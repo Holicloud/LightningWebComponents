@@ -1,0 +1,32 @@
+<template>
+    <div onmouseover={appearIcon} onmouseout={dissapearIcon} class="slds-clearfix">
+        <span class="slds-grid slds-grid_align-spread slds-float_left">
+            <div class="slds-truncate">
+                <template if:true={isPercentFixed}>
+                    <lightning-formatted-number
+                        value={formattedValue}
+                        format-style="percent-fixed"
+                        maximum-significant-digits={significantDigits}
+                    ></lightning-formatted-number>
+                </template>
+                <template if:true={standard}>
+                    <lightning-formatted-text value={value}></lightning-formatted-text>
+                </template>
+                <template if:true={isLookup}>
+                    <a onclick={navigateToRecord} href="javascript:void(0);">
+                        <lightning-formatted-text value={value}></lightning-formatted-text>
+                    </a>
+                </template>
+            </div>
+            <div class='edit_icon hideButton'>
+                <lightning-button-icon
+                    tabindex="0"
+                    variant='bare'
+                    title="Edit"
+                    icon-name='action:edit'
+                    onclick={handleClickEdit}
+                ></lightning-button-icon>
+            </div>
+        </span>
+    </div>
+</template>

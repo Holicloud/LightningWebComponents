@@ -1,0 +1,76 @@
+<template>
+    <section  onkeyup={handleKeyPress} role="dialog" tabindex="-1" class="slds-popover slds-popover_edit slds-hide" style={styleGiven} data-position-id="lgcp-1000020">
+        <span tabindex="0" class="inline-edit-form-start"></span>
+        <div class="slds-popover__body">
+            <form novalidate="">
+                <div class="slds-grid slds-p-left_xx-small">
+                    <slot>
+                        <div class="dt-type-edit-factory slds-col">
+                            <div class="picklistContainer slds-hide">
+                                <lightning-combobox
+                                    class="picklistInput"
+                                    data-id="picklistInput"
+                                    tabindex="0"
+                                    name="progress"
+                                    label="Status"
+                                    value={value}
+                                    placeholder={_placeholder}
+                                    onchange={handleChange}
+                                    options={_options}
+                                    variant="label-hidden"
+                                ></lightning-combobox>
+                            </div>
+                            <div class="inputPercentageContainer slds-hide">
+                                <lightning-input
+                                    onfocusout={handleChange}
+                                    class="inputPercentage"
+                                    tabindex="0"
+                                    data-id="inputPercentage"
+                                    type="text"
+                                    name="input1"
+                                    label="Enter a percentage"
+                                    variant="label-hidden"
+                                    value={value}
+                                    onchange={handlePercentageChanged}
+                                ></lightning-input>
+                            </div>
+                            <div class="lookupContainer slds-hide">
+                                <!-- <template > -->
+                                    <c-custom-lookup
+                                        if:true={validLookup}
+                                        object-api-name={objectApiName}
+                                        data-id="inputLookup"
+                                        search-by-api-name={searchByApiName}
+                                        additional-fields={additionalFields}
+                                        expanded-view-columns={expandedViewColumns}
+                                        icon-name="standard:user"
+                                        onselected={handleSelectedLookup}
+                                        onremoved={handleRemovedLookup}
+                                    ></c-custom-lookup>
+                                <!-- </template> -->
+                                    <!-- label="Brick"
+                                    limit-of-records="20"
+                                     help-text="ex:Code Brick Number" -->
+                                    <!-- where-clause={customLookupWhereClause} -->
+                                    <!-- hide-recent-records -->
+                            </div>
+                        </div>
+                    </slot>
+                </div>
+                <div if:true={multipleSelected} class="slds-form-element__control slds-grow">
+                    <span class="slds-checkbox">
+                        <lightning-input data-id='updateAll' type="checkbox" name="input1" label={updateSelectedLabel}> </lightning-input>
+                    </span>
+                </div>
+                <button type="submit" aria-hidden="true" tabindex="-1" value="save" class="slds-hide"></button>
+            </form>
+        </div>
+        <div if:true={multipleSelected} class="slds-popover__footer">
+            <div class="slds-grid slds-grid_align-end">
+                <lightning-button tabindex="0" label='cancel' onclick={handleCancel}></lightning-button>
+                <lightning-button label='Apply' onclick={handleApply} variant="brand"></lightning-button>
+            </div>
+        </div>
+        <div tabindex="0" class="inline-edit-form-end"></div>
+    </section>
+</template>

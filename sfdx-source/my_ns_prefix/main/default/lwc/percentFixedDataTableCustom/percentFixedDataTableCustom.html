@@ -1,0 +1,13 @@
+<template>
+    <div onmouseover={appearIcon} onmouseout={dissapearIcon}>
+        <span class="slds-grid slds-grid_align-spread">
+            <div class="slds-truncate">
+                <lightning-formatted-text value={value}></lightning-formatted-text>
+            </div>
+            <div class='edit_icon hideButton'>
+                <lightning-button-icon tabindex="0" variant='bare' title="Edit" icon-name='action:edit'
+                    onclick={handleClickEdit}></lightning-button-icon>
+            </div>
+        </span>
+    </div>
+</template>

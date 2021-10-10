@@ -6,7 +6,7 @@
   ],
   "namespace": "my_ns_prefix",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "43.0",
+  "sourceApiVersion": "52.0",
   "plugins": {
     "sfdxFalcon": {
       "appxPackage": {
