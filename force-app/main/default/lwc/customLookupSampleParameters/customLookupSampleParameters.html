@@ -1,0 +1,21 @@
+<template>
+    <lightning-card title="c-custom-lookup">
+		<lightning-layout>
+			<lightning-layout-item size="12">
+				<!-- <p>icon-name https://www.lightningdesignsystem.com/icons/</p> -->
+				<lightning-input
+					type="text"
+					variant="label-inline"
+					label="icon-name"
+					value={iconName}>
+				</lightning-input>
+				<lightning-textarea
+					label="fields"
+					value={fields}
+					onchange={handleFieldsChange}
+				></lightning-textarea>
+			</lightning-layout-item>
+		</lightning-layout>
+	</lightning-card>
+	<!-- {inputParameters} -->
+</template>
