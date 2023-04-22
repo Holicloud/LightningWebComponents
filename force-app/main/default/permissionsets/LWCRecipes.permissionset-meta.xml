@@ -16,6 +16,10 @@
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <tabSettings>
+        <tab>CustomLookup</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
         <tab>Custom__c</tab>
         <visibility>Visible</visibility>
     </tabSettings>
