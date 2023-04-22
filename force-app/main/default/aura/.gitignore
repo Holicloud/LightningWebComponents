@@ -21,7 +21,6 @@
 ################################################################################
 
 # Ignore everything...
-*
 
 # Except the following files...
 !.gitignore

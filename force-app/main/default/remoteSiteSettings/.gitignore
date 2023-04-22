@@ -7,8 +7,6 @@
 # TODO: Need to fill out the rest of this documentation header.
 ################################################################################
 
-# Ignore everything...
-*
 
 # Except the following files...
 !.gitignore

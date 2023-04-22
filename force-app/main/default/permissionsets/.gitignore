@@ -11,9 +11,6 @@
 # TODO: Should permission sets EVER appear outside of a feature module? YES.
 ################################################################################
 
-# Ignore everything...
-*
-
 # Except the following files...
 !.gitignore
 !README.md

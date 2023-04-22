@@ -1,0 +1,20 @@
+<template>
+	<lightning-card title="c-custom-data-table">
+		<c-custom-data-table
+			additional-search-by-fields={additionalSearchByFields}
+			columns={columns}
+			data-id="theDataTable"
+			table-id="theDataTable"
+			enable-infinite-loading
+			height='450px'
+			icon-name={iconName}
+			limit-of-records={limitOfRecords}
+			object-api-name={objectApiName}
+			onrowaction={handleRowAction}
+			search-by-api-name={searchByApiName}
+			search-key={searchKey}
+			where-clause={whereClause}
+			width='100%'
+		></c-custom-data-table>
+	</lightning-card>
+</template>
