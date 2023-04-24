@@ -84,6 +84,24 @@ function showToast(message = 'Unknown Error', title = 'Unknown Error', variant =
     });
 }
 
+function showToastError(message = 'Unknown Error', title = 'Unknown Error', variant = 'error') {
+    this.dispatchEvent(new ShowToastEvent({
+        title,
+        message,
+        variant,
+    }));
+}
+
+function showToastApexError(error) {
+    this.dispatchEvent(
+        new ShowToastEvent({
+            title: 'Apex Error',
+            message: reduceErrors(error).join(', '),
+            variant: 'error'
+        })
+    );
+}
+
 let getRecordTypeIdFromDevName = async (developerName, objectApiName) => {
     let recordTypeId;
     await getRecordTypeFromDeveloperName({ recordTypeDeveloperName: developerName, objectApiName: objectApiName })
@@ -92,4 +110,13 @@ let getRecordTypeIdFromDevName = async (developerName, objectApiName) => {
         });
     return recordTypeId;
 }
-export { flattenRecords, cloneArray, isBlank, showApexErrorMessage, showToast, getRecordTypeIdFromDevName }
+export {
+    showToastApexError,
+    flattenRecords,
+    cloneArray,
+    isBlank,
+    showToastError,
+    showApexErrorMessage,
+    showToast,
+    getRecordTypeIdFromDevName
+}

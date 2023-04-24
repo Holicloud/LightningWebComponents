@@ -1,4 +1,4 @@
-import getRecentlyViewedRecords from '@salesforce/apex/CustomDataTableController.getRecentlyViewedRecords';
+// import getRecentlyViewedRecords from '@salesforce/apex/CustomDataTableController.getRecentlyViewedRecords';
 import getFieldInformation from '@salesforce/apex/CustomDataTableController.getFieldInformation';
 import { isBlank, copyRecordsIntoNewArray } from 'c/commonFunctionsHelper';
 

@@ -25,30 +25,29 @@ export default class CustomLookupResults extends LightningElement {
     get extraFields() {
 
         let finalString = '';
-        let labelsMap = new Map();
-        const searchableFields = this.fields
-			.filter(e => e.searchable)
-			.map(element => element.fieldName.toLowerCase().replace('.','_'));
 
-        if (this.record && this.fields) {
+        const fields = JSON.parse(JSON.stringify(this.fields)).map(e => {
+            e.fieldName = e.fieldName.replace('.','_')
+            return e;
+        });
 
-            for (const field of this.fields) {
-                labelsMap.set(field.fieldName, field.label);
-            }
+        const searchableFields = new Set(
+            fields.filter(e => e.searchable).map(e => e.fieldName));
 
-            for (const field of Object.getOwnPropertyNames(this.record)) {
+        if (!this.record || !fields) return finalString;
 
-                if (labelsMap && [...labelsMap.keys()].includes(field) && field !== this.primaryField) {
+        const labelByField = new Map(fields.map(field => [field.fieldName, field.label]));
 
-					debugger
-					finalString += this.searchKey && searchableFields.includes(field.toLowerCase())
-						? `${labelsMap.get(field)}:${this.boldOcurrences(this.searchKey, this.record[field])}</br>`
-						: `${labelsMap.get(field)}:${this.record[field]}</br>`;
-                }
+        for (const field of Object.getOwnPropertyNames(this.record)) {
+
+            if (labelByField.has(field) && field !== this.primaryField) {
+                const value = this.searchKey && searchableFields.has(field)
+                    ? this.boldOcurrences(this.searchKey, this.record[field])
+                    : this.record[field];
+                finalString += `${labelByField.get(field)}: ${value}</br>`;
             }
         }
 
-		debugger
         return finalString;
     }
 

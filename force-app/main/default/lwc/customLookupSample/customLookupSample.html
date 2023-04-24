@@ -1,9 +1,29 @@
 <template>
 	<lightning-card title="c-custom-lookup">
-		<c-custom-lookup
-			icon-name={iconName}
-			fields={fields}
-			>
-		</c-custom-lookup>
+		<lightning-layout>
+			<lightning-layout-item size="6">
+				<lightning-input
+					type="text"
+					data-id="icon"
+					label="icon-name"
+					value={iconName}>
+				</lightning-input>
+				<lightning-textarea
+					data-id="fields"
+					label="fields"
+					value={displayFields}
+				></lightning-textarea>
+				<lightning-button
+						label="Test Parameters"
+						onclick={handleUpdateParameters}
+				></lightning-button>
+			</lightning-layout-item>
+			<lightning-layout-item size="6">
+				<c-custom-lookup
+					icon-name={iconName}
+					fields={fields}
+				></c-custom-lookup>
+			</lightning-layout-item>
+		</lightning-layout>
 	</lightning-card>
 </template>

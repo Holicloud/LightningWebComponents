@@ -5,7 +5,7 @@ import { LightningElement, track, api,wire } from 'lwc';
 import { formatColumns} from 'c/customDataTableHelper';
 import getRecords from '@salesforce/apex/CustomLookupController.getRecords';
 import { getObjectInfo} from 'lightning/uiObjectInfoApi';
-import { flattenRecords, cloneArray, isBlank} from 'c/commonFunctionsHelper';
+import { flattenRecords, cloneArray, isBlank, showToastError} from 'c/commonFunctionsHelper';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { reduceErrors } from 'c/ldsUtils';
 
@@ -65,20 +65,24 @@ export default class CustomLookup extends LightningElement {
     /**
      * @description fields that will be shown by the lookup
      * @type {Array<any>}
-     * @default
-     * [
-            { label: 'Nombre', fieldName: 'Name' },
-            { label: 'Phone', fieldName: 'Phone' },
-            { label: 'AccountNumber', fieldName: 'AccountNumber' },
-            { label: 'Owner', fieldName: 'Owner.Name' }
-        ];
      */
-    @api fields = [
+    _fields = [
         { label: 'Name', fieldName: 'Name' },
         { label: 'Phone', fieldName: 'Phone' },
         { label: 'AccountNumber', fieldName: 'AccountNumber' },
         { label: 'Owner', fieldName: 'Owner.Name' }
     ];
+
+    @api
+    get fields() {
+        return this._fields;
+    }
+    set fields(value) {
+        if (value && !Array.isArray(value)) {
+            showToastError.call(this, 'fields should be an array')
+        }  
+        this._fields = value;
+    }
 
     /**
      * @description prevent any input from being modified, use along with prevalue to have a prepopulated value that cant be modified by the user
@@ -246,14 +250,11 @@ export default class CustomLookup extends LightningElement {
         this.requiredClass = "slds-form-element";
     }
 
-    connectedCallback() {
-        let run = async () => {
-            if (this.fields && this.objectApiName) {
-				// this.fields = await formatColumns(this.fields, this.objectApiName);
-                // this.fields.map(e => e.fieldName) = this.fields.map(e => e.fieldName);
-            }
-        };
-        run();
+    async connectedCallback() {
+        if (this.fields && this.objectApiName) {
+            // this.fields = await formatColumns(this.fields, this.objectApiName);
+            // this.fields.map(e => e.fieldName) = this.fields.map(e => e.fieldName);
+        }
     }
 
     renderedCallback() {
@@ -266,7 +267,7 @@ export default class CustomLookup extends LightningElement {
 		getRecords({ queryParameters : JSON.stringify({
 			objectApiName : this.objectApiName,
 			preValue : this.preValue,
-			queryFields : this.fields.map(e => e.fieldName),
+			queryFields : this._fields.map(e => e.fieldName),
 			searchByApiName : this.searchByApiName,
 			searchByFields : this.searchBy,
 			whereClause : this.whereClause,
@@ -329,9 +330,9 @@ export default class CustomLookup extends LightningElement {
 				getRecords({ queryParameters : JSON.stringify({
 					limitOfRecords : 20,
 					objectApiName : this.objectApiName,
-					queryFields : this.fields.map(e => e.fieldName),
+					queryFields : this._fields.map(e => e.fieldName),
 					searchKey : this.searchKey,
-					searchByFields : this.fields.filter(e => e.searchable || e.primary).map(e => e.fieldName),
+					searchByFields : this._fields.filter(e => e.searchable || e.primary).map(e => e.fieldName),
 					whereClause : this.whereClause,
 				})})
 				.then(result => {
@@ -357,7 +358,7 @@ export default class CustomLookup extends LightningElement {
 		getRecords({ queryParameters : JSON.stringify({
 			limitOfRecords : this.limitOfRecords,
 			objectApiName : this.objectApiName,
-			queryFields : this.fields.map(e => e.fieldName),
+			queryFields : this._fields.map(e => e.fieldName),
 			displayRecentlyViewed: true,
 			whereClause : this.whereClause,
 		})})
@@ -377,7 +378,7 @@ export default class CustomLookup extends LightningElement {
 		getRecords({ queryParameters : JSON.stringify({
 			limitOfRecords : this.limitOfRecords,
 			objectApiName : this.objectApiName,
-			queryFields : this.fields.map(e => e.fieldName),
+			queryFields : this._fields.map(e => e.fieldName),
 			searchByApiName : this.searchByApiName,
 			whereClause : this.whereClause,
 		})})
@@ -424,7 +425,7 @@ export default class CustomLookup extends LightningElement {
     }
 
 	get primaryField() {
-        return this.fields.find(e => e.primary).fieldName.toUpperCase().replace('.', '_');
+        return this._fields.find(e => e.primary).fieldName.toUpperCase().replace('.', '_');
     }
 
     @api setFocusInSearchField() {

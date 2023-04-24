@@ -212,7 +212,7 @@
 								</li>
 								<template if:true={records} for:each={records} for:item="record">
 									<c-custom-lookup-results
-										fields={fields}
+										fields={_fields}
 										icon-name={iconName}
 										search-key={searchKey}
 										key={record.Id}
