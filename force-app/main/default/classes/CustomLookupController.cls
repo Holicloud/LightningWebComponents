@@ -12,10 +12,10 @@ public with sharing class CustomLookupController {
             queryFactory
                 .setLimit(parameters.limitOfRecords)
                 .selectFields(parameters.queryFields);
-
             if (parameters.preValue != null) {
+                String preValue = parameters.preValue;
                 queryFactory
-                    .setCondition('Id = :' + parameters.preValue)
+                    .setCondition('Id = :preValue')
                     .setLimit(1);
             } else if (String.isNotBlank(parameters.searchKey)) {
                 
@@ -27,23 +27,27 @@ public with sharing class CustomLookupController {
 
                 queryFactory.setCondition(String.join(new List<String>(conditions), ' OR '));
 
-            } else if (parameters.displayRecentlyViewed) {
+            } else if (parameters.displayRecentlyViewed == true) {
 
                 List<Id> recentlyViewed = new List<Id>(getRecentlyViewedRecords(parameters.objectApiName));
 
-                if (!recentlyViewed.isEmpty())
+                if (!recentlyViewed.isEmpty()) {
                     queryFactory.setCondition('Id IN (\'' + String.join(recentlyViewed, '\', \' ') + '\')');
                 }
+            }
 
             if (String.isNotBlank(parameters.whereClause)) {
-                queryFactory
-                    .setCondition(queryFactory.getCondition() + ' AND ('+ parameters.whereClause +')');
+                queryFactory.setCondition(
+                    queryFactory.getCondition() != null
+                        ? '(' + queryFactory.getCondition() + ') AND ('+ parameters.whereClause +')'
+                        : parameters.whereClause
+                );
             }
 
             return Database.query(queryFactory.toSOQL());
 
         } catch (Exception e) {
-            throw new AuraHandledException(e.getMessage() + queryFactory.getCondition());
+            throw new AuraHandledException(e.getMessage()  + ' Query:' + queryFactory.getCondition());
         }
     }
 

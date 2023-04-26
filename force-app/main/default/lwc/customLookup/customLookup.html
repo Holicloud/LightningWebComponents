@@ -5,34 +5,13 @@
 			class="slds-form-element__label"
 			for="combobox-id-4"
 		>
-			<template if:true={required}
-				><abbr class="slds-required" title="required">*</abbr></template
-			>{label}
+			<template if:true={required}>
+				<abbr class="slds-required" title="required">*</abbr>
+			</template>
+			{label}
 		</label>
-		<template if:true={helpfulInformation}>
-			<div class="slds-form-element__icon">
-				<div
-					onmouseover={showHelpfulInformation}
-					onmouseout={hideHelpfulInformation}
-				>
-					<lightning-icon
-						class="slds-button__icon"
-						aria-hidden="true"
-						icon-name="utility:info"
-						size="xx-small"
-					>
-					</lightning-icon>
-				</div>
-				<div
-					if:true={displayHelpfulInformation}
-					class="slds-popover slds-popover_tooltip slds-nubbin_bottom-left"
-					role="tooltip"
-					id="help"
-					style="position: absolute; top: -45px; left: -15px; width: 170px"
-				>
-					<div class="slds-popover__body">{helpfulInformation}</div>
-				</div>
-			</div>
+		<template if:true={helpText}>
+			<lightning-helptext content={helpText}></lightning-helptext>
 		</template>
 		<div class="slds-form-element__control">
 			<template if:true={recordSelected}>
@@ -113,7 +92,7 @@
 						>
 							<input
 								type="text"
-								name="mainInput"
+								data-id="input"
 								class="
 									slds-input
 									slds-combobox__input slds-combobox__input-value
@@ -237,7 +216,7 @@
 					</div>
 				</div>
 			</div>
-			<div if:true={helpText} class="slds-form-element__help">{helpText}</div>
+			<div if:true={bottomText} class="slds-form-element__help">{bottomText}</div>
 		</div>
 		<template if:true={displayRequiredMessage}>
 			<div class="slds-form-element__help" id="error-message-unique-id">

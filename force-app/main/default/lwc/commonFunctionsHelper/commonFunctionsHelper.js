@@ -1,5 +1,6 @@
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getRecordTypeFromDeveloperName from '@salesforce/apex/CustomDataTableController.getRecordTypeFromDeveloperName';
+import { reduceErrors } from 'c/ldsUtils';
 /**
  * @param  {Array} theArray
  * @return array of records flattened
@@ -97,7 +98,8 @@ function showToastApexError(error) {
         new ShowToastEvent({
             title: 'Apex Error',
             message: reduceErrors(error).join(', '),
-            variant: 'error'
+            variant: 'error',
+            mode: 'sticky'
         })
     );
 }

@@ -8,6 +8,72 @@
 					label="icon-name"
 					value={iconName}>
 				</lightning-input>
+				<lightning-input
+					type="text"
+					data-id="objectApiName"
+					label="object-api-name"
+					value={objectApiName}>
+				</lightning-input>
+				<lightning-input
+					type="text"
+					data-id="label"
+					label="label"
+					value={label}>
+				</lightning-input>
+				<lightning-input
+					type="text"
+					data-id="preValue"
+					label="pre-value"
+					value={preValue}>
+				</lightning-input>
+				<lightning-input
+					type="checkbox"
+					data-id="required"
+					label="required"
+					value={required}>
+				</lightning-input>
+				<lightning-input
+					type="checkbox"
+					data-id="disabled"
+					label="disabled"
+					value={disabled}>
+				</lightning-input>
+				<lightning-input
+					type="checkbox"
+					data-id="hideRecentRecords"
+					label="hide-recent-records"
+					value={hideRecentRecords}>
+				</lightning-input>
+				<lightning-input
+					type="text"
+					data-id="whereClause"
+					label="where-clause"
+					value={whereClause}>
+				</lightning-input>
+				<lightning-input
+					type="text"
+					data-id="limitOfRecords"
+					label="limit-of-records"
+					value={limitOfRecords}>
+				</lightning-input>
+				<lightning-input
+					type="text"
+					data-id="bottomText"
+					label="bottom-text"
+					value={bottomText}>
+				</lightning-input>
+				<lightning-input
+					type="text"
+					data-id="whereClause"
+					label="where-clause"
+					value={whereClause}>
+				</lightning-input>
+				<lightning-input
+					type="text"
+					data-id="helpText"
+					label="helpful-text"
+					value={helpText}>
+				</lightning-input>
 				<lightning-textarea
 					data-id="fields"
 					label="fields"
@@ -20,8 +86,18 @@
 			</lightning-layout-item>
 			<lightning-layout-item size="6">
 				<c-custom-lookup
-					icon-name={iconName}
+					disabled={disabled}
 					fields={fields}
+					help-text={helpText}
+					icon-name={iconName}
+					label={label}
+					limit-of-records={limitOfRecords}
+					object-api-name={objectApiName}
+					pre-value={preValue}
+					required={required}
+					where-clause={whereClause}
+					helpful-text={helpText}
+					hide-recent-records={hideRecentRecords}
 				></c-custom-lookup>
 			</lightning-layout-item>
 		</lightning-layout>

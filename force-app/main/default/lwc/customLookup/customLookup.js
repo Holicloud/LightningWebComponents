@@ -5,12 +5,18 @@ import { LightningElement, track, api,wire } from 'lwc';
 import { formatColumns} from 'c/customDataTableHelper';
 import getRecords from '@salesforce/apex/CustomLookupController.getRecords';
 import { getObjectInfo} from 'lightning/uiObjectInfoApi';
-import { flattenRecords, cloneArray, isBlank, showToastError} from 'c/commonFunctionsHelper';
+import { flattenRecords, cloneArray, isBlank, showToastError, showToastApexError } from 'c/commonFunctionsHelper';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import { reduceErrors } from 'c/ldsUtils';
 
 const DELAY = 800;
 export default class CustomLookup extends LightningElement {
+    /**
+     * @description help text information about the lookup
+     * @type {string}
+     * @example 'select your account'
+     */
+    @api bottomText;
+
     /**
      * @type {string}
      * @example 'custom:device'
@@ -92,19 +98,12 @@ export default class CustomLookup extends LightningElement {
     @api disabled = false;
 
     /**
-     * @description help text information about the lookup
-     * @type {string}
-     * @example 'select your account'
-     */
-    @api helpText;
-	
-    /**
      * @description it displays a small icon which can be used to display helpful information  to your users
      * @type {string}
      * @default 'searching by: searchBy'
      * @example 'type anything you want here'
      */
-    @api helpfulInformation;
+    @api helpText;
 
     /**
      * @description same as https://developer.salesforce.com/docs/component-library/bundle/lightning-datatable/documentation but supports object relationships
@@ -166,7 +165,7 @@ export default class CustomLookup extends LightningElement {
 
     /** submits the lookup, if there is no record selected and the lookup is required it displays a required message*/
     @api submit() {
-        if (this.required && this.recordSelected === undefined || this.recordSelected === null) {
+        if (this.required && !this.recordSelected) {
             this.requiredClass = 'slds-form-element slds-has-error';
             this.displayRequiredMessage = true;
         } else {
@@ -179,9 +178,7 @@ export default class CustomLookup extends LightningElement {
         this.submit();
         this.preValue = undefined;
         this.displaySearch(true);
-        const mainInput = [...this.template.querySelectorAll('input')]
-			.find(element => element.name === 'mainInput');
-        mainInput.value = '';
+        this.template.querySelector('[data-id="input"]').value = '';
         this.searchKey = '';
         this.recordSelected = undefined;
         this.records = undefined;
@@ -190,6 +187,10 @@ export default class CustomLookup extends LightningElement {
         this.setFocusInSearchField();
         this.displaySearchResults(true);
         this.dispatchEvent(theEvent);
+    }
+
+    @api get selectedRecord() {
+        return this.recordSelected;
     }
 
     /** @type {Array} */
@@ -213,9 +214,6 @@ export default class CustomLookup extends LightningElement {
     /** @type {boolean} */
     displaySearchIcon;
 
-    /** @type {boolean} @default false */
-    displayHelpfulInformation = false;
-
     /** @type {object} single record */
     showSpinner = false;
 
@@ -230,14 +228,6 @@ export default class CustomLookup extends LightningElement {
 
 	/** @type {string} */
 	objectLabel;
-
-    @api
-    get apiRecordSelected() {
-        return this.recordSelected;
-    }
-    set apiRecordSelected(apiRecordSelected) {
-        this.recordSelected = apiRecordSelected;
-    }
 
     get copyRecordsIsOk() {
         return this.staleRecords !== undefined && this.staleRecords.length > 0;
@@ -273,7 +263,7 @@ export default class CustomLookup extends LightningElement {
 			whereClause : this.whereClause,
 		})})
 		.then(result => {
-			if (result.length > 0) {
+			if (result.length) {
 				this.displaySearch(false);
 				this.recordSelected = result[0];
 				this.submit();
@@ -282,17 +272,11 @@ export default class CustomLookup extends LightningElement {
 				this.recordSelected = undefined;
 			}
 		})
-		.catch(error => this.showApexErrorMessage(error));
+		.catch(error => {
+            showToastApexError.call(this, error);
+        });
     }
 
-    showHelpfulInformation() {
-        this.displayHelpfulInformation = true;
-    }
-
-    hideHelpfulInformation() {
-        this.displayHelpfulInformation = false;
-    }
-    
     openExpandedLookup() {
         this.displayExpandedLookup(true);
     }
@@ -328,7 +312,7 @@ export default class CustomLookup extends LightningElement {
         if (!isBlank(this.searchKey)) {
             this.delayTimeout = setTimeout(() => {
 				getRecords({ queryParameters : JSON.stringify({
-					limitOfRecords : 20,
+					limitOfRecords : this.limitOfRecords,
 					objectApiName : this.objectApiName,
 					queryFields : this._fields.map(e => e.fieldName),
 					searchKey : this.searchKey,
@@ -342,9 +326,9 @@ export default class CustomLookup extends LightningElement {
 					this.searchLabel = `   "${this.searchKey}" in ${this.objectLabel} records`;
 					this.displaySearchIcon = true;
 					this.error = undefined;
-					this.showSpinner = false;
 				})
-				.catch(error => this.showApexErrorMessage(error));
+				.catch(error => showToastApexError.call(this, error))
+                .finally(() => this.showSpinner = false);
             }, DELAY);
         } else {
 			this.hideRecentRecords ? this.showGivenRecords() : this.showRecentRecords();
@@ -371,7 +355,7 @@ export default class CustomLookup extends LightningElement {
 				this.error = undefined
 			}
 		})
-		.catch(error => this.showApexErrorMessage(error));
+		.catch(error => showToastApexError.call(this, error));
     }
 
     showGivenRecords() {
@@ -379,7 +363,6 @@ export default class CustomLookup extends LightningElement {
 			limitOfRecords : this.limitOfRecords,
 			objectApiName : this.objectApiName,
 			queryFields : this._fields.map(e => e.fieldName),
-			searchByApiName : this.searchByApiName,
 			whereClause : this.whereClause,
 		})})
 		.then(result => {
@@ -391,25 +374,18 @@ export default class CustomLookup extends LightningElement {
 				this.error = undefined
 			}
 		})
-		.catch(error => this.showApexErrorMessage(error));
+		.catch(error => showToastApexError.call(this, error));
     }
-
-	showApexErrorMessage(error) {
-		this.dispatchEvent(
-			new ShowToastEvent({
-				title: 'Apex Error',
-				message: reduceErrors(error).join(', '),
-				variant: 'error'
-			})
-		);
-	}
 
     /**
      * @param  {any} recordSelected - event.detail has to be the ID of the record selected
      */
     handleSelect(event) {
         this.recordSelected = this.records.find(record => event.detail === record.Id);
-        this.throwEventSelected(this.recordSelected);
+
+        if (this.recordSelected) {
+            this.throwEventSelected(this.recordSelected);
+        }
     }
 
     /**
@@ -428,38 +404,25 @@ export default class CustomLookup extends LightningElement {
         return this._fields.find(e => e.primary).fieldName.toUpperCase().replace('.', '_');
     }
 
-    @api setFocusInSearchField() {
-        const mainInput = [...this.template.querySelectorAll('input')]
-			.find(element => element.name === 'mainInput');
-        mainInput.focus();
+    setFocusInSearchField() {
+        setTimeout(() => {
+            this.template.querySelector('[data-id="input"]').focus();
+        }, 0);
     }
 
     /** @param  {boolean} on - shows/hides lookupresults */
     displaySearchResults(on) {
-        this.resultClass = 'slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click ' +
-			on ? 'slds-is-open' : 'slds-is-close';
+        this.resultClass =
+            `slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-${on ? 'open' : 'close'}`;
     }
 
     /** @param  {boolean} on - shows/hides searchInputField  */
     displaySearch(on) {
-        const theDiv = [...this.template.querySelectorAll('div')]
-			.find(element => [...element.classList].includes("search-class"));
-
-        if (on) {
-            theDiv.classList.remove('modal-hidden');
-        } else {
-            theDiv.classList.add('modal-hidden');
-        }
+        this.template.querySelector('.search-class').classList[on ? 'remove' : 'add']('modal-hidden');
     }
 
     displayExpandedLookup(display) {
-        const popUp = this.template.querySelector('[data-id="thePopUp"]');
-
-        if (display) {
-            popUp.display();
-        } else {
-            popUp.hide();
-        }
+        this.template.querySelector('[data-id="thePopUp"]')[display ? 'display' : 'hide']();
     }
 
 
@@ -490,9 +453,5 @@ export default class CustomLookup extends LightningElement {
         this.displayExpandedLookup(false);
         this.recordSelected = event.detail.detail.row;
         this.throwEventSelected(this.recordSelected);
-    }
-
-    @api get selectedRecord() {
-        return this.recordSelected;
     }
 }
