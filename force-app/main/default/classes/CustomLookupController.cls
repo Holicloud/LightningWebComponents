@@ -12,10 +12,10 @@ public with sharing class CustomLookupController {
             queryFactory
                 .setLimit(parameters.limitOfRecords)
                 .selectFields(parameters.queryFields);
-            if (parameters.preValue != null) {
-                String preValue = parameters.preValue;
+            if (parameters.value != null) {
+                String value = parameters.value;
                 queryFactory
-                    .setCondition('Id = :preValue')
+                    .setCondition('Id = :value')
                     .setLimit(1);
             } else if (String.isNotBlank(parameters.searchKey)) {
                 
@@ -68,7 +68,7 @@ public with sharing class CustomLookupController {
     private class QueryParameters {
 
         public Boolean displayRecentlyViewed = false;
-        public Id preValue;
+        public Id value;
         public Integer limitOfRecords;
         public List<String> queryFields = new List<String>();
         public List<String> searchByFields = new List<String>();

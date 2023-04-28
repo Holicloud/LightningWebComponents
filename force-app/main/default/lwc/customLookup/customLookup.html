@@ -1,24 +1,21 @@
 <template>
-	<div class={requiredClass}>
+	<div class='slds-form-element'>
 		<label
-			if:true={label}
 			class="slds-form-element__label"
 			for="combobox-id-4"
 		>
-			<template if:true={required}>
-				<abbr class="slds-required" title="required">*</abbr>
-			</template>
+			<abbr if:true={required} class="slds-required" title="required">*</abbr>
 			{label}
 		</label>
-		<template if:true={helpText}>
-			<lightning-helptext content={helpText}></lightning-helptext>
-		</template>
+		<lightning-helptext if:true={helpText} content={helpText}></lightning-helptext>
 		<div class="slds-form-element__control">
-			<template if:true={recordSelected}>
+			<template lwc:if={recordSelected}>
 				<div class="slds-combobox_container slds-has-selection">
 					<div
 						class="
-							slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click
+							slds-combobox
+							slds-dropdown-trigger
+							slds-dropdown-trigger_click
 						"
 						aria-expanded="false"
 						aria-haspopup="listbox"
@@ -27,7 +24,8 @@
 						<div
 							class="
 								slds-combobox__form-element
-								slds-input-has-icon slds-input-has-icon_left-right
+								slds-input-has-icon
+								slds-input-has-icon_left-right
 							"
 							role="none"
 						>
@@ -53,7 +51,7 @@
 								role="textbox"
 								placeholder="Select an Option"
 								style="pointer-events: none"
-								value={primaryFieldDisplayableValue}
+								value={inputValue}
 								disabled={disabled}
 							/>
 							<button
@@ -64,7 +62,7 @@
 							>
 								<lightning-button-icon
 									disabled={disabled}
-									onmousedown={handleRemove}
+									onmousedown={remove}
 									icon-name="utility:close"
 									variant="bare"
 									alternative-text="Clear Selection"
@@ -75,10 +73,15 @@
 					</div>
 				</div>
 			</template>
-			<div class="search-class">
+			<template lwc:else>
 				<div class="slds-combobox_container">
 					<div
-						class={resultClass}
+						class="
+							input-combobox
+							slds-combobox
+							slds-dropdown-trigger
+							slds-dropdown-trigger_click
+						"
 						aria-expanded="true"
 						aria-haspopup="listbox"
 						role="combobox"
@@ -103,46 +106,39 @@
 								aria-controls="listbox-id-4"
 								autocomplete="off"
 								role="textbox"
-								placeholder={thePlaceHolder}
+								placeholder={inputPlaceHolder}
 								onkeyup={handleOnchange}
 								value={searchKey}
 								disabled={disabled}
 								onfocus={handleOnFocus}
-								onblur={inblurEdge}
+								onfocusout={submit}
 								required
 							/>
 							<span class="slds-input__icon-group slds-input__icon-group_right">
-								<template if:true={showSpinner}>
-									<div
-										role="status"
-										class="
-											slds-spinner slds-spinner_brand slds-spinner_x-small
-											slds-input__spinner
-										"
-									>
-										<span class="slds-assistive-text">Loading</span>
-										<div class="slds-spinner__dot-a"></div>
-										<div class="slds-spinner__dot-b"></div>
-									</div>
+								<template lwc:if={showSpinner}>
+									<lightning-spinner
+										title="Loading"
+										class="slds-input__spinner"
+										variant="brand"
+										size="small">
+									</lightning-spinner>
 								</template>
-								<div
-									class="
-										slds-button slds-button_icon
-										slds-input__icon slds-input__icon_right
-									"
-									title="Search"
-								>
-									<span class="slds-assistive-text">Search</span>
+								<template lwc:else>
 									<lightning-icon
+										class="
+											slds-button
+											slds-button_icon
+											slds-input__icon
+											slds-input__icon_right
+										"
 										icon-name="utility:search"
 										size="x-small"
 									></lightning-icon>
-								</div>
+								</template>
 							</span>
 						</div>
 						<div
 							tabindex="0"
-							onblur={inblur}
 							id="listbox-id-4"
 							class="
 								slds-dropdown
@@ -158,7 +154,6 @@
 								<li
 									role="presentation"
 									class="slds-listbox__item"
-									onmousedown={openExpandedLookup}
 								>
 									<div
 										aria-selected="true"
@@ -172,20 +167,15 @@
 										"
 										role="option"
 									>
-										<template if:true={displaySearchIcon}
-											><lightning-icon
+											<lightning-icon
+												if:true={displaySearchIcon}
 												icon-name="utility:search"
 												size="x-small"
-											></lightning-icon
-										></template>
+											></lightning-icon>
 										<span class="slds-media__body">
-											<span
-												class="
-													slds-listbox__option-text
-													slds-listbox__option-text_entity
-												"
-												>{searchLabel}</span
-											>
+											<span class="slds-listbox__option-text_entity">
+												{searchLabel}
+											</span>
 										</span>
 									</div>
 								</li>
@@ -199,43 +189,14 @@
 										record={record}
 									></c-custom-lookup-results>
 								</template>
-								<template if:true={error}>
-									<span class="slds-media__body">
-										<span
-											class="
-												slds-align_absolute-center
-												slds-box
-												slds-theme_shade slds-theme_error
-											"
-											>{error}</span
-										>
-									</span>
-								</template>
 							</ul>
 						</div>
 					</div>
 				</div>
-			</div>
-			<div if:true={bottomText} class="slds-form-element__help">{bottomText}</div>
+			</template>
 		</div>
-		<template if:true={displayRequiredMessage}>
-			<div class="slds-form-element__help" id="error-message-unique-id">
-				Complete this field.
-			</div>
-		</template>
+		<div if:true={displayRequiredMessage} class="displayRequiredMessage slds-form-element__help">
+			Complete this field.
+		</div>
 	</div>
-	<!-- <c-expanded-list-view-custom-lookup
-		data-id="thePopUp"
-		additional-search-by-fields={additionalSearchByFields}
-		columns={expandedViewColumns}
-		icon-name={iconName}
-		limit-of-records={limitOfRecordsExpandedLookup}
-		object-api-name={objectApiName}
-		object-label={objectLabel}
-		search-by-api-name={searchByApiName}
-		search-key={searchKey}
-		where-clause={whereClause}
-		onrowaction={handleRowAction}
-		oncancel={handleCancelModal}
-	></c-expanded-list-view-custom-lookup> -->
 </template>

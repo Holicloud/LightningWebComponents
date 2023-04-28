@@ -6,12 +6,11 @@ export default class CustomLookupSample extends LightningElement {
     iconName = 'standard:contact';
     objectApiName = 'Account';
     label = 'test label';
-    preValue = '';
+    value = '';
     whereClause = 'Id != NULL';
-    required = true;
+    required = false;
     limitOfRecords = 10;
     disabled = false;
-    bottomText = 'some bottom text';
     helpText = 'some help text';
     hideRecentRecords = false;
 
@@ -37,14 +36,17 @@ export default class CustomLookupSample extends LightningElement {
         this.iconName = this.getElementByDataId('icon').value;
         this.objectApiName = this.getElementByDataId('objectApiName').value;
         this.label = this.getElementByDataId('label').value;
-        this.preValue = this.getElementByDataId('preValue').value;
+        this.value = this.getElementByDataId('value').value;
         this.required = this.getElementByDataId('required').checked;
         this.whereClause = this.getElementByDataId('whereClause').value;
         this.limitOfRecords = this.getElementByDataId('limitOfRecords').value;
         this.disabled = this.getElementByDataId('disabled').checked;
         this.hideRecentRecords = this.getElementByDataId('hideRecentRecords').checked;
-        this.bottomText = this.getElementByDataId('bottomText').value;
         this.helpText = this.getElementByDataId('helpText').value;
+    }
+
+    testSubmit() {
+        this.getElementByDataId('customLookup').submit();
     }
 
     getElementByDataId(dataId) {

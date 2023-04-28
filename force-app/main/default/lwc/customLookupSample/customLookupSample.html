@@ -22,9 +22,9 @@
 				</lightning-input>
 				<lightning-input
 					type="text"
-					data-id="preValue"
-					label="pre-value"
-					value={preValue}>
+					data-id="value"
+					label="value"
+					value={value}>
 				</lightning-input>
 				<lightning-input
 					type="checkbox"
@@ -58,18 +58,6 @@
 				</lightning-input>
 				<lightning-input
 					type="text"
-					data-id="bottomText"
-					label="bottom-text"
-					value={bottomText}>
-				</lightning-input>
-				<lightning-input
-					type="text"
-					data-id="whereClause"
-					label="where-clause"
-					value={whereClause}>
-				</lightning-input>
-				<lightning-input
-					type="text"
 					data-id="helpText"
 					label="helpful-text"
 					value={helpText}>
@@ -83,9 +71,14 @@
 						label="Test Parameters"
 						onclick={handleUpdateParameters}
 				></lightning-button>
+				<lightning-button
+						label="Test Submit button"
+						onclick={testSubmit}
+				></lightning-button>
 			</lightning-layout-item>
 			<lightning-layout-item size="6">
 				<c-custom-lookup
+					data-id="customLookup"
 					disabled={disabled}
 					fields={fields}
 					help-text={helpText}
@@ -93,7 +86,7 @@
 					label={label}
 					limit-of-records={limitOfRecords}
 					object-api-name={objectApiName}
-					pre-value={preValue}
+					value={value}
 					required={required}
 					where-clause={whereClause}
 					helpful-text={helpText}
