@@ -1,4 +1,4 @@
-public with sharing class CustomLookupController {
+public with sharing class LookupController {
 
     @AuraEnabled(cacheable=true)
     public static List<SObject> getRecords(String queryParameters) {

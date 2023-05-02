@@ -1,0 +1,27 @@
+<template>
+  <li role="presentation" class="slds-listbox__item" onmousedown={handleRecordSelect}>
+      <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option" >
+          <span class="slds-media__figure slds-listbox__option-icon">
+              <lightning-icon icon-name={iconName} size="small"></lightning-icon>
+          </span>
+          <span class="slds-media__body">
+              <span class="slds-listbox__option-text slds-listbox__option-text_entity">
+                  <lightning-formatted-rich-text
+          class="slds-truncate"
+          title={primaryFieldDisplayableValue}
+          value={primaryFieldDisplayableValue}
+          disable-linkify
+        ></lightning-formatted-rich-text>
+              </span>
+              <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">
+                  <lightning-formatted-rich-text
+          class="slds-truncate"
+          title={extraFields}
+          value={extraFields}
+          disable-linkify
+        ></lightning-formatted-rich-text>
+              </span>
+          </span>
+      </div>
+  </li>
+</template>

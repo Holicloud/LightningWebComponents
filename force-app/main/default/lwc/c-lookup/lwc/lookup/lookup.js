@@ -2,12 +2,12 @@
 /* eslint-disable vars-on-top */
 
 import { LightningElement, track, api,wire } from 'lwc';
-import getRecords from '@salesforce/apex/CustomLookupController.getRecords';
+import getRecords from '@salesforce/apex/LookupController.getRecords';
 import { getObjectInfo} from 'lightning/uiObjectInfoApi';
 import { flattenRecords, cloneArray, isBlank, showToastError, showToastApexError } from 'c/commonFunctionsHelper';
 
 const DELAY = 800;
-export default class CustomLookup extends LightningElement {
+export default class Lookup extends LightningElement {
     /**
      * @type {string}
      * @example 'custom:device'

@@ -180,14 +180,14 @@
 									</div>
 								</li>
 								<template if:true={records} for:each={records} for:item="record">
-									<c-custom-lookup-results
+									<c-lookup-result
 										fields={_fields}
 										icon-name={iconName}
 										search-key={searchKey}
 										key={record.Id}
 										onselect={handleSelect}
 										record={record}
-									></c-custom-lookup-results>
+									></c-lookup-result>
 								</template>
 							</ul>
 						</div>

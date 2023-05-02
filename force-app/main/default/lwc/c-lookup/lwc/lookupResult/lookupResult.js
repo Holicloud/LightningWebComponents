@@ -1,6 +1,6 @@
 import { LightningElement, api } from 'lwc';
 
-export default class CustomLookupResults extends LightningElement {
+export default class LookupResult extends LightningElement {
     @api fields;
     @api iconName;
     @api record;
