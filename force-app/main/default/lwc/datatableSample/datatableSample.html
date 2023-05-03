@@ -1,0 +1,17 @@
+<template>
+	<lightning-card title="c-custom-lookup">
+		<lightning-layout>
+			<lightning-layout-item size="6">
+				<lightning-input
+					type="text"
+					data-id="icon"
+					label="limit-of-records"
+					value={limitOfRecords}>
+				</lightning-input>
+			</lightning-layout-item>
+			<c-datatable
+				limit-of-records={limitOfRecords}
+			></c-datatable>
+		</lightning-layout>
+	</lightning-card>
+</template>

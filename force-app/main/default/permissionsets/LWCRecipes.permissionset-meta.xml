@@ -20,6 +20,10 @@
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
+        <tab>datatable</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
         <tab>Custom__c</tab>
         <visibility>Visible</visibility>
     </tabSettings>
