@@ -2,26 +2,30 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getRecordTypeFromDeveloperName from '@salesforce/apex/CustomDataTableController.getRecordTypeFromDeveloperName';
 import { reduceErrors } from 'c/ldsUtils';
 /**
- * @param  {Array} theArray
+ * @param  {Array} array
  * @return array of records flattened
  */
-function flattenRecords(theArray) {
+function flattenRecords(array) {
 
-    theArray.forEach(row => {
-        for (const col in row) {
-            const curCol = row[col];
+    array.forEach(element => {
+        for (const property in element) {
+            const curCol = element[property];
             if (typeof curCol === 'object') {
-                flattenStructure(row, col + '_', curCol);
+                flattenStructure(element, property + '.', curCol);
             } else {
-                row[col] = row[col];
+                element[property] = element[property];
             }
         }
     });
 
-    return theArray.map(element => {
-        Object.getOwnPropertyNames(element).forEach(field => {
-            if (typeof element[field] === 'object') {
-                delete element[field];
+    return deleteObjectProperties(array);
+}
+
+function deleteObjectProperties(array) {
+    return array.map(element => {
+        Object.getOwnPropertyNames(element).forEach(property => {
+            if (typeof element[property] === 'object') {
+                delete element[property];
             }
         });
         return element;
@@ -37,7 +41,7 @@ function flattenStructure(topObject, prefix, toBeFlattened) {
     for (const prop in toBeFlattened) {
         const curVal = toBeFlattened[prop];
         if (typeof curVal === 'object') {
-            flattenStructure(topObject, prefix + prop + '_', curVal);
+            flattenStructure(topObject, prefix + prop + '.', curVal);
         } else {
             topObject[`${prefix}${prop}`] = curVal;
         }
@@ -56,19 +60,6 @@ function isBlank(theString) {
  */
 function cloneArray(arrayOfRecords) {
     return JSON.parse(JSON.stringify(arrayOfRecords));
-}
-function showApexErrorMessage(error) {
-    let message = 'Unknown error';
-    if (Array.isArray(error.body)) {
-        message = error.body.map(e => e.message).join(', ');
-    } else if (typeof error.body.message === 'string') {
-        message = error.body.message;
-    }
-    return new ShowToastEvent({
-        title: 'Apex Error',
-        message,
-        variant: 'error',
-    });
 }
 /**
  *
@@ -118,7 +109,6 @@ export {
     cloneArray,
     isBlank,
     showToastError,
-    showApexErrorMessage,
     showToast,
     getRecordTypeIdFromDevName
 }

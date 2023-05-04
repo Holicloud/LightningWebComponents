@@ -24,6 +24,16 @@ public with sharing class FieldUtilityClass {
         }
     }
 
+    public static Schema.DescribeFieldResult getFieldDescribe(String objName, String fieldName) {
+        return Schema.getGlobalDescribe()
+            .get(objName)
+            .getDescribe()
+            .fields
+            .getMap()
+            .get(fieldName)
+            .getDescribe();
+    }
+
     public static Map<Object, List<Map<String, String>>> getFieldDependenciesMaps(
         String objectName,
         String controllingField,

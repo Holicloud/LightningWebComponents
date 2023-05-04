@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { LightningElement, api, track, wire } from 'lwc';
-import getRecordsWithCounter from '@salesforce/apex/CustomDataTableController.getRecordsWithCounter';
-import getRecordsWithCounterNonCacheable from '@salesforce/apex/CustomDataTableController.getRecordsWithCounterNonCacheable';
+// import getRecordsWithCounter from '@salesforce/apex/CustomDataTableController.getRecordsWithCounter';
+// import getRecordsWithCounterNonCacheable from '@salesforce/apex/CustomDataTableController.getRecordsWithCounterNonCacheable';
 import { buildQuery, getApexFields, formatColumns, buildQueryCounter, sortBy } from 'c/customDataTableHelper';
 import { flattenRecords, copyRecordsIntoNewArray, showApexErrorMessage, isBlank, getRecordTypeIdFromDevName } from 'c/commonFunctionsHelper';
 import { getObjectInfo, getPicklistValuesByRecordType } from 'lightning/uiObjectInfoApi';

@@ -1,15 +1,6 @@
 public with sharing class CustomDataTableController {
 
     @AuraEnabled(cacheable=true)
-    public static List<SObject> findRecords(String theQuery) {
-        try {
-            return Database.query(theQuery);
-        } catch (Exception e) {
-            throw new AuraHandledException(e.getMessage() + theQuery);
-        }
-    }
-
-    @AuraEnabled(cacheable=true)
     public static string getRecordTypeFromDeveloperName(String recordTypeDeveloperName, String objectApiName) {
         try {
             return Schema.getGlobalDescribe()
@@ -24,42 +15,100 @@ public with sharing class CustomDataTableController {
     }
 
     @AuraEnabled(cacheable=true)
-    public static Map<String, FieldPermissionWrapper> getFieldInformation(
+    public static Map<String, Object> getFieldInformation(
         String objectAPIName,
         List<String> fieldApiNames) {
 
         objectApiName = Schema.getGlobalDescribe().get(objectApiName).getDescribe().getName();
-        Map<String, FieldPermissionWrapper> fieldDescription = new Map<String, FieldPermissionWrapper>();
+        Map<String, Object> fieldDescribeByApiName = new Map<String, Object>();
 
         try {
             for (String fieldApiName : fieldApiNames) {
 
-                Schema.DescribeFieldResult theFieldDescribe;
+                Schema.DescribeFieldResult describe;
+                Map<String, Object> describeAsMap;
 
-                if (!fieldApiName.contains('.')) {
-                    theFieldDescribe = Schema.getGlobalDescribe()
-                        .get(objectApiName)
-                        .getDescribe()
-                        .fields
-                        .getMap()
-                        .get(fieldApiName)
-                        .getDescribe();
-                } else {
+                if (fieldApiName.contains('.')) {
                     UtilityDescribe fieldDescribeUtil = getFieldDescribe(fieldApiName, objectAPIName);
-                    fieldApiName = fieldDescribeUtil.fullApiName;
-                    theFieldDescribe = fieldDescribeUtil.fieldDescribe;
+                    describe = fieldDescribeUtil.fieldDescribe;
+                    describeAsMap = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(describe));
+                    describeAsMap.put('updateable', false);
+                    describeAsMap.put('name', fieldDescribeUtil.fullApiName);
+                } else {
+                    describe = FieldUtilityClass.getFieldDescribe(objectAPIName, fieldApiName);
+                    describeAsMap = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(describe));
+                    describeAsMap.put('name', describe.getName());
                 }
-                fieldDescription.put(
-                    fieldApiName.toUpperCase(),
-                    new FieldPermissionWrapper(fieldApiName, theFieldDescribe, theFieldDescribe.isAccessible()));
+
+                describeAsMap.put('accesible', describe.isAccessible());
+                fieldDescribeByApiName.put(fieldApiName, describeAsMap);
             }
-            return fieldDescription;
+
+            return fieldDescribeByApiName;
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
     }
  
-    public static UtilityDescribe getFieldDescribe(String relationship, String objectApiName) {
+    
+
+    @AuraEnabled(cacheable=true)
+    public static FindRecordsWrapper getRecords(String queryParameters) {
+        System.debug(queryParameters);
+		QueryParameters parameters =
+            ((QueryParameters) JSON.deserialize(queryParameters, QueryParameters.class));
+		fflib_QueryFactory queryFactory = new fflib_QueryFactory(Schema.getGlobalDescribe().get(parameters.objectApiName));
+
+		try {
+			
+			queryFactory
+				.setOffSet(parameters.offSet)
+				.setLimit(parameters.limitOfRecords)
+				.selectFields(new List<String>(new Set<String>(parameters.fields)));
+
+            if (String.isNotBlank(parameters.sortedBy)) {
+                queryFactory.setOrdering(
+                    parameters.sortedBy,
+                    parameters.sortDirection == 'desc'
+                        ? fflib_QueryFactory.SortOrder.DESCENDING
+                        : fflib_QueryFactory.SortOrder.ASCENDING
+                    );
+                queryFactory.addOrdering('Id',fflib_QueryFactory.SortOrder.ASCENDING);
+            } else {
+                queryFactory.setOrdering('Id',fflib_QueryFactory.SortOrder.ASCENDING);
+            }
+
+
+			// if (String.isNotBlank(parameters.searchKey)) {
+			// 	Set<String> conditions = new Set<String>();
+
+			// 	for (String field : parameters.searchByFields)
+			// 		conditions.add(field + ' LIKE \'%' + parameters.searchKey + '%\'');
+
+			// 	queryFactory.setCondition(String.join(new List<String>(conditions), ' OR '));
+			// }
+
+			if (String.isNotBlank(parameters.whereClause)) {
+                queryFactory.setCondition(
+                    queryFactory.getCondition() != null
+                        ? '(' + queryFactory.getCondition() + ') AND ('+ parameters.whereClause +')'
+                        : parameters.whereClause
+                );
+            }
+
+            String countQuery = queryFactory.getCondition() != null ? 'WHERE ' + queryFactory.getCondition() : '';
+
+            return new FindRecordsWrapper(
+				Database.countQuery('SELECT COUNT() FROM ' + parameters.objectApiName + countQuery),
+				Database.query(queryFactory.toSOQL()));
+        } catch (Exception e) {
+            AuraHandledException error = new AuraHandledException(e.getMessage());
+            error.setMessage(error.getMessage() + queryFactory.getCondition());
+            throw error;
+        }
+    }
+
+    private static UtilityDescribe getFieldDescribe(String relationship, String objectApiName) {
         try {
             relationship =  relationship.toUpperCase();
             List<String> fields = relationship.split('\\.');
@@ -72,7 +121,8 @@ public with sharing class CustomDataTableController {
                 Map<String,Schema.SObjectField> mapOfDescribes = Schema.getGlobalDescribe()
                     .get(objectApiName)
                     .getDescribe()
-                    .fields.getMap();
+                    .fields
+                    .getMap();
 
                 for (Schema.SObjectField field : mapOfDescribes.values()) {
 
@@ -88,57 +138,18 @@ public with sharing class CustomDataTableController {
                 }
             }
 
-            Schema.DescribeFieldResult theRealField = Schema.getGlobalDescribe()
-                .get(objectApiName)
-                .getDescribe()
-                .fields
-                .getMap()
-                .get(theField)
-                .getDescribe();
+            Schema.DescribeFieldResult lastField = FieldUtilityClass.getFieldDescribe(objectApiName, theField);
+            finalRelationShip.add(lastField.getName());
 
-            finalRelationShip.add(theRealField.getName());
-
-            return new UtilityDescribe(String.join(finalRelationShip, '.'), theRealField);
+            return new UtilityDescribe(String.join(finalRelationShip, '.'), lastField);
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage()+' objectApiName: '+objectApiName+' relationship: '+relationship);
         }
     }
 
-    @AuraEnabled(cacheable=true)
-    public static FindRecordsWrapper getRecordsWithCounter(String queryParameters) {
-		QueryParameters parameters = ((QueryParameters) JSON.deserialize(queryParameters, QueryParameters.class));
-		fflib_QueryFactory queryFactory = new fflib_QueryFactory(Schema.getGlobalDescribe().get(parameters.objectApiName));
-
-		try {
-			
-			queryFactory
-				.setOffSet(parameters.offSet)
-				.setLimit(parameters.limitOfRecords)
-				.selectFields(parameters.queryFields);
-			if (String.isNotBlank(parameters.searchKey)) {
-				Set<String> conditions = new Set<String>();
-
-				for (String field : parameters.searchByFields)
-					conditions.add(field + ' LIKE \'%' + parameters.searchKey + '%\'');
-
-				queryFactory.setCondition(String.join(new List<String>(conditions), ' OR '));
-			}
-
-			if (String.isNotBlank(parameters.whereClause)) {
-				queryFactory.setCondition(queryFactory.getCondition() + ' AND ('+ parameters.whereClause +')');
-			}
-
-            return new FindRecordsWrapper(
-				Database.countQuery('SELECT COUNT() FROM ' + parameters.objectApiName + 'WHERE ' + queryFactory.getCondition()),
-				Database.query(queryFactory.toSOQL()));
-        } catch (Exception e) {
-            throw new AuraHandledException(e.getMessage() + queryFactory.getCondition());
-        }
-    }
-
     @AuraEnabled(cacheable=false)
-    public static FindRecordsWrapper getRecordsWithCounterNonCacheable(String queryParameters) {
-        return getRecordsWithCounter(queryParameters);
+    public static FindRecordsWrapper getRecordsNonCacheable(String queryParameters) {
+        return getRecords(queryParameters);
     }
 
     public class FindRecordsWrapper{
@@ -152,22 +163,6 @@ public with sharing class CustomDataTableController {
         public FindRecordsWrapper(Integer totalRecordCount, List<SObject> records) {
             this.totalRecordCount = totalRecordCount;
             this.records = records;
-        }
-    }
-
-    public class FieldPermissionWrapper{
-
-        @AuraEnabled
-        public String fullApiName { get; set; }
-        @AuraEnabled
-        public String fieldDescribe { get; set; }
-        @AuraEnabled
-        public Boolean visible { get; set; } //Apparently this property get lost and we have to manually send it throw apex
-
-        public FieldPermissionWrapper(String fullApiName, DescribeFieldResult fieldDescribe, Boolean visible) {
-            this.fullApiName = fullApiName;
-            this.fieldDescribe = JSON.serialize(fieldDescribe);
-            this.visible = visible;
         }
     }
 
@@ -186,9 +181,9 @@ public with sharing class CustomDataTableController {
 		public Integer limitOfRecords;
 		public Integer offSet;
 		public String objectApiName;
-		public List<String> queryFields = new List<String>();
-		public List<String> searchByFields = new List<String>();
-		public String searchKey;
+        public String sortedBy;
+        public String sortDirection;
+		public List<String> fields = new List<String>();
 		public String whereClause;
 	}
 }

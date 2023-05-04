@@ -1,9 +1,10 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, api } from 'lwc';
 import { showToastError } from 'c/commonFunctionsHelper';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class CustomLookupSample extends LightningElement {
-    limitOfRecords = 10;
+    @api flexipageRegionWidth;
+    limitOfRecords = 50;
 
     fields = [
         { label: 'Name', fieldName: 'Name', primary: true },

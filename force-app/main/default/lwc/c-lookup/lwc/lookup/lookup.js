@@ -285,7 +285,7 @@ export default class Lookup extends LightningElement {
     }
 
 	get primaryField() {
-        return this._fields.find(e => e.primary).fieldName.toUpperCase().replace('.', '_');
+        return this._fields.find(e => e.primary).fieldName.toUpperCase();
     }
 
     setFocusInSearchField() {

@@ -1,138 +1,86 @@
 <template>
-  <div class="slds-modal__content searchHelpItems disabled-class"><!--  id="modal-content-id-1"> -->
-      <div class="slds-lookup slds-form-element__control" data-select="multi" data-scope="single" data-typeahead="true" role="combobox"
-          aria-haspopup="listbox" aria-expanded="true">
-          <lightning-layout>
-              <lightning-layout-item alignment-bump="left" padding="horizontal-medium">
-                  <slot></slot>
-              </lightning-layout-item>
-              <lightning-layout-item flexibility="auto">
-                  <label class="slds-form-element__label" for="combobox-id-4">{objectLabel} records</label>
-                  <template if:false={_hideInput}>
-                      <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right">
-                          <input
-                              type="text"
-                              aria-activedescendant="option1"
-                              aria-autocomplete="list"
-                              aria-controls="listbox-id-4"
-                              autocomplete="off"
-                              class="slds-input slds-combobox__input slds-combobox__input-value"
-                              id="combobox-id-4"
-                              name="mainInput"
-                              onkeyup={handleOnchange}
-                              placeholder="Search..."
-                              role="textbox"
-                              value={_searchKey}
-                              required
-                          />
-                          <span class="slds-input__icon-group slds-input__icon-group_right">
-                              <template if:true={_showSpinner}>
-                                  <div role="status" class="slds-spinner slds-spinner_brand slds-spinner_x-small slds-input__spinner">
-                                      <span class="slds-assistive-text">Loading</span>
-                                      <div class="slds-spinner__dot-a"></div>
-                                      <div class="slds-spinner__dot-b"></div>
-                                  </div>
-                              </template>
-                              <div class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" title="Search">
-                                  <span class="slds-assistive-text">Search</span>
-                                  <lightning-icon icon-name="utility:search" size="x-small"></lightning-icon>
-                              </div>
-                          </span>
-                      </div>
-                  </template>
-              </lightning-layout-item>
-          </lightning-layout>
-          <div class="slds-card__body slds-card__body_inner">
-              <article class="slds-card slds-card_boundary">
-                  <lightning-card variant="Narrow" title={title} icon-name={iconName}>
-                      <div class="slds-scrollable_x">
-                          <template if:true={recordsAreOk}>
-                              <div class="tableContainer slds-scrollable">
-                                  <c-data-table-extended-types
-                                      key-field="Id"
-                                      columns={_columns}
-                                      data={_records}
-                                      data-id="theDataTable"
-                                      default-sort-direction={defaultSortDirection}
-                                      sorted-direction={sortDirection}
-                                      sorted-by={sortedBy}
-                                      onsort={onHandleSort}
-                                      onloadmore={loadMoreData}
-                                      onrowaction={handleRowAction}
-                                      oncellchange={handleCellChange}
-                                      draft-values={_draftValues}
-                                      hide-checkbox-column={_hideCheckBoxColumn}
-                                      enable-infinite-loading={_enableInfiniteLoading}
-                                      errors={_errors}
-                                      onrowselection={handleRowSelection}
-                                      onpicklistchanged={picklistChanged}
-                                      oncustomfieldedit={handleCustomFieldEdit}
-                                      suppress-bottom-bar
-                                  ></c-data-table-extended-types>
-                              </div>
-                          </template>
-                      </div>
-                      <div if:true={_showSpinner} class="slds-spinner_inline spinner-padding">
-                          <lightning-spinner variant="brandf" alternative-text="Loading Cases" size="medium">
-                          </lightning-spinner>
-                      </div>
-                      <template if:false={recordsAreOk}>
-                          <!--no data-->
-                          <c-datatable-no-records-illustration>
-                              No results for "{_searchKey}" in {objectLabel}
-                          </c-datatable-no-records-illustration>
-                          
-                      </template>
-                      <lightning-layout>
-                          <lightning-layout-item padding="horizontal-medium" size="12">
-                              <lightning-layout>
-                                  <lightning-layout-item padding="horizontal-medium" size="3">
-                                      {loadMoreStatus}
-                                  </lightning-layout-item>
-                                  <lightning-layout-item padding="horizontal-medium" size="6">
-                                      <div if:true={cellDataChanged} class="slds-align_absolute-center">
-                                          <lightning-layout-item padding="horizontal-medium">
-                                              <lightning-button variant="bare" label="Cancel" title="Cancel" onclick={handleCancel}></lightning-button>
-                                          </lightning-layout-item>
-                                          <lightning-layout-item padding="horizontal-medium">
-                                              <lightning-button variant="brand" label="Save" title="Save" onclick={handleSave}></lightning-button>
-                                          </lightning-layout-item>
-                                      </div>
-                                  </lightning-layout-item>
-                                  <lightning-layout-item padding="horizontal-medium" size="3">
-                                      <div class="slds-form-element">
-                                          <div if:true={displayButton}>
-                                              <a onclick={displayLimitOfRecords}>display More...</a>
-                                          </div>
-                                          <template if:true={optionsAreOK}>
-                                              <div class="slds-popover slds-nubbin_bottom-left slds-rise-from-ground" role="tooltip" id="help"
-                                                  style="position:absolute;top:-45px;left:-15px;width:170px">
-                                                  <div class="slds-popover__body">
-                                                      <div  class="slds-modal__content">
-                                                          <lightning-combobox
-                                                              label='amount displayed'
-                                                              class='slds-modal__content'
-                                                              name="progress"
-                                                              options={options}
-                                                              value={_limitOfRecords}
-                                                              onchange={handleChangeLimitDisplayed}
-                                                          ></lightning-combobox>
-                                                      </div>
-                                                  </div>
-                                              </div>
-                                          </template>
-                                      </div>
-                                  </lightning-layout-item>
-                              </lightning-layout>
-                          </lightning-layout-item>
-                      </lightning-layout>
-                  </lightning-card>
-              </article>
-          </div>
-      </div>
-  </div>
-<!-- <c-edit-data-table-custom-field
-    onfieldchanged={handleFieldChanged}
-    data-id="editCustomPopUpComponent"
-></c-edit-data-table-custom-field> -->
+    <div lwc:if={state.records.length} style='height:100%'>
+        <c-data-table-extended-types
+            columns={state.columns}
+            data={state.records}
+            default-sort-direction={defaultSortDirection}
+            enable-infinite-loading={state.enableInfiniteLoading}
+            hide-checkbox-column={state.hideCheckBoxColumn}
+            key-field="Id"
+            load-more-offset={state.loadMoreOffset}
+            max-column-width={state.maxColumnWidth}
+            min-column-width={state.minColumnWidth}
+            onloadmore={loadMoreData}
+            onrowaction={handleRowAction}
+            onsort={handleOnSort}
+            show-row-number-column
+            sorted-by={state.sortedBy}
+            sorted-direction={state.sortDirection}
+        ></c-data-table-extended-types>
+                <!-- data-id="theDataTable"
+                oncellchange={handleCellChange}
+                draft-values={_draftValues}
+                errors={_errors}
+                onrowselection={handleRowSelection}
+                onpicklistchanged={picklistChanged}
+                oncustomfieldedit={handleCustomFieldEdit}
+                suppress-bottom-bar -->
+        {loadMoreStatus}
+    </div>
+    <template lwc:else>
+        <c-datatable-no-records-illustration>
+            No results for "{_searchKey}" in {objectLabel}
+        </c-datatable-no-records-illustration>
+    </template>
+    <!-- <div if:true={showSpinner} class="slds-spinner_inline spinner-padding">
+        <lightning-spinner variant="brand" alternative-text="Loading" size="medium">
+        </lightning-spinner>
+    </div>
+    <lightning-layout>
+        <lightning-layout-item padding="horizontal-medium" size="12">
+            <lightning-layout>
+                <lightning-layout-item padding="horizontal-medium" size="3">
+                    {loadMoreStatus}
+                </lightning-layout-item>
+                <lightning-layout-item padding="horizontal-medium" size="6">
+                    <div if:true={cellDataChanged} class="slds-align_absolute-center">
+                        <lightning-layout-item padding="horizontal-medium">
+                            <lightning-button variant="bare" label="Cancel" title="Cancel" onclick={handleCancel}></lightning-button>
+                        </lightning-layout-item>
+                        <lightning-layout-item padding="horizontal-medium">
+                            <lightning-button variant="brand" label="Save" title="Save" onclick={handleSave}></lightning-button>
+                        </lightning-layout-item>
+                    </div>
+                </lightning-layout-item>
+                <lightning-layout-item padding="horizontal-medium" size="3">
+                    <div class="slds-form-element">
+                        <div if:true={displayButton}>
+                            <a onclick={displayLimitOfRecords}>display More...</a>
+                        </div>
+                        <template if:true={optionsAreOK}>
+                            <div class="slds-popover slds-nubbin_bottom-left slds-rise-from-ground" role="tooltip" id="help"
+                                style="position:absolute;top:-45px;left:-15px;width:170px">
+                                <div class="slds-popover__body">
+                                    <div  class="slds-modal__content">
+                                        <lightning-combobox
+                                            label='amount displayed'
+                                            class='slds-modal__content'
+                                            name="progress"
+                                            options={options}
+                                            value={_limitOfRecords}
+                                            onchange={handleChangeLimitDisplayed}
+                                        ></lightning-combobox>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </lightning-layout-item>
+            </lightning-layout>
+        </lightning-layout-item> -->
+    <!-- </lightning-layout> -->
+    <!-- <c-edit-data-table-custom-field
+        onfieldchanged={handleFieldChanged}
+        data-id="editCustomPopUpComponent"
+    ></c-edit-data-table-custom-field> -->
 </template>
