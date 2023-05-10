@@ -13,63 +13,27 @@
             <value>
                 <fullName>a</fullName>
                 <default>false</default>
-                <label>a</label>
+                <label>first value first value</label>
             </value>
             <value>
                 <fullName>b</fullName>
                 <default>false</default>
-                <label>b</label>
+                <label>second value second value</label>
             </value>
             <value>
                 <fullName>c</fullName>
                 <default>false</default>
-                <label>c</label>
+                <label>third value third value</label>
             </value>
             <value>
                 <fullName>d</fullName>
                 <default>false</default>
-                <label>d</label>
+                <label>fourth value fourth value</label>
             </value>
             <value>
                 <fullName>e</fullName>
                 <default>false</default>
-                <label>e</label>
-            </value>
-            <value>
-                <fullName>fifth</fullName>
-                <default>false</default>
-                <isActive>false</isActive>
-                <label>fifth</label>
-            </value>
-            <value>
-                <fullName>first</fullName>
-                <default>false</default>
-                <isActive>false</isActive>
-                <label>first</label>
-            </value>
-            <value>
-                <fullName>fourth</fullName>
-                <default>false</default>
-                <isActive>false</isActive>
-                <label>fourth</label>
-            </value>
-            <value>
-                <fullName>second</fullName>
-                <default>false</default>
-                <isActive>false</isActive>
-                <label>second</label>
-            </value>
-            <value>
-                <fullName>six</fullName>
-                <default>false</default>
-                <isActive>false</isActive>
-                <label>six</label>
-            </value>
-            <value>
-                <fullName>third</fullName>
-                <default>false</default>
-                <isActive>false</isActive>
-                <label>third</label>
+                <label>fifth value fifth value</label>
             </value>
         </valueSetDefinition>
     </valueSet>

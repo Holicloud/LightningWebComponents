@@ -5,8 +5,10 @@ const TYPES = {
     'integer' : 'number',
     'double' : 'number',
     'string' : 'text',
-    // 'percent' : 'percent-fixed',
-    'datetime': 'date'
+    'datetime': 'date',
+    'percent' : 'percent-fixed',
+    'date' : 'date-local',
+    'multipicklist' : 'multi-picklist',
 }
 /**
  * @todo inner "fieldName"  has to apply column.fieldName.split('.').join('_');
@@ -74,6 +76,10 @@ async function formatColumns({ columns, object }) {
                     minimumFractionDigits: fieldDescribe.scale,
                     maximumFractionDigits: fieldDescribe.scale,
                     formatStyle: "percent-fixed"
+                }
+            } else if (fieldDescribe.type === 'multipicklist') {
+                column.typeAttributes = {
+                    options: JSON.stringify(fieldDescribe.picklistValues)
                 }
             }
 

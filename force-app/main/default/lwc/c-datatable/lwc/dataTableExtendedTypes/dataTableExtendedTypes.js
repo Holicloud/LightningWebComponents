@@ -1,22 +1,42 @@
 import LightningDatatable from 'lightning/datatable';
 //import the template so that it can be reused
-import CustomFieldTemplate from './customFieldDataTableTemplate.html';
+// import CustomFieldTemplate from './customFieldDataTableTemplate.html';
+import percentFixedTemplate from './datatableCellPercentFixedTemplate.html';
+import timeTemplate from './datatableCellTimeTemplate.html';
+import dataTableCellMultiPicklistTemplate from './dataTableCellMultiPicklistTemplate.html';
 export default class DataTableExtendedTypes extends LightningDatatable {
     static customTypes = {
-        picklist: {
-            template: CustomFieldTemplate,
-            standardCellLayout: true,
-            typeAttributes: ['value', 'recordId', 'fieldName', 'editable', 'type'],
-        },
         ['percent-fixed']: {
-            template: CustomFieldTemplate,
+            template: percentFixedTemplate,
             standardCellLayout: true,
-            typeAttributes: ['value', 'recordId', 'fieldName', 'editable', 'type', 'numberOfDecimals', 'maxLength'],
+            typeAttributes: [
+                'formatStyle',
+                'maximumFractionDigits',
+                'maximumSignificantDigits',
+                'minimumFractionDigits',
+                'minimumIntegerDigits',
+                'minimumSignificantDigits'
+            ],
         },
-        lookup: {
-            template: CustomFieldTemplate,
+        time: {
+            template: timeTemplate,
             standardCellLayout: true,
-            typeAttributes: ['value', 'recordId', 'fieldName', 'editable', 'type', 'lookupRecordId'],
         },
+        ['multi-picklist'] : {
+            template: dataTableCellMultiPicklistTemplate,
+            standardCellLayout: true,
+            typeAttributes: ['options'],
+        }
+        // picklist: {
+        //     template: CustomFieldTemplate,
+        //     standardCellLayout: true,
+        //     typeAttributes: ['value', 'recordId', 'fieldName', 'editable', 'type'],
+        // },
+        
+        // lookup: {
+        //     template: CustomFieldTemplate,
+        //     standardCellLayout: true,
+        //     typeAttributes: ['value', 'recordId', 'fieldName', 'editable', 'type', 'lookupRecordId'],
+        // },
     };
 }

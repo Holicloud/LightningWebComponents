@@ -19,22 +19,22 @@ export default class Datatable extends LightningElement {
     minColumnWidth: 50,
     maxColumnWidth: 1000,
     columns : [
-      { fieldName: 'Checkbox__c', },
-      { fieldName: 'Currency__c', sortable: true },
-      { fieldName: 'Date__c', },
-      { fieldName: 'DateTime__c', },
-      { fieldName: 'Email__c', },
-      { fieldName: 'Lookup__c', },
-      { fieldName: 'MultiSelectPicklist__c', },
-      { fieldName: 'Number__c', },
-      { label: 'Owner', fieldName: 'Owner.Name', sortable: true },
-      { fieldName: 'Percent__c', },
-      { fieldName: 'Phone__c' },
-      { fieldName: 'Picklist__c', },
-      { fieldName: 'TextArea__c', },
-      { fieldName: 'Text__c', sortable: true },
-      { fieldName: 'Time__c', },
-      { fieldName: 'Url__c', },
+      { fieldName: 'Checkbox__c', editable: true },
+      { fieldName: 'Currency__c', editable: true },
+      { fieldName: 'Date__c', editable: true },
+      { fieldName: 'DateTime__c', editable: true },
+      { fieldName: 'Email__c', editable: true },
+      { fieldName: 'Lookup__c', editable: true },
+      { fieldName: 'MultiSelectPicklist__c', editable: true },
+      { fieldName: 'Number__c', editable: true },
+      { label: 'Owner', fieldName: 'Owner.Name', editable: true },
+      { fieldName: 'Percent__c', editable: true },
+      { fieldName: 'Phone__c' , editable: true },
+      { fieldName: 'Picklist__c', editable: true },
+      { fieldName: 'TextArea__c', editable: true },
+      { fieldName: 'Text__c', editable: true },
+      { fieldName: 'Time__c', editable: true },
+      { fieldName: 'Url__c', editable: true },
     ]
   };
 
@@ -44,7 +44,7 @@ export default class Datatable extends LightningElement {
 
   @api defaultSortDirection = 'asc';
 
-  showSpinner = false;
+  showSpinner = true;
   queryOffSet = 0;
 
   @api
@@ -201,10 +201,16 @@ export default class Datatable extends LightningElement {
   }
 
   handleOnSort(event) {
-    const { fieldName, sortDirection } = event.detail;
-    this.state.sortedBy = fieldName;
-    this.state.sortDirection = sortDirection;
-    this.showRecords();
+    window.clearTimeout(this.delayTimeout);
+
+    this.showSpinner = true;
+
+    this.delayTimeout = setTimeout(() => {
+      const { fieldName, sortDirection } = event.detail;
+      this.state.sortedBy = fieldName;
+      this.state.sortDirection = sortDirection;
+      this.showRecords();
+    }, DELAY);
   }
 
   handleRowAction(event) {

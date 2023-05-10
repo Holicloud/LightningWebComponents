@@ -1,37 +1,43 @@
 <template>
-    <div lwc:if={state.records.length} style='height:100%'>
-        <c-data-table-extended-types
-            columns={state.columns}
-            data={state.records}
-            default-sort-direction={defaultSortDirection}
-            enable-infinite-loading={state.enableInfiniteLoading}
-            hide-checkbox-column={state.hideCheckBoxColumn}
-            key-field="Id"
-            load-more-offset={state.loadMoreOffset}
-            max-column-width={state.maxColumnWidth}
-            min-column-width={state.minColumnWidth}
-            onloadmore={loadMoreData}
-            onrowaction={handleRowAction}
-            onsort={handleOnSort}
-            show-row-number-column
-            sorted-by={state.sortedBy}
-            sorted-direction={state.sortDirection}
-        ></c-data-table-extended-types>
-                <!-- data-id="theDataTable"
-                oncellchange={handleCellChange}
-                draft-values={_draftValues}
-                errors={_errors}
-                onrowselection={handleRowSelection}
-                onpicklistchanged={picklistChanged}
-                oncustomfieldedit={handleCustomFieldEdit}
-                suppress-bottom-bar -->
-        {loadMoreStatus}
+    <div lwc:if={showSpinner} style="height:100%;" class="slds-is-relative">
+        <lightning-spinner variant="brand" size="medium"></lightning-spinner>
     </div>
     <template lwc:else>
-        <c-datatable-no-records-illustration>
-            No results for "{_searchKey}" in {objectLabel}
-        </c-datatable-no-records-illustration>
+        <div lwc:if={state.records.length} style='height:100%'>
+            <c-data-table-extended-types
+                columns={state.columns}
+                data={state.records}
+                default-sort-direction={defaultSortDirection}
+                enable-infinite-loading={state.enableInfiniteLoading}
+                hide-checkbox-column={state.hideCheckBoxColumn}
+                key-field="Id"
+                load-more-offset={state.loadMoreOffset}
+                max-column-width={state.maxColumnWidth}
+                min-column-width={state.minColumnWidth}
+                onloadmore={loadMoreData}
+                onrowaction={handleRowAction}
+                onsort={handleOnSort}
+                show-row-number-column
+                sorted-by={state.sortedBy}
+                sorted-direction={state.sortDirection}
+            ></c-data-table-extended-types>
+                    <!-- data-id="theDataTable"
+                    oncellchange={handleCellChange}
+                    draft-values={_draftValues}
+                    errors={_errors}
+                    onrowselection={handleRowSelection}
+                    onpicklistchanged={picklistChanged}
+                    oncustomfieldedit={handleCustomFieldEdit}
+                    suppress-bottom-bar -->
+            {loadMoreStatus}
+        </div>
+        <template lwc:else>
+            <c-datatable-no-records-illustration>
+                No results for "{_searchKey}" in {objectLabel}
+            </c-datatable-no-records-illustration>
+        </template>    
     </template>
+    
     <!-- <div if:true={showSpinner} class="slds-spinner_inline spinner-padding">
         <lightning-spinner variant="brand" alternative-text="Loading" size="medium">
         </lightning-spinner>
