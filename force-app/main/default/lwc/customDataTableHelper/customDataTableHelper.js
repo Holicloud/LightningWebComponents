@@ -81,6 +81,10 @@ async function formatColumns({ columns, object }) {
                 column.typeAttributes = {
                     options: JSON.stringify(fieldDescribe.picklistValues)
                 }
+            } else if (fieldDescribe.type === 'picklist') {
+                column.typeAttributes = {
+                    options: JSON.stringify(fieldDescribe.picklistValues)
+                }
             }
 
             // if (['percent', 'picklist', 'reference'].includes(fieldDescribe.type)) {

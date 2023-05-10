@@ -26,6 +26,11 @@ export default class DataTableExtendedTypes extends LightningDatatable {
             template: dataTableCellMultiPicklistTemplate,
             standardCellLayout: true,
             typeAttributes: ['options'],
+        },
+        ['picklist'] : {
+            template: dataTableCellMultiPicklistTemplate,
+            standardCellLayout: true,
+            typeAttributes: ['options'],
         }
         // picklist: {
         //     template: CustomFieldTemplate,
