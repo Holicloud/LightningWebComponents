@@ -17,6 +17,7 @@ export default class Datatable extends LightningElement {
     enableInfiniteLoading: false,
     loadMoreOffset: 20,
     minColumnWidth: 50,
+    isLoading: false,
     maxColumnWidth: 1000,
     columns : [
       { fieldName: 'Checkbox__c', editable: true },
@@ -54,6 +55,15 @@ export default class Datatable extends LightningElement {
 
   set sortedBy(value) {
     this.state.sortedBy = value;
+  }
+
+  @api
+  get isLoading() {
+    return this.state.isLoading;
+  }
+
+  set isLoading(value) {
+    this.state.isLoading = value;
   }
 
   @api
@@ -230,12 +240,14 @@ export default class Datatable extends LightningElement {
     this.delayTimeout = setTimeout(async () => {
         
         this.loadMoreStatus = 'Loading';
+        this.isLoading = true;
         isLoading = true;
 
         if (this.state.records.length >= this.totalNumberOfRecords) {
           this.loadMoreStatus = 'No more data to load';
           infiniteLoading = false;
           isLoading = false;
+          this.isLoading = false;
           return;
         }
 
@@ -273,6 +285,12 @@ export default class Datatable extends LightningElement {
         }
 
         isLoading = false;
+        this.isLoading = false;
     }, DELAY);
+  }
+
+  handleSave(event) {
+    debugger
+    this.saveDraftValues = event.detail.draftValues;
   }
 }

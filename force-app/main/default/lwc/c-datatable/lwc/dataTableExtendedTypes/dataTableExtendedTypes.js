@@ -1,15 +1,20 @@
 import LightningDatatable from 'lightning/datatable';
 //import the template so that it can be reused
 // import CustomFieldTemplate from './customFieldDataTableTemplate.html';
-import percentFixedTemplate from './datatableCellPercentFixedTemplate.html';
-import timeTemplate from './datatableCellTimeTemplate.html';
-import dataTableCellMultiPicklistTemplate from './dataTableCellMultiPicklistTemplate.html';
+import percentFixed from './percentFixed.html';
+import percentFixedEdit from './percentFixedEdit.html';
+import time from './time.html';
+import multiPicklist from './multiPicklist.html';
+import picklist from './picklist.html';
+
 export default class DataTableExtendedTypes extends LightningDatatable {
     static customTypes = {
         ['percent-fixed']: {
-            template: percentFixedTemplate,
+            template: percentFixed,
+            editTemplate: percentFixedEdit,
             standardCellLayout: true,
             typeAttributes: [
+                'step',
                 'formatStyle',
                 'maximumFractionDigits',
                 'maximumSignificantDigits',
@@ -19,16 +24,16 @@ export default class DataTableExtendedTypes extends LightningDatatable {
             ],
         },
         time: {
-            template: timeTemplate,
+            template: time,
             standardCellLayout: true,
         },
         ['multi-picklist'] : {
-            template: dataTableCellMultiPicklistTemplate,
+            template: multiPicklist,
             standardCellLayout: true,
             typeAttributes: ['options'],
         },
         ['picklist'] : {
-            template: dataTableCellMultiPicklistTemplate,
+            template: picklist,
             standardCellLayout: true,
             typeAttributes: ['options'],
         }

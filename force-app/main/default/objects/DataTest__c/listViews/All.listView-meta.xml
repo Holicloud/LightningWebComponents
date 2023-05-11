@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ListView xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>All</fullName>
-    <columns>Checkbox__c</columns>
+    <columns>NAME</columns>
     <columns>Currency__c</columns>
     <columns>Date__c</columns>
     <columns>DateTime__c</columns>

@@ -10,6 +10,8 @@ const TYPES = {
     'date' : 'date-local',
     'multipicklist' : 'multi-picklist',
 }
+
+const PERCENT_STEP = `.${Array.apply(null, {length: 17}).map(() => '0').join('')}1`;
 /**
  * @todo inner "fieldName"  has to apply column.fieldName.split('.').join('_');
  * @return promise
@@ -57,7 +59,8 @@ async function formatColumns({ columns, object }) {
                 }
             } else if (fieldDescribe.type === 'currency') {
                 column.typeAttributes = {
-                    currencyDisplayAs: "symbol"
+                    currencyDisplayAs: "symbol",
+                    step: 1
                 }
             } else if (fieldDescribe.type === 'date') {
                 column.typeAttributes = {
@@ -75,7 +78,8 @@ async function formatColumns({ columns, object }) {
                 column.typeAttributes = {
                     minimumFractionDigits: fieldDescribe.scale,
                     maximumFractionDigits: fieldDescribe.scale,
-                    formatStyle: "percent-fixed"
+                    formatStyle: "percent-fixed",
+                    step: PERCENT_STEP
                 }
             } else if (fieldDescribe.type === 'multipicklist') {
                 column.typeAttributes = {
