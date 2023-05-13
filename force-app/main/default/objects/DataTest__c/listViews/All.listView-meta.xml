@@ -7,11 +7,9 @@
     <columns>DateTime__c</columns>
     <columns>Email__c</columns>
     <columns>Lookup__c</columns>
-    <columns>MultiSelectPicklist__c</columns>
     <columns>Number__c</columns>
     <columns>Percent__c</columns>
     <columns>Phone__c</columns>
-    <columns>Picklist__c</columns>
     <columns>TextArea__c</columns>
     <columns>Time__c</columns>
     <columns>Url__c</columns>
@@ -20,7 +18,7 @@
     <filters>
         <field>RECORDTYPE</field>
         <operation>equals</operation>
-        <value>DataTest__c.RecordTypeB</value>
+        <value>DataTest__c.AB</value>
     </filters>
     <label>All</label>
 </ListView>

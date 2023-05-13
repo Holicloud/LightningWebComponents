@@ -16,7 +16,7 @@ const PERCENT_STEP = `.${Array.apply(null, {length: 17}).map(() => '0').join('')
  * @todo inner "fieldName"  has to apply column.fieldName.split('.').join('_');
  * @return promise
  */
-async function formatColumns({ columns, object : objectApiName, recordTypeId }){
+async function formatColumns({ columns, object : objectApiName }){
     const fieldInformation = await getFieldInformation({
         objectAPIName: objectApiName,
         fieldApiNames: columns.map(e => e.fieldName) });
@@ -89,7 +89,7 @@ async function formatColumns({ columns, object : objectApiName, recordTypeId }){
                 column.typeAttributes = {
                     options: JSON.stringify(fieldDescribe.picklistValues),
                     placeholder: 'Select an Option',
-                    recordTypeId,
+                    recordTypeId : { fieldName: 'RecordTypeId' },
                     objectApiName,
                     controllerFieldApiName : fieldDescribe.controllerName,
                     rowId : { fieldName: 'Id' }

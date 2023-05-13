@@ -78,32 +78,18 @@ public with sharing class CustomDataTableController {
                 queryFactory.setOrdering('Id',fflib_QueryFactory.SortOrder.ASCENDING);
             }
 
-
-			// if (String.isNotBlank(parameters.searchKey)) {
-			// 	Set<String> conditions = new Set<String>();
-
-			// 	for (String field : parameters.searchByFields)
-			// 		conditions.add(field + ' LIKE \'%' + parameters.searchKey + '%\'');
-
-			// 	queryFactory.setCondition(String.join(new List<String>(conditions), ' OR '));
-			// }
-
 			if (String.isNotBlank(parameters.whereClause)) {
-                queryFactory.setCondition(
-                    queryFactory.getCondition() != null
-                        ? '(' + queryFactory.getCondition() + ') AND ('+ parameters.whereClause +')'
-                        : parameters.whereClause
-                );
+                queryFactory.setCondition(parameters.whereClause.replace('"','\''));
             }
 
-            String countQuery = queryFactory.getCondition() != null ? 'WHERE ' + queryFactory.getCondition() : '';
+            String countQuery = queryFactory.getCondition() != null ? ' WHERE ' + queryFactory.getCondition() : '';
 
             return new FindRecordsWrapper(
 				Database.countQuery('SELECT COUNT() FROM ' + parameters.objectApiName + countQuery),
 				Database.query(queryFactory.toSOQL()));
         } catch (Exception e) {
             AuraHandledException error = new AuraHandledException(e.getMessage());
-            error.setMessage(error.getMessage() + queryFactory.getCondition());
+            error.setMessage(error.getMessage() + queryFactory.toSOQL());
             throw error;
         }
     }

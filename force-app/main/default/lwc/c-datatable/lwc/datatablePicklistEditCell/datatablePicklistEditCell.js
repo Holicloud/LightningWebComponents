@@ -5,6 +5,8 @@ import dataTableMessageChannel from '@salesforce/messageChannel/DataTable__c';
 
 export default class DatatablePicklistEditCell extends LightningElement {
 
+  // public properties
+
   @api rowId;
 
   @api placeholder = 'Select an option';
@@ -15,6 +17,8 @@ export default class DatatablePicklistEditCell extends LightningElement {
 
   @api controllerFieldApiName;
 
+  // private properties
+
   _objectApiName = null;
 
   _value = null;
@@ -22,6 +26,14 @@ export default class DatatablePicklistEditCell extends LightningElement {
   _fieldApiName = null;
 
   _wireFieldApiNameObject = {};
+
+  _subscription = null;
+
+  _disabled = true;
+
+  _controllingFieldValue;
+
+  // public getters-setters
 
   @api
   get fieldApiName() {
@@ -52,30 +64,52 @@ export default class DatatablePicklistEditCell extends LightningElement {
     this._value = value;
   }
 
-  disabled = true;
-
-  @wire(getPicklistValues, { recordTypeId: '$recordTypeId', fieldApiName: '$_wireFieldApiNameObject' })
-  picklistInfo;
-
-  
+  // private getters-setters
 
   get actualOptions() {
     const values = this.picklistInfo?.data?.values;
-    this.disabled = false;
+    this._disabled = false;
     if (!this.recordTypeId) {
       return JSON.parse(this.options);
     } else if (this.controllerFieldApiName && values) {
       const controllerValues = this.picklistInfo?.data?.controllerValues;
-      const key = controllerValues[this.controllingFieldValue];
+      const key = controllerValues[this._controllingFieldValue];
       const result = values.filter(opt => opt.validFor.includes(key));
       return result;
     } else if (values) {
       return values;
     }
 
-    this.disabled = true;
+    this._disabled = true;
     return [];
   }
+
+  // public methods
+
+  @api
+  get validity() {
+    return this.template.querySelector('lightning-combobox').validity;
+  }
+
+  @api
+  showHelpMessageIfInvalid() {
+    this.template.querySelector('lightning-combobox').showHelpMessageIfInvalid();
+  }
+
+  @api
+  focus() {
+    this.template.querySelector('lightning-combobox').focus();
+  }
+
+  // wire methods
+
+  @wire(MessageContext)
+  messageContext;
+
+  @wire(getPicklistValues, { recordTypeId: '$recordTypeId', fieldApiName: '$_wireFieldApiNameObject' })
+  picklistInfo;
+
+  // private methods
 
   handleChange(e) {
     e.stopPropagation();
@@ -107,25 +141,32 @@ export default class DatatablePicklistEditCell extends LightningElement {
     }));
   }
 
-  @api
-  get validity() {
-    return this.template.querySelector('lightning-combobox').validity;
+  subscribeToMessageChannel() {
+    if (!this._subscription) {
+        this._subscription = subscribe(
+            this.messageContext,
+            dataTableMessageChannel,
+            (message) => this.handleMessage(message),
+            { scope: APPLICATION_SCOPE }
+        );
+    }
   }
 
-  @api
-  showHelpMessageIfInvalid() {
-    this.template.querySelector('lightning-combobox').showHelpMessageIfInvalid();
+  unsubscribeToMessageChannel() {
+    unsubscribe(this._subscription);
+    this._subscription = null;
   }
 
-  @api
-  focus() {
-    this.template.querySelector('lightning-combobox').focus();
+
+  handleMessage({ action, detail }) {
+    if (action === 'valueResponse') {
+      if (this.rowId === detail.rowId) {
+        this._controllingFieldValue = detail.value;
+      }
+    }
   }
 
-  subscription = null;
-
-  @wire(MessageContext)
-  messageContext;
+  // hooks
 
   connectedCallback() {
     this.subscribeToMessageChannel();
@@ -133,42 +174,13 @@ export default class DatatablePicklistEditCell extends LightningElement {
       this.messageContext,
       dataTableMessageChannel,
       {
-        action: 'picklistValueRequest' ,
+        action: 'valueRequest' ,
         detail: {
           rowId: this.rowId,
           fieldApiName: this.controllerFieldApiName
         }
       }
     );
-  }
-
-  @wire(MessageContext)
-  messageContext;
-
-  // Encapsulate logic for Lightning message service subscribe and unsubsubscribe
-  subscribeToMessageChannel() {
-      if (!this.subscription) {
-          this.subscription = subscribe(
-              this.messageContext,
-              dataTableMessageChannel,
-              (message) => this.handleMessage(message),
-              { scope: APPLICATION_SCOPE }
-          );
-      }
-  }
-
-  unsubscribeToMessageChannel() {
-    unsubscribe(this.subscription);
-    this.subscription = null;
-  }
-
-  controllingFieldValue;
-  handleMessage({ action, detail }) {
-    if (action === 'picklistValueResponse') {
-      if (this.rowId === detail.rowId) {
-        this.controllingFieldValue = detail.value;
-      }
-    }
   }
 
   disconnectedCallback() {

@@ -22,7 +22,11 @@ export default class Datatable extends LightningElement {
     minColumnWidth: 50,
     maxColumnWidth: 1000,
     columns : [
-      // { fieldName: 'Checkbox__c', editable: true },
+      { fieldName: 'Level1__c', editable: true },
+      { fieldName: 'Level2__c', editable: true },
+      { fieldName: 'Level3__c', editable: true },
+      { fieldName: 'Level4__c', editable: true },
+      { fieldName: 'RecordType.Name', label: 'Recordtype Name' },
       // { fieldName: 'Currency__c', editable: true },
       // { fieldName: 'Date__c', editable: true },
       // { fieldName: 'DateTime__c', editable: true },
@@ -33,8 +37,6 @@ export default class Datatable extends LightningElement {
       // { label: 'Owner', fieldName: 'Owner.Name', editable: true },
       // { fieldName: 'Percent__c', editable: true },
       // { fieldName: 'Phone__c' , editable: true },
-      { fieldName: 'Picklist__c', editable: true },
-      { fieldName: 'PicklistB__c', editable: true },
       // { fieldName: 'TextArea__c', editable: true },
       // { fieldName: 'Text__c', editable: true },
       // { fieldName: 'Time__c', editable: true },
@@ -52,15 +54,6 @@ export default class Datatable extends LightningElement {
 
   showSpinner = true;
   queryOffSet = 0;
-
-  @api
-  get recordTypeId() {
-    return this.state.recordTypeId;
-  }
-
-  set recordTypeId(value) {
-    this.state.recordTypeId = value;
-  }
 
   @api
   get sortedBy() {
@@ -162,9 +155,9 @@ export default class Datatable extends LightningElement {
   }
 
   async formatColumns() {
-    const { columns, object, recordTypeId } = this.state;
+    const { columns, object } = this.state;
     if (columns && object && !this.formatColumnsHasRun)  {
-      this.state.columns = await formatColumns({ object, columns, recordTypeId });
+      this.state.columns = await formatColumns({ object, columns });
       this.formatColumnsHasRun = true;
     } else {
       this.formatColumnsHasRun = false;
@@ -192,6 +185,7 @@ export default class Datatable extends LightningElement {
           limitOfRecords,
           objectApiName: object,
           fields : this.fields,
+          whereClause: `Id IN ('a018b00000yi4X6AAI',  'a018b00000yi4VeAAI') `,
           sortedBy,
           sortDirection
       })});
@@ -220,9 +214,9 @@ export default class Datatable extends LightningElement {
   }
 
   init() {
-    if (!this.state.hideCheckBoxColumn && !this.state.recordTypeId) {
-      this.state.hideCheckBoxColumn = true;
-    }
+    // if (!this.state.hideCheckBoxColumn && !this.state.recordTypeId) {
+    //   this.state.hideCheckBoxColumn = true;
+    // }
   }
 
   handleOnSort(event) {
@@ -332,20 +326,29 @@ export default class Datatable extends LightningElement {
   }
 
   handleMessage({ action, detail }) {
-    if (action === 'picklistValueRequest') {
+    if (action === 'valueRequest') {
 
       const valueInDrafted = this.template.querySelector('c-data-table-extended-types')
         .draftValues.find(e => e.Id == detail.rowId)?.[detail.fieldApiName];
       const valueInRecords = this.state.records.find(e => e.Id == detail.rowId)?.[detail.fieldApiName];
 
+      let value = valueInDrafted || valueInRecords;
+
+      // controller field is checkbox
+      if (typeof valueInDrafted === 'boolean') {
+        value = valueInDrafted;
+      } else if (typeof valueInRecords === 'boolean') {
+        value = valueInRecords;
+      }
+
       publish(
         this.messageContext,
         dataTableMessageChannel,
         {
-          action: 'picklistValueResponse' ,
+          action: 'valueResponse' ,
           detail: {
             rowId: detail.rowId,
-            value: valueInDrafted || valueInRecords
+            value
           }
         }
       );

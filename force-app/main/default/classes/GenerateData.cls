@@ -41,7 +41,7 @@ public with sharing class GenerateData {
         for (Integer i = 0; i < numberOfRecords; i++) {
             DataTest__c singleResult = new DataTest__c();
             
-            singleResult.Checkbox__c = Math.mod(Integer.valueof((math.random() * 10)), 2) == 0;
+            // singleResult.Checkbox__c = Math.mod(Integer.valueof((math.random() * 10)), 2) == 0;
             singleResult.Currency__c = Integer.valueOf(Math.random() * 999);
             singleResult.Date__c = randomDate(Date.newInstance(2000, 1, 1), Date.newInstance(2025, 1, 1));
             singleResult.Time__c = randomTime(Integer.valueOf(Math.random() * 100000), Integer.valueOf(Math.random() * 100000));
@@ -57,12 +57,12 @@ public with sharing class GenerateData {
             singleResult.Email__c = getRandomElementFromList(emails);
             singleResult.Lookup__c = getRandomElementFromList(accIds);
             singleResult.Name = generateRandomString(12 + Integer.valueOf(Math.random() * 5));
-            singleResult.MultiSelectPicklist__c = 'a;b;c;d;e';
+            // singleResult.MultiSelectPicklist__c = 'a;b;c;d;e';
             singleResult.Number__c = Integer.valueOf(Math.random() * 1000);
             singleResult.Percent__c = Integer.valueOf(Math.random() * 100);
             singleResult.Phone__c = String.valueOf(Integer.valueOf(Math.random() * 100000));
-            singleResult.Picklist__c = getRandomElementFromList(picklistValues);
-            singleResult.Text__c = generateRandomString(12 + Integer.valueOf(Math.random() * 5));
+            // singleResult.Picklist__c = getRandomElementFromList(picklistValues);
+            // singleResult.Text__c = generateRandomString(12 + Integer.valueOf(Math.random() * 5));
             singleResult.TextArea__c = generateRandomString(50 + Integer.valueOf(Math.random() * 10));
             singleResult.Url__c = getRandomElementFromList(urls);
 
