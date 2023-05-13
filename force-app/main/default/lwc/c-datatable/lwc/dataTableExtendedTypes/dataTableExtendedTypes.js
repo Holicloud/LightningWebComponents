@@ -1,11 +1,10 @@
 import LightningDatatable from 'lightning/datatable';
-//import the template so that it can be reused
-// import CustomFieldTemplate from './customFieldDataTableTemplate.html';
+import multiPicklist from './multiPicklist.html';
 import percentFixed from './percentFixed.html';
 import percentFixedEdit from './percentFixedEdit.html';
-import time from './time.html';
-import multiPicklist from './multiPicklist.html';
 import picklist from './picklist.html';
+import picklistEdit from './picklistEdit.html';
+import time from './time.html';
 
 export default class DataTableExtendedTypes extends LightningDatatable {
     static customTypes = {
@@ -32,21 +31,18 @@ export default class DataTableExtendedTypes extends LightningDatatable {
             standardCellLayout: true,
             typeAttributes: ['options'],
         },
-        ['picklist'] : {
+        picklist : {
             template: picklist,
+            editTemplate: picklistEdit,
             standardCellLayout: true,
-            typeAttributes: ['options'],
+            typeAttributes: [
+                'options',
+                'placeholder',
+                'recordTypeId',
+                'objectApiName',
+                'controllerFieldApiName',
+                'rowId'
+            ],
         }
-        // picklist: {
-        //     template: CustomFieldTemplate,
-        //     standardCellLayout: true,
-        //     typeAttributes: ['value', 'recordId', 'fieldName', 'editable', 'type'],
-        // },
-        
-        // lookup: {
-        //     template: CustomFieldTemplate,
-        //     standardCellLayout: true,
-        //     typeAttributes: ['value', 'recordId', 'fieldName', 'editable', 'type', 'lookupRecordId'],
-        // },
     };
 }

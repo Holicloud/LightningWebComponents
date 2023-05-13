@@ -13,9 +13,14 @@
     <columns>Phone__c</columns>
     <columns>Picklist__c</columns>
     <columns>TextArea__c</columns>
-    <columns>Text__c</columns>
     <columns>Time__c</columns>
     <columns>Url__c</columns>
+    <columns>RECORDTYPE</columns>
     <filterScope>Everything</filterScope>
+    <filters>
+        <field>RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>DataTest__c.RecordTypeB</value>
+    </filters>
     <label>All</label>
 </ListView>

@@ -35,6 +35,42 @@
                 <default>false</default>
                 <label>fifth value fifth value</label>
             </value>
+            <value>
+                <fullName>fifth</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>fifth</label>
+            </value>
+            <value>
+                <fullName>first</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>first</label>
+            </value>
+            <value>
+                <fullName>fourth</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>fourth</label>
+            </value>
+            <value>
+                <fullName>second</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>second</label>
+            </value>
+            <value>
+                <fullName>six</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>six</label>
+            </value>
+            <value>
+                <fullName>third</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>third</label>
+            </value>
         </valueSetDefinition>
     </valueSet>
     <visibleLines>4</visibleLines>

@@ -1,10 +1,12 @@
 /* eslint-disable no-console */
 import { LightningElement, api, track, wire } from 'lwc';
 import getRecords from '@salesforce/apex/CustomDataTableController.getRecords';
-import getRecordsNonCacheable from '@salesforce/apex/CustomDataTableController.getRecordsNonCacheable';
+// import getRecordsNonCacheable from '@salesforce/apex/CustomDataTableController.getRecordsNonCacheable';
 import { formatColumns } from 'c/customDataTableHelper';
-import { getObjectInfo, getPicklistValuesByRecordType } from 'lightning/uiObjectInfoApi';
 import { flattenRecords, cloneArray, showToastError, showToastApexError } from 'c/commonFunctionsHelper';
+
+import { publish, subscribe, unsubscribe, APPLICATION_SCOPE, MessageContext, } from 'lightning/messageService'
+import dataTableMessageChannel from '@salesforce/messageChannel/DataTable__c';
 const DELAY = 800;
 export default class Datatable extends LightningElement {
   @track state = {
@@ -14,30 +16,33 @@ export default class Datatable extends LightningElement {
     sortedBy: 'Currency__c',
     sortDirection: 'asc',
     hideCheckBoxColumn: false,
+    recordTypeId: null,
     enableInfiniteLoading: false,
     loadMoreOffset: 20,
     minColumnWidth: 50,
-    isLoading: false,
     maxColumnWidth: 1000,
     columns : [
-      { fieldName: 'Checkbox__c', editable: true },
-      { fieldName: 'Currency__c', editable: true },
-      { fieldName: 'Date__c', editable: true },
-      { fieldName: 'DateTime__c', editable: true },
-      { fieldName: 'Email__c', editable: true },
-      { fieldName: 'Lookup__c', editable: true },
-      { fieldName: 'MultiSelectPicklist__c', editable: true },
-      { fieldName: 'Number__c', editable: true },
-      { label: 'Owner', fieldName: 'Owner.Name', editable: true },
-      { fieldName: 'Percent__c', editable: true },
-      { fieldName: 'Phone__c' , editable: true },
+      // { fieldName: 'Checkbox__c', editable: true },
+      // { fieldName: 'Currency__c', editable: true },
+      // { fieldName: 'Date__c', editable: true },
+      // { fieldName: 'DateTime__c', editable: true },
+      // { fieldName: 'Email__c', editable: true },
+      // { fieldName: 'Lookup__c', editable: true },
+      // { fieldName: 'MultiSelectPicklist__c', editable: true },
+      // { fieldName: 'Number__c', editable: true },
+      // { label: 'Owner', fieldName: 'Owner.Name', editable: true },
+      // { fieldName: 'Percent__c', editable: true },
+      // { fieldName: 'Phone__c' , editable: true },
       { fieldName: 'Picklist__c', editable: true },
-      { fieldName: 'TextArea__c', editable: true },
-      { fieldName: 'Text__c', editable: true },
-      { fieldName: 'Time__c', editable: true },
-      { fieldName: 'Url__c', editable: true },
+      { fieldName: 'PicklistB__c', editable: true },
+      // { fieldName: 'TextArea__c', editable: true },
+      // { fieldName: 'Text__c', editable: true },
+      // { fieldName: 'Time__c', editable: true },
+      // { fieldName: 'Url__c', editable: true },
     ]
   };
+
+  subscription;
 
   totalNumberOfRecords;
   loadMoreStatus;
@@ -49,6 +54,15 @@ export default class Datatable extends LightningElement {
   queryOffSet = 0;
 
   @api
+  get recordTypeId() {
+    return this.state.recordTypeId;
+  }
+
+  set recordTypeId(value) {
+    this.state.recordTypeId = value;
+  }
+
+  @api
   get sortedBy() {
     return this.state.sortedBy;
   }
@@ -57,14 +71,7 @@ export default class Datatable extends LightningElement {
     this.state.sortedBy = value;
   }
 
-  @api
-  get isLoading() {
-    return this.state.isLoading;
-  }
-
-  set isLoading(value) {
-    this.state.isLoading = value;
-  }
+  @api isLoading = false;
 
   @api
   get sortDirection() {
@@ -155,9 +162,9 @@ export default class Datatable extends LightningElement {
   }
 
   async formatColumns() {
-    const {columns, object} = this.state;
+    const { columns, object, recordTypeId } = this.state;
     if (columns && object && !this.formatColumnsHasRun)  {
-      this.state.columns = await formatColumns({ object, columns });
+      this.state.columns = await formatColumns({ object, columns, recordTypeId });
       this.formatColumnsHasRun = true;
     } else {
       this.formatColumnsHasRun = false;
@@ -206,8 +213,16 @@ export default class Datatable extends LightningElement {
   }
 
   async connectedCallback() {
+    this.subscribeToMessageChannel();
+    await this.init();
     await this.formatColumns();
     await this.showRecords();
+  }
+
+  init() {
+    if (!this.state.hideCheckBoxColumn && !this.state.recordTypeId) {
+      this.state.hideCheckBoxColumn = true;
+    }
   }
 
   handleOnSort(event) {
@@ -290,7 +305,54 @@ export default class Datatable extends LightningElement {
   }
 
   handleSave(event) {
-    debugger
-    this.saveDraftValues = event.detail.draftValues;
+    debugger;
+    this.draftValues = event.detail.draftValues;
+  }
+
+
+
+  @wire(MessageContext)
+  messageContext;
+
+  // Encapsulate logic for Lightning message service subscribe and unsubsubscribe
+  subscribeToMessageChannel() {
+      if (!this.subscription) {
+          this.subscription = subscribe(
+              this.messageContext,
+              dataTableMessageChannel,
+              (message) => this.handleMessage(message),
+              { scope: APPLICATION_SCOPE }
+          );
+      }
+  }
+
+  unsubscribeToMessageChannel() {
+    unsubscribe(this.subscription);
+    this.subscription = null;
+  }
+
+  handleMessage({ action, detail }) {
+    if (action === 'picklistValueRequest') {
+
+      const valueInDrafted = this.template.querySelector('c-data-table-extended-types')
+        .draftValues.find(e => e.Id == detail.rowId)?.[detail.fieldApiName];
+      const valueInRecords = this.state.records.find(e => e.Id == detail.rowId)?.[detail.fieldApiName];
+
+      publish(
+        this.messageContext,
+        dataTableMessageChannel,
+        {
+          action: 'picklistValueResponse' ,
+          detail: {
+            rowId: detail.rowId,
+            value: valueInDrafted || valueInRecords
+          }
+        }
+      );
+    }
+  }
+
+  disconnectedCallback() {
+    this.unsubscribeToMessageChannel();
   }
 }

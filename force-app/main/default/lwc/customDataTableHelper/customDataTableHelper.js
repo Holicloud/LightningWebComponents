@@ -16,9 +16,9 @@ const PERCENT_STEP = `.${Array.apply(null, {length: 17}).map(() => '0').join('')
  * @todo inner "fieldName"  has to apply column.fieldName.split('.').join('_');
  * @return promise
  */
-async function formatColumns({ columns, object }) {
+async function formatColumns({ columns, object : objectApiName, recordTypeId }){
     const fieldInformation = await getFieldInformation({
-        objectAPIName: object,
+        objectAPIName: objectApiName,
         fieldApiNames: columns.map(e => e.fieldName) });
 
     if (!fieldInformation) {
@@ -80,20 +80,21 @@ async function formatColumns({ columns, object }) {
                     maximumFractionDigits: fieldDescribe.scale,
                     formatStyle: "percent-fixed",
                     step: PERCENT_STEP
-                }
+                };
             } else if (fieldDescribe.type === 'multipicklist') {
                 column.typeAttributes = {
                     options: JSON.stringify(fieldDescribe.picklistValues)
                 }
             } else if (fieldDescribe.type === 'picklist') {
                 column.typeAttributes = {
-                    options: JSON.stringify(fieldDescribe.picklistValues)
+                    options: JSON.stringify(fieldDescribe.picklistValues),
+                    placeholder: 'Select an Option',
+                    recordTypeId,
+                    objectApiName,
+                    controllerFieldApiName : fieldDescribe.controllerName,
+                    rowId : { fieldName: 'Id' }
                 }
             }
-
-            // if (['percent', 'picklist', 'reference'].includes(fieldDescribe.type)) {
-            //     formatCustomTypes(column, fieldDescribe);
-            // }
         }
 
         result.push(formatfieldNamesProperties(column, column.fieldName));
@@ -102,33 +103,6 @@ async function formatColumns({ columns, object }) {
     return result;
 }
 
-function formatCustomTypes(column, fieldDescribe) {
-    column.type = typeByFieldDescribeType[fieldDescribe.type] || fieldDescribe.type;
-    const { editable, fieldName, type } = column;
-
-    column.typeAttributes = {
-        editable,
-        fieldName,
-        recordId : { fieldName: 'Id' },
-        type
-    };
-
-    if (fieldDescribe.type === 'percent') {
-        column.typeAttributes.maxLength = fieldDescribe.precision > 16 ? 16 : fieldDescribe.precision;
-        column.typeAttributes.numberOfDecimal = fieldDescribe.scale;
-        column.typeAttributes.value = { fieldName };
-    } else if (fieldDescribe.type === 'picklist') {
-        column.typeAttributes.placeholder = column.typeAttributes.placeholder || 'Select...';
-        column.typeAttributes.value = { fieldName };
-    } else if (fieldDescribe.type === 'reference' && !column._isReference) {
-        column.typeAttributes = {
-            // value : { fieldName: `${column.fieldName.replace('__c','__r')}.Name` },
-            // searchByApiName : `Name`,
-            // objectApiName : fieldDescribe.referenceTo[0],
-            // lookupRecordId : { fieldName },
-        };
-    }
-}
 
 /**
  * @description inner fieldName has to be flattened as well so it can match to a field properly
