@@ -16,7 +16,7 @@ const PERCENT_STEP = `.${Array.apply(null, {length: 17}).map(() => '0').join('')
  * @todo inner "fieldName"  has to apply column.fieldName.split('.').join('_');
  * @return promise
  */
-async function formatColumns({ columns, object : objectApiName }){
+async function formatColumns({ columns, objectApiName }){
     const fieldInformation = await getFieldInformation({
         objectAPIName: objectApiName,
         fieldApiNames: columns.map(e => e.fieldName) });

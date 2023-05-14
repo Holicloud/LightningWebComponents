@@ -1,5 +1,4 @@
 import { LightningElement, api, wire } from 'lwc';
-import { getPicklistValues } from 'lightning/uiObjectInfoApi';
 import { publish, subscribe, unsubscribe, APPLICATION_SCOPE, MessageContext, } from 'lightning/messageService'
 import dataTableMessageChannel from '@salesforce/messageChannel/DataTable__c';
 
@@ -33,6 +32,8 @@ export default class DatatablePicklistEditCell extends LightningElement {
 
   _controllingFieldValue;
 
+  _fieldDependency = null;
+
   // public getters-setters
 
   @api
@@ -42,7 +43,6 @@ export default class DatatablePicklistEditCell extends LightningElement {
 
   set fieldApiName(value) {
     this._fieldApiName = value;
-    this._wireFieldApiNameObject.fieldApiName = value;
   }
 
   @api
@@ -52,7 +52,6 @@ export default class DatatablePicklistEditCell extends LightningElement {
 
   set objectApiName(value) {
     this._objectApiName = value;
-    this._wireFieldApiNameObject.objectApiName = value;
   }
 
   @api
@@ -67,12 +66,11 @@ export default class DatatablePicklistEditCell extends LightningElement {
   // private getters-setters
 
   get actualOptions() {
-    const values = this.picklistInfo?.data?.values;
+    const {values, controllerValues} = this._fieldDependency;
     this._disabled = false;
     if (!this.recordTypeId) {
       return JSON.parse(this.options);
     } else if (this.controllerFieldApiName && values) {
-      const controllerValues = this.picklistInfo?.data?.controllerValues;
       const key = controllerValues[this._controllingFieldValue];
       const result = values.filter(opt => opt.validFor.includes(key));
       return result;
@@ -105,9 +103,6 @@ export default class DatatablePicklistEditCell extends LightningElement {
 
   @wire(MessageContext)
   messageContext;
-
-  @wire(getPicklistValues, { recordTypeId: '$recordTypeId', fieldApiName: '$_wireFieldApiNameObject' })
-  picklistInfo;
 
   // private methods
 
@@ -161,6 +156,7 @@ export default class DatatablePicklistEditCell extends LightningElement {
   handleMessage({ action, detail }) {
     if (action === 'valueResponse') {
       if (this.rowId === detail.rowId) {
+        this._fieldDependency = detail.fieldDependency;
         this._controllingFieldValue = detail.value;
       }
     }
@@ -177,7 +173,9 @@ export default class DatatablePicklistEditCell extends LightningElement {
         action: 'valueRequest' ,
         detail: {
           rowId: this.rowId,
-          fieldApiName: this.controllerFieldApiName
+          controllerFieldApiName: this._fieldApiName,
+          fieldApiName: this.controllerFieldApiName,
+          recordTypeId : this.recordTypeId
         }
       }
     );

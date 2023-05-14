@@ -5,12 +5,13 @@ import getRecords from '@salesforce/apex/CustomDataTableController.getRecords';
 import { formatColumns } from 'c/customDataTableHelper';
 import { flattenRecords, cloneArray, showToastError, showToastApexError } from 'c/commonFunctionsHelper';
 
+import { getObjectInfo, getPicklistValuesByRecordType } from 'lightning/uiObjectInfoApi';
 import { publish, subscribe, unsubscribe, APPLICATION_SCOPE, MessageContext, } from 'lightning/messageService'
 import dataTableMessageChannel from '@salesforce/messageChannel/DataTable__c';
 const DELAY = 800;
 export default class Datatable extends LightningElement {
   @track state = {
-    object : 'DataTest__c',
+    objectApiName : 'DataTest__c',
     records : [],
     limitOfRecords: 50,
     sortedBy: 'Currency__c',
@@ -121,13 +122,14 @@ export default class Datatable extends LightningElement {
   }
 
   @api
-  get object() {
-    return this.state.object;
+  get objectApiName() {
+    return this.state.objectApiName;
   }
 
-  set object(value) {
-    this.state.object = value;
-    this.formatColumns();
+  set objectApiName(value) {
+    this._wiredObjectApiName.objectApiName = value;
+    this.state.objectApiName = value;
+    // this.formatColumns();
   }
 
   @api
@@ -142,7 +144,7 @@ export default class Datatable extends LightningElement {
     }
 
     this.state.columns = value;
-    this.formatColumns();
+    // this.formatColumns();
   }
 
   @api
@@ -155,9 +157,9 @@ export default class Datatable extends LightningElement {
   }
 
   async formatColumns() {
-    const { columns, object } = this.state;
-    if (columns && object && !this.formatColumnsHasRun)  {
-      this.state.columns = await formatColumns({ object, columns });
+    const { columns, objectApiName } = this.state;
+    if (columns && objectApiName && !this.formatColumnsHasRun)  {
+      this.state.columns = await formatColumns({ objectApiName, columns });
       this.formatColumnsHasRun = true;
     } else {
       this.formatColumnsHasRun = false;
@@ -178,12 +180,12 @@ export default class Datatable extends LightningElement {
 
   async showRecords() {
     // this.resetDraftedValues();
-    const { limitOfRecords, object, sortedBy, sortDirection } = this.state;
+    const { limitOfRecords, objectApiName, sortedBy, sortDirection } = this.state;
     this.showSpinner = true;
     try {
       const result = await getRecords({ queryParameters : JSON.stringify({
           limitOfRecords,
-          objectApiName: object,
+          objectApiName: objectApiName,
           fields : this.fields,
           whereClause: `Id IN ('a018b00000yi4X6AAI',  'a018b00000yi4VeAAI') `,
           sortedBy,
@@ -260,7 +262,7 @@ export default class Datatable extends LightningElement {
           return;
         }
 
-        const { limitOfRecords, object, sortedBy, sortDirection, records } = this.state;
+        const { limitOfRecords, objectApiName, sortedBy, sortDirection, records } = this.state;
         
         const previousOffSet = this.queryOffSet;
         const previousRecords = [...records];
@@ -271,7 +273,7 @@ export default class Datatable extends LightningElement {
         try {
           const result = await getRecords({ queryParameters : JSON.stringify({
             limitOfRecords,
-            objectApiName: object,
+            objectApiName: objectApiName,
             fields : this.fields,
             offSet : this.queryOffSet,
             sortedBy,
@@ -303,7 +305,34 @@ export default class Datatable extends LightningElement {
     this.draftValues = event.detail.draftValues;
   }
 
+  recordTypeIds;
+  currentRecordType;
+  recordTypeFetchIndex = 0;
+  picklistValuesByRecordType = {};
 
+  @wire(getObjectInfo, { objectApiName: '$state.objectApiName' })
+  wiredObjectInfo({ data, error }){
+    if(data) {
+      this.recordTypeIds = Object.getOwnPropertyNames(data.recordTypeInfos);
+      this.currentRecordType = this.recordTypeIds[this.recordTypeFetchIndex];
+    } else if (error) {
+      this.recordTypeIds = null;
+    }
+  }
+
+  @wire(getPicklistValuesByRecordType, { objectApiName: '$state.objectApiName', recordTypeId: '$currentRecordType' })
+  wiredData({ error, data }) {
+    if (data) {
+      this.picklistValuesByRecordType[this.currentRecordType] = data.picklistFieldValues;
+
+      if (this.recordTypeFetchIndex < this.recordTypeIds.length) {
+        this.recordTypeFetchIndex++;
+        this.currentRecordType = this.recordTypeIds[this.recordTypeFetchIndex];
+      }
+    } else if (error) {
+      console.error('Error:', error);
+    }
+  }
 
   @wire(MessageContext)
   messageContext;
@@ -328,9 +357,11 @@ export default class Datatable extends LightningElement {
   handleMessage({ action, detail }) {
     if (action === 'valueRequest') {
 
+      const {fieldApiName, controllerFieldApiName, rowId, recordTypeId } = detail;
+
       const valueInDrafted = this.template.querySelector('c-data-table-extended-types')
-        .draftValues.find(e => e.Id == detail.rowId)?.[detail.fieldApiName];
-      const valueInRecords = this.state.records.find(e => e.Id == detail.rowId)?.[detail.fieldApiName];
+        .draftValues.find(e => e.Id == rowId)?.[fieldApiName];
+      const valueInRecords = this.state.records.find(e => e.Id == rowId)?.[fieldApiName];
 
       let value = valueInDrafted || valueInRecords;
 
@@ -347,8 +378,9 @@ export default class Datatable extends LightningElement {
         {
           action: 'valueResponse' ,
           detail: {
-            rowId: detail.rowId,
-            value
+            rowId: rowId,
+            value,
+            fieldDependency: this.picklistValuesByRecordType[recordTypeId][controllerFieldApiName]
           }
         }
       );
