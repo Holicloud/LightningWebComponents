@@ -20,6 +20,9 @@
                 show-row-number-column
                 sorted-by={state.sortedBy}
                 sorted-direction={state.sortDirection}
+                draft-values={draftValues}
+                oncellchange={handleChange}
+                onvaluerequest={handleValueRequest}
                 onsave={handleSave}
                 is-loading={isLoading}
             ></c-data-table-extended-types>

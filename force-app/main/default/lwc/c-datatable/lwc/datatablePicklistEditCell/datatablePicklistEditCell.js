@@ -1,5 +1,5 @@
 import { LightningElement, api, wire } from 'lwc';
-import { publish, subscribe, unsubscribe, APPLICATION_SCOPE, MessageContext, } from 'lightning/messageService'
+import { subscribe, unsubscribe, APPLICATION_SCOPE, MessageContext, } from 'lightning/messageService'
 import dataTableMessageChannel from '@salesforce/messageChannel/DataTable__c';
 
 export default class DatatablePicklistEditCell extends LightningElement {
@@ -166,19 +166,17 @@ export default class DatatablePicklistEditCell extends LightningElement {
 
   connectedCallback() {
     this.subscribeToMessageChannel();
-    publish(
-      this.messageContext,
-      dataTableMessageChannel,
-      {
-        action: 'valueRequest' ,
-        detail: {
-          rowId: this.rowId,
-          controllerFieldApiName: this._fieldApiName,
-          fieldApiName: this.controllerFieldApiName,
-          recordTypeId : this.recordTypeId
-        }
-      }
-    );
+    const detail = {
+      rowId: this.rowId,
+      controllerFieldApiName: this._fieldApiName,
+      fieldApiName: this.controllerFieldApiName,
+      recordTypeId : this.recordTypeId
+    };
+    this.dispatchEvent(new CustomEvent('valuerequest', {
+        detail,
+        bubbles: true,
+        composed: true
+    }));
   }
 
   disconnectedCallback() {

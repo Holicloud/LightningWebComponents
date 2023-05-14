@@ -6,7 +6,7 @@ import { formatColumns } from 'c/customDataTableHelper';
 import { flattenRecords, cloneArray, showToastError, showToastApexError } from 'c/commonFunctionsHelper';
 
 import { getObjectInfo, getPicklistValuesByRecordType } from 'lightning/uiObjectInfoApi';
-import { publish, subscribe, unsubscribe, APPLICATION_SCOPE, MessageContext, } from 'lightning/messageService'
+import { publish, MessageContext, } from 'lightning/messageService'
 import dataTableMessageChannel from '@salesforce/messageChannel/DataTable__c';
 const DELAY = 800;
 export default class Datatable extends LightningElement {
@@ -209,7 +209,6 @@ export default class Datatable extends LightningElement {
   }
 
   async connectedCallback() {
-    this.subscribeToMessageChannel();
     await this.init();
     await this.formatColumns();
     await this.showRecords();
@@ -337,57 +336,43 @@ export default class Datatable extends LightningElement {
   @wire(MessageContext)
   messageContext;
 
-  // Encapsulate logic for Lightning message service subscribe and unsubsubscribe
-  subscribeToMessageChannel() {
-      if (!this.subscription) {
-          this.subscription = subscribe(
-              this.messageContext,
-              dataTableMessageChannel,
-              (message) => this.handleMessage(message),
-              { scope: APPLICATION_SCOPE }
-          );
-      }
-  }
+  handleValueRequest(event) {
+    event.stopPropagation();
+  // if (action === 'valueRequest') {
 
-  unsubscribeToMessageChannel() {
-    unsubscribe(this.subscription);
-    this.subscription = null;
-  }
+    const {fieldApiName, controllerFieldApiName, rowId, recordTypeId } = event.detail;
 
-  handleMessage({ action, detail }) {
-    if (action === 'valueRequest') {
+    const valueInDrafted = this.template.querySelector('c-data-table-extended-types')
+      .draftValues.find(e => e.Id == rowId)?.[fieldApiName];
+    const valueInRecords = this.state.records.find(e => e.Id == rowId)?.[fieldApiName];
 
-      const {fieldApiName, controllerFieldApiName, rowId, recordTypeId } = detail;
+    let value = valueInDrafted || valueInRecords;
 
-      const valueInDrafted = this.template.querySelector('c-data-table-extended-types')
-        .draftValues.find(e => e.Id == rowId)?.[fieldApiName];
-      const valueInRecords = this.state.records.find(e => e.Id == rowId)?.[fieldApiName];
-
-      let value = valueInDrafted || valueInRecords;
-
-      // controller field is checkbox
-      if (typeof valueInDrafted === 'boolean') {
-        value = valueInDrafted;
-      } else if (typeof valueInRecords === 'boolean') {
-        value = valueInRecords;
-      }
-
-      publish(
-        this.messageContext,
-        dataTableMessageChannel,
-        {
-          action: 'valueResponse' ,
-          detail: {
-            rowId: rowId,
-            value,
-            fieldDependency: this.picklistValuesByRecordType[recordTypeId][controllerFieldApiName]
-          }
-        }
-      );
+    // controller field is checkbox
+    if (typeof valueInDrafted === 'boolean') {
+      value = valueInDrafted;
+    } else if (typeof valueInRecords === 'boolean') {
+      value = valueInRecords;
     }
+
+    publish(
+      this.messageContext,
+      dataTableMessageChannel,
+      {
+        action: 'valueResponse' ,
+        detail: {
+          rowId,
+          value,
+          fieldDependency: this.picklistValuesByRecordType[recordTypeId][controllerFieldApiName]
+        }
+      }
+    );
   }
 
-  disconnectedCallback() {
-    this.unsubscribeToMessageChannel();
+
+  // @track draftValues = [];
+  handleChange(event) {
+    debugger
+    // this.draftValues = JSON.parse(JSON.stringify(event.detail.draftValues));
   }
 }
