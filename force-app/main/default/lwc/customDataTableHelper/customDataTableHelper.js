@@ -18,48 +18,49 @@ const PERCENT_STEP = `.${Array.apply(null, {length: 17}).map(() => '0').join('')
  * @return promise
  */
 async function formatColumns({ columns, objectApiName }){
-    const fieldInformation = await getFieldInformation({
-        objectAPIName: objectApiName,
-        fieldApiNames: columns.map(e => e.fieldName) });
+    try {
+        const fieldInformation = await getFieldInformation({
+            objectAPIName: objectApiName,
+            fieldApiNames: columns.map(e => e.fieldName) })
+        .catch(error => { throw error });
 
-    if (!fieldInformation) {
-        return
-    }
-
-    String.prototype.equalIgnoreCase = function(str) {
-        return str != null && typeof str === 'string' && this.toUpperCase() === str.toUpperCase();
-    }
-
-    const result = [];
-
-    for (const column of columns) {
-
-        const fieldDescribe = fieldInformation[
-            Object.keys(fieldInformation).find(e => e.equalIgnoreCase(column.fieldName))
-        ];
-
-        const { accesible, updateable, sortable, name, label, type } = fieldDescribe;
-
-        if (!fieldDescribe || !accesible) continue;
-
-        column.editable = column.editable && updateable;
-        column.sortable = column.sortable && sortable;
-        column.fieldName = name;
-
-        column.label = column.label || label;
-
-        if (column.type !== 'button' && !column.override) {
-
-            column.type = TYPES[type] || type;
-            setTypeAttributes(column, fieldDescribe);
+        String.prototype.equalIgnoreCase = function(str) {
+            return str != null && typeof str === 'string' && this.toUpperCase() === str.toUpperCase();
         }
-
-        result.push(formatfieldNamesProperties(column, column.fieldName));
+    
+        const result = [];
+    
+        for (const column of columns) {
+    
+            const fieldDescribe = fieldInformation[
+                Object.keys(fieldInformation).find(e => e.equalIgnoreCase(column.fieldName))
+            ];
+    
+            const { accesible, updateable, sortable, name, label, type } = fieldDescribe;
+    
+            if (!fieldDescribe || !accesible) continue;
+    
+            column.editable = column.editable && updateable;
+            column.sortable = column.sortable && sortable;
+            column.fieldName = name;
+    
+            column.label = column.label || label;
+    
+            if (column.type !== 'button' && !column.override) {
+    
+                column.type = TYPES[type] || type;
+                setTypeAttributes(column, fieldDescribe);
+            }
+    
+            result.push(formatfieldNamesProperties(column, column.fieldName));
+        }
+    
+        setParenting(result);
+    
+        return { data: result, error: undefined };
+    } catch (error) {
+        return { data: undefined, error };
     }
-
-    setParenting(result);
-
-    return result;
 }
 
 function setTypeAttributes(column, fieldDescribe) {
@@ -141,12 +142,14 @@ function setParenting(columns) {
     for (const column of columns) {
         if (!column.override && ['picklist', 'boolean'].includes(column.type)) {
 
-            const child = columns
-                .find(c => c.typeAttributes?.parentName === column.fieldName);
+            const childs = columns
+                .filter(c => c.typeAttributes?.parentName === column.fieldName);
 
-            column.typeAttributes = column.typeAttributes || {};
-            column.typeAttributes.childName = child?.fieldName;
-            column.typeAttributes.isParent = !!child;
+            if (childs) {
+                column.typeAttributes = column.typeAttributes || {};
+                column.typeAttributes.childs = childs.map(c => c.fieldName);
+                column.typeAttributes.isParent = true;
+            }
         }
     }
 }

@@ -8,7 +8,9 @@ import { flattenRecords, cloneArray, showToastError, showToastApexError } from '
 import { getObjectInfo, getPicklistValuesByRecordType } from 'lightning/uiObjectInfoApi';
 import { publish, MessageContext, } from 'lightning/messageService'
 import dataTableMessageChannel from '@salesforce/messageChannel/DataTable__c';
+
 const DELAY = 800;
+const RECORD_TYPE_ID_FIELD = 'RecordTypeId';
 export default class Datatable extends LightningElement {
   // public props
 
@@ -38,10 +40,11 @@ export default class Datatable extends LightningElement {
     columns : [
       { fieldName: 'Level1__c', editable: true },
       { fieldName: 'Level2__c', editable: true },
+      { fieldName: 'Lvl2B__c', editable: true },
       { fieldName: 'Level3__c', editable: true },
-      { fieldName: 'Level4__c', editable: true },
-      { fieldName: 'RecordTypeId', editable: true },
-      { fieldName: 'RecordType.Name', label: 'Recordtype Name' },
+      // { fieldName: 'Level4__c', editable: true },
+      // { fieldName: 'RecordTypeId', editable: true },
+      // { fieldName: 'RecordType.Name', label: 'Recordtype Name' },
       // { fieldName: 'Currency__c', editable: true },
       // { fieldName: 'Date__c', editable: true },
       // { fieldName: 'DateTime__c', editable: true },
@@ -316,7 +319,7 @@ export default class Datatable extends LightningElement {
     const rowInfo = this._getRow({ rowId });
 
     let { values, controllerValues } = {...this._recordTypeInfos[
-        this._getFieldValue({ field : 'RecordTypeId', rowInfo })
+        this._getFieldValue({ field : RECORD_TYPE_ID_FIELD, rowInfo })
     ].picklistFieldValues[fieldName]};
     
     if (!values) return;
@@ -343,26 +346,24 @@ export default class Datatable extends LightningElement {
 
       const [ field ] = Object.getOwnPropertyNames(cellChangeDraft);
       
-      const column = this._state.columns.find(e => e.fieldName === field);
+      const {type, typeAttributes} = this._state.columns.find(e => e.fieldName === field);
 
       const rowId = cellChangeDraft.Id;
-      
-      if (!['picklist', 'boolean', 'multi-picklist'].includes(column.type)) continue;
-
       const rowInfo = this._getRow({ rowId });
+      const recordTypeInfo = this._recordTypeInfos[this._getFieldValue({ field : RECORD_TYPE_ID_FIELD, rowInfo })];
+      
+      if (['picklist', 'boolean', 'multi-picklist'].includes(type)) {
+        this._updateDependencies({
+          allDrafted,
+          field,
+          recordTypeInfo,
+          rowId,
+          rowInfo,
+          parentValue: typeAttributes?.isChild && this._getFieldValue({field : typeAttributes.parentName, rowInfo })
+        });
+      } else if (field === RECORD_TYPE_ID_FIELD) {
 
-      const recordTypeInfo = this._recordTypeInfos[
-        this._getFieldValue({ field : 'RecordTypeId', rowInfo })];
-
-      const input = { allDrafted, field, recordTypeInfo, rowId, rowInfo };
-
-      if (column.typeAttributes?.isChild) {
-        input.parentValue = this._getFieldValue({
-          field : column.typeAttributes.parentName,
-          rowInfo });
       }
-
-      this._updateDependencies(input);
     }
 
     this._draftValues = [...allDrafted];
@@ -373,7 +374,12 @@ export default class Datatable extends LightningElement {
   async _formatColumns() {
     const { columns, objectApiName } = this._state;
     if (columns && objectApiName && !this.formatColumnsHasRun)  {
-      this._state.columns = await formatColumns({ objectApiName, columns });
+      const { data, error } = await formatColumns({ objectApiName, columns })
+      if (data) {
+        this._state.columns = data; 
+      } else {
+        showToastApexError.call(this, error);
+      }
       this.formatColumnsHasRun = true;
     } else {
       this.formatColumnsHasRun = false;
@@ -429,7 +435,7 @@ export default class Datatable extends LightningElement {
     rowId,
     rowInfo,
   }) {
-    const { type, typeAttributes: { isChild, isParent, childName } } =
+    const { type, typeAttributes: { isChild, isParent, childs } } =
       this._state.columns.find(e => e.fieldName === field);
     
     const value = this._getFieldValue({ field : field, rowInfo });
@@ -456,15 +462,17 @@ export default class Datatable extends LightningElement {
     }
 
     if (isParent && (value !== undefined || clearChild)) {
-      this._updateDependencies({
-        rowId,
-        allDrafted,
-        field: childName,
-        parentValue: value,
-        recordTypeInfo,
-        rowInfo,
-        clearChild
-      });
+      for (const field of childs) {
+        this._updateDependencies({
+          rowId,
+          allDrafted,
+          field,
+          parentValue: value,
+          recordTypeInfo,
+          rowInfo,
+          clearChild
+        });
+      }
     }
   }
 

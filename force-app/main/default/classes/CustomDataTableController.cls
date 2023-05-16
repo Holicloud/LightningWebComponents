@@ -69,6 +69,7 @@ public with sharing class CustomDataTableController {
 			queryFactory
 				.setOffSet(parameters.offSet)
 				.setLimit(parameters.limitOfRecords)
+                .selectField('RecordTypeId')
 				.selectFields(new List<String>(new Set<String>(parameters.fields)));
 
             if (String.isNotBlank(parameters.sortedBy)) {

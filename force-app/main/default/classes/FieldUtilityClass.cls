@@ -25,13 +25,18 @@ public with sharing class FieldUtilityClass {
     }
 
     public static Schema.DescribeFieldResult getFieldDescribe(String objName, String fieldName) {
-        return Schema.getGlobalDescribe()
-            .get(objName)
-            .getDescribe()
-            .fields
-            .getMap()
-            .get(fieldName)
-            .getDescribe();
+        try {
+            return Schema.getGlobalDescribe()
+                .get(objName)
+                .getDescribe()
+                .fields
+                .getMap()
+                .get(fieldName)
+                .getDescribe();
+        } catch (Exception e) {
+            throw new FieldUtilityClassException(
+                'invalid Parameters Object Name: ' + objName + ', Field Name:' + fieldName);
+        }
     }
 
     public static Map<Object, List<Map<String, String>>> getFieldDependenciesMaps(
@@ -115,4 +120,6 @@ public with sharing class FieldUtilityClass {
                 'label' => currDependentValue.getLabel()
             });
     }
+
+    private class FieldUtilityClassException extends Exception {}
 }
