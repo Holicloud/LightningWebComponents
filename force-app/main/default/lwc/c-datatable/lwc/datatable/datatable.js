@@ -40,6 +40,7 @@ export default class Datatable extends LightningElement {
       { fieldName: 'Level2__c', editable: true },
       { fieldName: 'Level3__c', editable: true },
       { fieldName: 'Level4__c', editable: true },
+      { fieldName: 'RecordTypeId', editable: true },
       { fieldName: 'RecordType.Name', label: 'Recordtype Name' },
       // { fieldName: 'Currency__c', editable: true },
       // { fieldName: 'Date__c', editable: true },

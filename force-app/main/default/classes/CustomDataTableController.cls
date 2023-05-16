@@ -38,9 +38,14 @@ public with sharing class CustomDataTableController {
                     describe = FieldUtilityClass.getFieldDescribe(objectAPIName, fieldApiName);
                     describeAsMap = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(describe));
                     describeAsMap.put('name', describe.getName());
+                    if (describe.getController() != null) {
+                        describeAsMap.put('controllerLabel', describe.getController().getDescribe().getLabel());
+                    }
                 }
 
                 describeAsMap.put('accesible', describe.isAccessible());
+
+                
                 fieldDescribeByApiName.put(fieldApiName, describeAsMap);
             }
 

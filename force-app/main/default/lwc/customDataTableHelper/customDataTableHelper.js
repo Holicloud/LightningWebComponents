@@ -62,7 +62,12 @@ async function formatColumns({ columns, objectApiName }){
 }
 
 function setTypeAttributes(column, fieldDescribe) {
-    const { type, scale, controllerName, picklistValues } = fieldDescribe;
+    const { type, scale, controllerName, controllerLabel, picklistValues } = fieldDescribe;
+    
+    if (controllerName) {
+        column.label += ` (ControlledBy: ${controllerLabel})`;
+    }
+
     switch (type) {
         case 'datetime':
             column.typeAttributes = {
