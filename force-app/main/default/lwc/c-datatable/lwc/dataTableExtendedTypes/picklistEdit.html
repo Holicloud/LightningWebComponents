@@ -1,13 +1,10 @@
 <template>
   <c-datatable-picklist-edit-cell
     data-inputable="true"
-    field-api-name={columnDef.fieldName}
-    object-api-name={typeAttributes.objectApiName}
-    options={typeAttributes.options}
+    parent-name={typeAttributes.parentName}
+    field-name={typeAttributes.fieldName}
     placeholder={typeAttributes.placeholder}
-    record-type-id={typeAttributes.recordTypeId}
-    controller-field-api-name={typeAttributes.controllerFieldApiName}
-    value={editedValue}
     row-id={typeAttributes.rowId}
+    value={editedValue}
   ></c-datatable-picklist-edit-cell>
 </template>

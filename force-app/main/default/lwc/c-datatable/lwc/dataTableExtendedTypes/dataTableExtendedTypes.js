@@ -36,12 +36,12 @@ export default class DataTableExtendedTypes extends LightningDatatable {
             editTemplate: picklistEdit,
             standardCellLayout: true,
             typeAttributes: [
-                'options',
+                'recordTypeInfos',
                 'placeholder',
-                'recordTypeId',
-                'objectApiName',
-                'controllerFieldApiName',
-                'rowId'
+                'parentName',
+                'rowId',
+                'fieldName',
+                'options'
             ],
         }
     };

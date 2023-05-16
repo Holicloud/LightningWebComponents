@@ -10,18 +10,31 @@ import { publish, MessageContext, } from 'lightning/messageService'
 import dataTableMessageChannel from '@salesforce/messageChannel/DataTable__c';
 const DELAY = 800;
 export default class Datatable extends LightningElement {
-  @track state = {
+  // public props
+
+  @api defaultSortDirection = 'asc';
+  
+
+  // wire prop
+
+  @wire(MessageContext)
+  messageContext;
+  
+  // private props
+
+  @track _state = {
+    isLoading: false,
+    enableInfiniteLoading: false,
+    hideCheckBoxColumn: false,
+    limitOfRecords: 50,
+    loadMoreOffset: 20,
+    maxColumnWidth: 1000,
+    minColumnWidth: 50,
     objectApiName : 'DataTest__c',
     records : [],
-    limitOfRecords: 50,
-    sortedBy: 'Currency__c',
-    sortDirection: 'asc',
-    hideCheckBoxColumn: false,
     recordTypeId: null,
-    enableInfiniteLoading: false,
-    loadMoreOffset: 20,
-    minColumnWidth: 50,
-    maxColumnWidth: 1000,
+    sortDirection: 'asc',
+    sortedBy: 'Currency__c',
     columns : [
       { fieldName: 'Level1__c', editable: true },
       { fieldName: 'Level2__c', editable: true },
@@ -45,96 +58,96 @@ export default class Datatable extends LightningElement {
     ]
   };
 
-  subscription;
+  @track _draftValues = [];
 
-  totalNumberOfRecords;
-  loadMoreStatus;
-  staticRecords;
+  _currentRecordType = null;
+  _delayTimeout;
+  _loadMoreStatus;
+  _queryOffSet = 0;
+  _recordTypeInfos = [];
+  _showSpinner = true;
+  _staticRecords;
+  _totalNumberOfRecords;
 
-  @api defaultSortDirection = 'asc';
-
-  showSpinner = true;
-  queryOffSet = 0;
+  // public getters-setters
 
   @api
   get sortedBy() {
-    return this.state.sortedBy;
+    return this._state.sortedBy;
   }
 
   set sortedBy(value) {
-    this.state.sortedBy = value;
+    this._state.sortedBy = value;
   }
-
-  @api isLoading = false;
 
   @api
   get sortDirection() {
-    return this.state.sortDirection;
+    return this._state.sortDirection;
   }
 
   set sortDirection(value) {
-    this.state.sortDirection = value;
+    this._state.sortDirection = value;
   }
 
   @api
   get enableInfiniteLoading() {
-    return this.state.enableInfiniteLoading;
+    return this._state.enableInfiniteLoading;
   }
 
   set enableInfiniteLoading(value) {
-    this.state.enableInfiniteLoading = value;
+    this._state.enableInfiniteLoading = value;
   }
 
   @api
   get loadMoreOffset() {
-    return this.state.loadMoreOffset;
+    return this._state.loadMoreOffset;
   }
 
   set loadMoreOffset(value) {
-    this.state.loadMoreOffset = value;
+    this._state.loadMoreOffset = value;
   }
 
   @api
   get minColumnWidth() {
-    return this.state.minColumnWidth;
+    return this._state.minColumnWidth;
   }
 
   set minColumnWidth(value) {
-    this.state.minColumnWidth = value;
+    this._state.minColumnWidth = value;
   }
 
   @api
   get maxColumnWidth() {
-    return this.state.maxColumnWidth;
+    return this._state.maxColumnWidth;
   }
 
   set maxColumnWidth(value) {
-    this.state.maxColumnWidth = value;
+    this._state.maxColumnWidth = value;
   }
 
   @api
   get hideCheckBoxColumn() {
-    return this.state.hideCheckBoxColumn;
+    return this._state.hideCheckBoxColumn;
   }
 
   set hideCheckBoxColumn(value) {
-    this.state.hideCheckBoxColumn = value;
+    this._state.hideCheckBoxColumn = value;
   }
 
   @api
   get objectApiName() {
-    return this.state.objectApiName;
+    return this._state.objectApiName;
   }
 
   set objectApiName(value) {
     this._wiredObjectApiName.objectApiName = value;
-    this.state.objectApiName = value;
-    // this.formatColumns();
+    this._state.objectApiName = value;
+    // this._formatColumns();
   }
 
   @api
   get columns() {
-    return this.state.columns;
+    return this._state.columns;
   }
 
   set columns(value) {
@@ -143,33 +156,34 @@ export default class Datatable extends LightningElement {
       return;
     }
 
-    this.state.columns = value;
-    // this.formatColumns();
+    this._state.columns = value;
+    // this._formatColumns();
   }
 
   @api
   get limitOfRecords() {
-    return this.state.limitOfRecords;
+    return this._state.limitOfRecords;
   }
 
   set limitOfRecords(value) {
-    this.state.limitOfRecords = value;
+    this._state.limitOfRecords = value;
   }
 
-  async formatColumns() {
-    const { columns, objectApiName } = this.state;
-    if (columns && objectApiName && !this.formatColumnsHasRun)  {
-      this.state.columns = await formatColumns({ objectApiName, columns });
-      this.formatColumnsHasRun = true;
-    } else {
-      this.formatColumnsHasRun = false;
-    }
+  @api
+  get isLoading() {
+    return this._state.isLoading;
   }
 
-  get fields() {
+  set isLoading(value) {
+    this._state.isLoading = value;
+  }
+
+  // private getters-setters
+
+  get _fields() {
     let result = new Set();
 
-    for (const { apexFieldsReferenced } of this.state.columns) {
+    for (const { apexFieldsReferenced } of this._state.columns) {
       for (const field of apexFieldsReferenced) {
         result.add(field);
       }
@@ -178,62 +192,50 @@ export default class Datatable extends LightningElement {
     return [...result];
   }
 
-  async showRecords() {
-    // this.resetDraftedValues();
-    const { limitOfRecords, objectApiName, sortedBy, sortDirection } = this.state;
-    this.showSpinner = true;
-    try {
-      const result = await getRecords({ queryParameters : JSON.stringify({
-          limitOfRecords,
-          objectApiName: objectApiName,
-          fields : this.fields,
-          whereClause: `Id IN ('a018b00000yi4X6AAI',  'a018b00000yi4VeAAI') `,
-          sortedBy,
-          sortDirection
-      })});
-  
-      if (result) {
-        this.totalNumberOfRecords = result.totalRecordCount;
-        const records = flattenRecords(cloneArray(result.records));
-        this.staticRecords = [...records]; 
-        this.state.records = records;
-      }
-      
-    } catch (error) {
-      showToastApexError.call(this, error);
-      this.state.records = null;
-      this.staticRecords = null; 
+  // public methods
+  // wire methods
+
+  @wire(getObjectInfo, { objectApiName: '$_state.objectApiName' })
+  wiredObjectInfo({ data, error }){
+    if(data) {
+      this._recordTypeInfos = JSON.parse(JSON.stringify(data.recordTypeInfos));
+      this._currentRecordType = Object.keys(data.recordTypeInfos)[0];
+    } else if (error) {
+      this._recordTypeInfos = null;
+      this._currentRecordType = null;
     }
-
-    this.showSpinner = false
   }
 
-  async connectedCallback() {
-    await this.init();
-    await this.formatColumns();
-    await this.showRecords();
+  @wire(getPicklistValuesByRecordType, { objectApiName: '$_state.objectApiName', recordTypeId: '$_currentRecordType' })
+  async wiredData({ error, data }) {
+    if (data) {
+      this._recordTypeInfos[this._currentRecordType].picklistFieldValues = data.picklistFieldValues;
+      const nextRecordType = Object.values(this._recordTypeInfos)
+        .find(e => !e.picklistFieldValues)?.recordTypeId;
+      if (nextRecordType) {
+        this._currentRecordType = nextRecordType;
+      }
+    } else if (error) {
+      console.error('Error:', error);
+    }
   }
 
-  init() {
-    // if (!this.state.hideCheckBoxColumn && !this.state.recordTypeId) {
-    //   this.state.hideCheckBoxColumn = true;
-    // }
-  }
+  // event handlers
 
-  handleOnSort(event) {
-    window.clearTimeout(this.delayTimeout);
+  _handleSort(event) {
+    window.clearTimeout(this._delayTimeout);
 
-    this.showSpinner = true;
+    this._showSpinner = true;
 
-    this.delayTimeout = setTimeout(() => {
+    this._delayTimeout = setTimeout(() => {
       const { fieldName, sortDirection } = event.detail;
-      this.state.sortedBy = fieldName;
-      this.state.sortDirection = sortDirection;
-      this.showRecords();
+      this._state.sortedBy = fieldName;
+      this._state.sortDirection = sortDirection;
+      this._showRecords();
     }, DELAY);
   }
 
-  handleRowAction(event) {
+  _handleRowAction(event) {
     const theEvent = new CustomEvent('rowaction', { detail: event.detail });
     this.dispatchEvent(theEvent);
   }
@@ -242,137 +244,250 @@ export default class Datatable extends LightningElement {
      * query more records based uppon the limit records and the offset of records that are already being shown
      * @param  {any} event - event.target of the datatable scroll
      */
-  loadMoreData(event) {
+  _handleLoadMoreData(event) {
     let infiniteLoading = event.target.enableInfiniteLoading;
     let isLoading = event.target.isLoading;
-    window.clearTimeout(this.delayTimeout);
+    window.clearTimeout(this._delayTimeout);
 
-    this.delayTimeout = setTimeout(async () => {
+    this._delayTimeout = setTimeout(async () => {
         
-        this.loadMoreStatus = 'Loading';
-        this.isLoading = true;
+        this._loadMoreStatus = 'Loading';
+        this._state.isLoading = true;
         isLoading = true;
 
-        if (this.state.records.length >= this.totalNumberOfRecords) {
-          this.loadMoreStatus = 'No more data to load';
+        if (this._state.records.length >= this._totalNumberOfRecords) {
+          this._loadMoreStatus = 'No more data to load';
           infiniteLoading = false;
           isLoading = false;
-          this.isLoading = false;
+          this._state.isLoading = false;
           return;
         }
 
-        const { limitOfRecords, objectApiName, sortedBy, sortDirection, records } = this.state;
+        const { limitOfRecords, objectApiName, sortedBy, sortDirection, records } = this._state;
         
-        const previousOffSet = this.queryOffSet;
+        const previousOffSet = this._queryOffSet;
         const previousRecords = [...records];
-        const previousStaticRecords = [...this.staticRecords];
+        const previous_StaticRecords = [...this._staticRecords];
 
-        this.queryOffSet = this.queryOffSet + limitOfRecords;
+        this._queryOffSet = this._queryOffSet + limitOfRecords;
 
         try {
           const result = await getRecords({ queryParameters : JSON.stringify({
             limitOfRecords,
             objectApiName: objectApiName,
-            fields : this.fields,
-            offSet : this.queryOffSet,
+            fields : this._fields,
+            offSet : this._queryOffSet,
             sortedBy,
             sortDirection
           })});
       
           if (result) {
             const newData = flattenRecords(cloneArray(result.records));
-            this.state.records = this.state.records.concat(newData);
-            this.staticRecords = this.staticRecords.concat(newData);
-            this.loadMoreStatus = '';
-            this.totalNumberOfRecords = result.totalRecordCount;
+            this._state.records = this._state.records.concat(newData);
+            this._staticRecords = this._staticRecords.concat(newData);
+            this._loadMoreStatus = '';
+            this._totalNumberOfRecords = result.totalRecordCount;
           }
         } catch (error) {
-          this.loadMoreStatus = '';
+          this._loadMoreStatus = '';
           showToastApexError.call(this, error);
-          this.state.records = previousStaticRecords;
-          this.staticRecords = previousRecords;
-          this.queryOffSet = previousOffSet;
+          this._state.records = previous_StaticRecords;
+          this._staticRecords = previousRecords;
+          this._queryOffSet = previousOffSet;
         }
 
         isLoading = false;
-        this.isLoading = false;
+        this._state.isLoading = false;
     }, DELAY);
   }
 
-  handleSave(event) {
-    debugger;
-    this.draftValues = event.detail.draftValues;
+  _handleSave(event) {
+    // debugger;
+    // this.draftValues = [{Level1__c: false, Id: 'a018b00000yi4VeAAI'}];
+    // this.draftValues = event.detail.draftValues;
   }
 
-  recordTypeIds;
-  currentRecordType;
-  recordTypeFetchIndex = 0;
-  picklistValuesByRecordType = {};
-
-  @wire(getObjectInfo, { objectApiName: '$state.objectApiName' })
-  wiredObjectInfo({ data, error }){
-    if(data) {
-      this.recordTypeIds = Object.getOwnPropertyNames(data.recordTypeInfos);
-      this.currentRecordType = this.recordTypeIds[this.recordTypeFetchIndex];
-    } else if (error) {
-      this.recordTypeIds = null;
-    }
-  }
-
-  @wire(getPicklistValuesByRecordType, { objectApiName: '$state.objectApiName', recordTypeId: '$currentRecordType' })
-  wiredData({ error, data }) {
-    if (data) {
-      this.picklistValuesByRecordType[this.currentRecordType] = data.picklistFieldValues;
-
-      if (this.recordTypeFetchIndex < this.recordTypeIds.length) {
-        this.recordTypeFetchIndex++;
-        this.currentRecordType = this.recordTypeIds[this.recordTypeFetchIndex];
-      }
-    } else if (error) {
-      console.error('Error:', error);
-    }
-  }
-
-  @wire(MessageContext)
-  messageContext;
-
-  handleValueRequest(event) {
+  _handleRowInfoRequest(event) {
     event.stopPropagation();
-  // if (action === 'valueRequest') {
 
-    const {fieldApiName, controllerFieldApiName, rowId, recordTypeId } = event.detail;
+    const { rowId, fieldName, parentName } = event.detail;
 
-    const valueInDrafted = this.template.querySelector('c-data-table-extended-types')
-      .draftValues.find(e => e.Id == rowId)?.[fieldApiName];
-    const valueInRecords = this.state.records.find(e => e.Id == rowId)?.[fieldApiName];
+    const rowInfo = this._getRow({ rowId });
 
-    let value = valueInDrafted || valueInRecords;
+    let { values, controllerValues } = {...this._recordTypeInfos[
+        this._getFieldValue({ field : 'RecordTypeId', rowInfo })
+    ].picklistFieldValues[fieldName]};
+    
+    if (!values) return;
 
-    // controller field is checkbox
-    if (typeof valueInDrafted === 'boolean') {
-      value = valueInDrafted;
-    } else if (typeof valueInRecords === 'boolean') {
-      value = valueInRecords;
+    if (parentName) {
+      const parentValue = this._getFieldValue({ field : parentName, rowInfo });
+      values = values.filter(opt => opt.validFor.includes(controllerValues[parentValue]));
     }
 
     publish(
       this.messageContext,
       dataTableMessageChannel,
-      {
-        action: 'valueResponse' ,
-        detail: {
-          rowId,
-          value,
-          fieldDependency: this.picklistValuesByRecordType[recordTypeId][controllerFieldApiName]
-        }
-      }
+      { action: 'rowinforesponse' , detail: { rowId, values } }
     );
   }
 
+  _handleChange(event) {
+    event.stopPropagation();
 
-  // @track draftValues = [];
-  handleChange(event) {
-    debugger
-    // this.draftValues = JSON.parse(JSON.stringify(event.detail.draftValues));
+    const allDrafted = this.template.querySelector('c-data-table-extended-types')
+      .draftValues;
+
+    for (const cellChangeDraft of event.detail.draftValues) {
+
+      const [ field ] = Object.getOwnPropertyNames(cellChangeDraft);
+      
+      const { type, typeAttributes : { parentName, isChild } } =
+        this._state.columns.find(e => e.fieldName === field);
+
+      const rowId = cellChangeDraft.Id;
+      
+      if (!['picklist', 'boolean', 'multi-picklist'].includes(type)) continue;
+
+      const rowInfo = this._getRow({ rowId });
+
+      const recordTypeInfo = this._recordTypeInfos[
+        this._getFieldValue({ field : 'RecordTypeId', rowInfo })];
+
+      const input = { allDrafted, field, recordTypeInfo, rowId, rowInfo };
+
+      if (isChild) {
+        input.parentValue = this._getFieldValue({ field : parentName, rowInfo });
+      }
+
+      this._updateDependencies(input);
+    }
+
+    this._draftValues = [...allDrafted];
+  }
+
+  // private methods
+
+  async _formatColumns() {
+    const { columns, objectApiName } = this._state;
+    if (columns && objectApiName && !this.formatColumnsHasRun)  {
+      this._state.columns = await formatColumns({ objectApiName, columns });
+      this.formatColumnsHasRun = true;
+    } else {
+      this.formatColumnsHasRun = false;
+    }
+  }
+
+  async _showRecords() {
+    // this.resetDraftedValues();
+    const { limitOfRecords, objectApiName, sortedBy, sortDirection } = this._state;
+    this._showSpinner = true;
+    try {
+      const result = await getRecords({ queryParameters : JSON.stringify({
+          limitOfRecords,
+          objectApiName: objectApiName,
+          fields : this._fields,
+          // whereClause: `Id IN ('a018b00000yi4X6AAI',  'a018b00000yi4VeAAI') `,
+          sortedBy,
+          sortDirection
+      })});
+  
+      if (result) {
+        this._totalNumberOfRecords = result.totalRecordCount;
+        const records = flattenRecords(cloneArray(result.records));
+        this._staticRecords = [...records]; 
+        this._state.records = records;
+      }
+      
+    } catch (error) {
+      showToastApexError.call(this, error);
+      this._state.records = null;
+      this._staticRecords = null; 
+    }
+
+    this._showSpinner = false
+  }
+
+  _getRow({ rowId }) {
+    const drafted = this.template.querySelector('c-data-table-extended-types')
+      .draftValues
+      .find(e => e.Id == rowId);
+
+    const record = this._state.records.find(e => e.Id == rowId);
+
+    return { drafted , record };
+  }
+
+  _updateDependencies({
+    allDrafted,
+    clearChild = false,
+    field,
+    parentValue,
+    recordTypeInfo,
+    rowId,
+    rowInfo,
+  }) {
+    const { type, typeAttributes: { isChild, isParent, childName } } =
+      this._state.columns.find(e => e.fieldName === field);
+    
+    const value = this._getFieldValue({ field : field, rowInfo });
+
+    if (type === 'picklist') {
+
+      const existingDraft = allDrafted.find(d => d.Id === rowId);
+
+      if (clearChild) {
+        this._pushToDraft({ allDrafted, existingDraft, field, rowId });
+      } else if (value !== undefined) {
+
+        let { values, controllerValues } = recordTypeInfo.picklistFieldValues[field];
+
+        if (isChild) {
+          values = values.filter(opt => opt.validFor.includes(controllerValues[parentValue]));
+        }
+
+        if (!values.find(opt => opt.value === value)) {
+          clearChild = true;
+          this._pushToDraft({ allDrafted, existingDraft, field, rowId });
+        }
+      }
+    }
+
+    if (isParent && (value !== undefined || clearChild)) {
+      this._updateDependencies({
+        rowId,
+        allDrafted,
+        field: childName,
+        parentValue: value,
+        recordTypeInfo,
+        rowInfo,
+        clearChild
+      });
+    }
+  }
+
+  _pushToDraft({ allDrafted, existingDraft, field, rowId }) {
+    if (!existingDraft) {
+      allDrafted.push({ [field] : '', Id : rowId })
+    } else {
+      existingDraft[field] = '';
+    }
+  }
+
+  _getFieldValue({ field, rowInfo }) {
+
+    const valueInDrafted = rowInfo.drafted?.[field];
+    if (typeof valueInDrafted === 'boolean' || valueInDrafted) {
+      return valueInDrafted;
+    }
+
+    return rowInfo.record?.[field];
+  }
+
+  // hooks
+
+  async connectedCallback() {
+    await this._formatColumns();
+    await this._showRecords();
   }
 }

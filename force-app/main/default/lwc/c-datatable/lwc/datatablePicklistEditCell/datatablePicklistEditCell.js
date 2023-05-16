@@ -6,80 +6,25 @@ export default class DatatablePicklistEditCell extends LightningElement {
 
   // public properties
 
-  @api rowId;
-
+  @api parentName;
   @api placeholder = 'Select an option';
-
-  @api options = [];
-
-  @api recordTypeId;
-
-  @api controllerFieldApiName;
-
+  @api rowId;
+  @api fieldName;
   // private properties
 
-  _objectApiName = null;
-
-  _value = null;
-
-  _fieldApiName = null;
-
-  _wireFieldApiNameObject = {};
-
-  _subscription = null;
-
   _disabled = true;
-
-  _controllingFieldValue;
-
-  _fieldDependency = null;
+  _subscription = null;
+  _value = '';
+  _options = [];
 
   // public getters-setters
-
-  @api
-  get fieldApiName() {
-    return this._fieldApiName;
-  }
-
-  set fieldApiName(value) {
-    this._fieldApiName = value;
-  }
-
-  @api
-  get objectApiName() {
-    return this._objectApiName;
-  }
-
-  set objectApiName(value) {
-    this._objectApiName = value;
-  }
 
   @api
   get value() {
     return this._value;
   }
-
   set value(value) {
     this._value = value;
-  }
-
-  // private getters-setters
-
-  get actualOptions() {
-    const {values, controllerValues} = this._fieldDependency;
-    this._disabled = false;
-    if (!this.recordTypeId) {
-      return JSON.parse(this.options);
-    } else if (this.controllerFieldApiName && values) {
-      const key = controllerValues[this._controllingFieldValue];
-      const result = values.filter(opt => opt.validFor.includes(key));
-      return result;
-    } else if (values) {
-      return values;
-    }
-
-    this._disabled = true;
-    return [];
   }
 
   // public methods
@@ -106,7 +51,7 @@ export default class DatatablePicklistEditCell extends LightningElement {
 
   // private methods
 
-  handleChange(e) {
+  _handleChange(e) {
     e.stopPropagation();
 
     this._value = e.detail.value;
@@ -120,7 +65,7 @@ export default class DatatablePicklistEditCell extends LightningElement {
     }));
   }
 
-  handleFocus(e) {
+  _handleFocus(e) {
     e.stopPropagation();
     this.dispatchEvent(new CustomEvent('focus', {
         bubbles: true,
@@ -128,7 +73,7 @@ export default class DatatablePicklistEditCell extends LightningElement {
     }));
   }
 
-  handleBlur(e) {
+  _handleBlur(e) {
     e.stopPropagation();
     this.dispatchEvent(new CustomEvent('blur', {
         bubbles: true,
@@ -136,50 +81,46 @@ export default class DatatablePicklistEditCell extends LightningElement {
     }));
   }
 
-  subscribeToMessageChannel() {
+  _subscribeToMessageChannel() {
     if (!this._subscription) {
         this._subscription = subscribe(
             this.messageContext,
             dataTableMessageChannel,
-            (message) => this.handleMessage(message),
+            (message) => this._handleMessage(message),
             { scope: APPLICATION_SCOPE }
         );
     }
   }
 
-  unsubscribeToMessageChannel() {
+  _unsubscribeToMessageChannel() {
     unsubscribe(this._subscription);
     this._subscription = null;
   }
 
-
-  handleMessage({ action, detail }) {
-    if (action === 'valueResponse') {
-      if (this.rowId === detail.rowId) {
-        this._fieldDependency = detail.fieldDependency;
-        this._controllingFieldValue = detail.value;
-      }
+  _handleMessage({ action, detail }) {
+    const { rowId, values } = detail;
+    if (action === 'rowinforesponse' && this.rowId === rowId) {
+      this._options = values;
+      this._disabled = false;
     }
   }
 
   // hooks
 
   connectedCallback() {
-    this.subscribeToMessageChannel();
-    const detail = {
-      rowId: this.rowId,
-      controllerFieldApiName: this._fieldApiName,
-      fieldApiName: this.controllerFieldApiName,
-      recordTypeId : this.recordTypeId
-    };
-    this.dispatchEvent(new CustomEvent('valuerequest', {
-        detail,
+    this._subscribeToMessageChannel();
+    this.dispatchEvent(new CustomEvent('rowinforequest', {
+        detail : {
+          rowId: this.rowId,
+          fieldName : this.fieldName,
+          parentName : this.parentName
+        },
         bubbles: true,
         composed: true
     }));
   }
 
   disconnectedCallback() {
-    this.unsubscribeToMessageChannel();
+    this._unsubscribeToMessageChannel();
   }
 }

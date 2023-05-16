@@ -37,72 +37,113 @@ async function formatColumns({ columns, objectApiName }){
             Object.keys(fieldInformation).find(e => e.equalIgnoreCase(column.fieldName))
         ];
 
-        if (!fieldDescribe || !fieldDescribe.accesible) continue;
+        const { accesible, updateable, sortable, name, label, type } = fieldDescribe;
 
-        column.editable = column.editable && fieldDescribe.updateable;
-        column.sortable = column.sortable && fieldDescribe.sortable;
-        column.fieldName = fieldDescribe.name;
+        if (!fieldDescribe || !accesible) continue;
 
-        column.label = column.label || fieldDescribe.label;
+        column.editable = column.editable && updateable;
+        column.sortable = column.sortable && sortable;
+        column.fieldName = name;
+
+        column.label = column.label || label;
 
         if (column.type !== 'button' && !column.override) {
-            column.type = TYPES[fieldDescribe.type] || fieldDescribe.type;
 
-            if (fieldDescribe.type === 'datetime') {
-                column.typeAttributes = {
-                    year: "numeric",
-                    month: "numeric",
-                    day: "numeric",
-                    hour: "numeric",
-                    minute: "2-digit",
-                    timeZone: TIME_ZONE
-                }
-            } else if (fieldDescribe.type === 'currency') {
-                column.typeAttributes = {
-                    currencyDisplayAs: "symbol",
-                    step: 1
-                }
-            } else if (fieldDescribe.type === 'date') {
-                column.typeAttributes = {
-                    year: "numeric",
-                    month: "numeric",
-                    day: "numeric",
-                    timeZone: "UTC"
-                }
-            } else if (fieldDescribe.type === 'integer' || fieldDescribe.type === 'double') {
-                column.typeAttributes = {
-                    minimumFractionDigits: fieldDescribe.scale,
-                    maximumFractionDigits: fieldDescribe.scale
-                }
-            } else if (fieldDescribe.type === 'percent') {
-                column.typeAttributes = {
-                    minimumFractionDigits: fieldDescribe.scale,
-                    maximumFractionDigits: fieldDescribe.scale,
-                    formatStyle: "percent-fixed",
-                    step: PERCENT_STEP
-                };
-            } else if (fieldDescribe.type === 'multipicklist') {
-                column.typeAttributes = {
-                    options: JSON.stringify(fieldDescribe.picklistValues)
-                }
-            } else if (fieldDescribe.type === 'picklist') {
-                column.typeAttributes = {
-                    options: JSON.stringify(fieldDescribe.picklistValues),
-                    placeholder: 'Select an Option',
-                    recordTypeId : { fieldName: 'RecordTypeId' },
-                    objectApiName,
-                    controllerFieldApiName : fieldDescribe.controllerName,
-                    rowId : { fieldName: 'Id' }
-                }
-            }
+            column.type = TYPES[type] || type;
+            setTypeAttributes(column, fieldDescribe);
         }
 
         result.push(formatfieldNamesProperties(column, column.fieldName));
     }
 
+    setParenting(result);
+
     return result;
 }
 
+function setTypeAttributes(column, fieldDescribe) {
+    const { type, scale, controllerName, picklistValues } = fieldDescribe;
+    switch (type) {
+        case 'datetime':
+            column.typeAttributes = {
+                year: "numeric",
+                month: "numeric",
+                day: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+                timeZone: TIME_ZONE
+            }
+            break;
+        case 'currency':
+            column.typeAttributes = {
+                currencyDisplayAs: "symbol",
+                step: 1
+            }
+            break;
+        case 'date':
+            column.typeAttributes = {
+                year: "numeric",
+                month: "numeric",
+                day: "numeric",
+                timeZone: "UTC"
+            }
+            break;
+        case 'integer':
+            column.typeAttributes = {
+                minimumFractionDigits: scale,
+                maximumFractionDigits: scale
+            }
+            break;
+        case 'double':
+            column.typeAttributes = {
+                minimumFractionDigits: scale,
+                maximumFractionDigits: scale
+            }
+            break;
+        case 'percent':
+            column.typeAttributes = {
+                minimumFractionDigits: scale,
+                maximumFractionDigits: scale,
+                formatStyle: "percent-fixed",
+                step: PERCENT_STEP
+            };
+            break;
+        case 'picklist':
+            column.typeAttributes = {
+                placeholder: 'Select an Option',
+                parentName : controllerName,
+                isChild: !!controllerName,
+                rowId : { fieldName: 'Id' },
+                fieldName: column.fieldName,
+                options: JSON.stringify(picklistValues)
+            }
+            break;
+        case 'multipicklist':
+            column.typeAttributes = {
+                options: JSON.stringify(picklistValues),
+                parentName : controllerName,
+                isChild: !!controllerName,
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+
+function setParenting(columns) {
+    for (const column of columns) {
+        if (!column.override && ['picklist', 'boolean'].includes(column.type)) {
+
+            const child = columns
+                .find(c => c.typeAttributes?.parentName === column.fieldName);
+
+            column.typeAttributes = column.typeAttributes || {};
+            column.typeAttributes.childName = child?.fieldName;
+            column.typeAttributes.isParent = !!child;
+        }
+    }
+}
 
 /**
  * @description inner fieldName has to be flattened as well so it can match to a field properly
@@ -131,4 +172,4 @@ function formatfieldNamesProperties(object, topLevelFieldName, apexApiNames = ne
 }
 
 
-export {  formatColumns } 
+export { formatColumns } 
