@@ -9,6 +9,7 @@ const TYPES = {
     'percent' : 'percent-fixed',
     'date' : 'date-local',
     'multipicklist' : 'multi-picklist',
+    'reference' : 'text'
 }
 
 const PERCENT_STEP = `.${Array.apply(null, {length: 17}).map(() => '0').join('')}1`;

@@ -343,12 +343,11 @@ export default class Datatable extends LightningElement {
 
       const [ field ] = Object.getOwnPropertyNames(cellChangeDraft);
       
-      const { type, typeAttributes : { parentName, isChild } } =
-        this._state.columns.find(e => e.fieldName === field);
+      const column = this._state.columns.find(e => e.fieldName === field);
 
       const rowId = cellChangeDraft.Id;
       
-      if (!['picklist', 'boolean', 'multi-picklist'].includes(type)) continue;
+      if (!['picklist', 'boolean', 'multi-picklist'].includes(column.type)) continue;
 
       const rowInfo = this._getRow({ rowId });
 
@@ -357,8 +356,10 @@ export default class Datatable extends LightningElement {
 
       const input = { allDrafted, field, recordTypeInfo, rowId, rowInfo };
 
-      if (isChild) {
-        input.parentValue = this._getFieldValue({ field : parentName, rowInfo });
+      if (column.typeAttributes?.isChild) {
+        input.parentValue = this._getFieldValue({
+          field : column.typeAttributes.parentName,
+          rowInfo });
       }
 
       this._updateDependencies(input);
