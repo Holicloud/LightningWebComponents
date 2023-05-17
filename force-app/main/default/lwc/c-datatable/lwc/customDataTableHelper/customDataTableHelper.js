@@ -8,7 +8,6 @@ const TYPES = {
     'datetime': 'date',
     'percent' : 'percent-fixed',
     'date' : 'date-local',
-    'multipicklist' : 'multi-picklist',
     'reference' : 'text'
 }
 
@@ -129,6 +128,8 @@ function setTypeAttributes(column, fieldDescribe) {
             column.typeAttributes = {
                 options: JSON.stringify(picklistValues),
                 parentName : controllerName,
+                fieldName: column.fieldName,
+                rowId : { fieldName: 'Id' },
                 isChild: !!controllerName,
             }
             break;

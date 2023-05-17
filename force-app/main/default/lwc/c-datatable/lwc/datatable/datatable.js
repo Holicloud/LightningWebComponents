@@ -36,13 +36,14 @@ export default class Datatable extends LightningElement {
     records : [],
     recordTypeId: null,
     sortDirection: 'asc',
-    sortedBy: 'Currency__c',
+    sortedBy: 'Level2__c',
     columns : [
       { fieldName: 'Level1__c', editable: true },
+      { fieldName: 'test__c', editable: true },
       { fieldName: 'Level2__c', editable: true },
       { fieldName: 'Lvl2B__c', editable: true },
       { fieldName: 'Level3__c', editable: true },
-      // { fieldName: 'Level4__c', editable: true },
+      { fieldName: 'Level4__c', editable: true },
       // { fieldName: 'RecordTypeId', editable: true },
       // { fieldName: 'RecordType.Name', label: 'Recordtype Name' },
       // { fieldName: 'Currency__c', editable: true },
@@ -50,7 +51,6 @@ export default class Datatable extends LightningElement {
       // { fieldName: 'DateTime__c', editable: true },
       // { fieldName: 'Email__c', editable: true },
       // { fieldName: 'Lookup__c', editable: true },
-      // { fieldName: 'MultiSelectPicklist__c', editable: true },
       // { fieldName: 'Number__c', editable: true },
       // { label: 'Owner', fieldName: 'Owner.Name', editable: true },
       // { fieldName: 'Percent__c', editable: true },
@@ -352,7 +352,7 @@ export default class Datatable extends LightningElement {
       const rowInfo = this._getRow({ rowId });
       const recordTypeInfo = this._recordTypeInfos[this._getFieldValue({ field : RECORD_TYPE_ID_FIELD, rowInfo })];
       
-      if (['picklist', 'boolean', 'multi-picklist'].includes(type)) {
+      if (['picklist', 'boolean', 'multipicklist'].includes(type)) {
         this._updateDependencies({
           allDrafted,
           field,
@@ -361,14 +361,11 @@ export default class Datatable extends LightningElement {
           rowInfo,
           parentValue: typeAttributes?.isChild && this._getFieldValue({field : typeAttributes.parentName, rowInfo })
         });
-      } else if (field === RECORD_TYPE_ID_FIELD) {
-
       }
     }
 
     this._draftValues = [...allDrafted];
   }
-
   // private methods
 
   async _formatColumns() {
@@ -395,7 +392,7 @@ export default class Datatable extends LightningElement {
           limitOfRecords,
           objectApiName: objectApiName,
           fields : this._fields,
-          // whereClause: `Id IN ('a018b00000yi4X6AAI',  'a018b00000yi4VeAAI') `,
+          whereClause: `Level2__c != null`,
           sortedBy,
           sortDirection
       })});
@@ -438,23 +435,29 @@ export default class Datatable extends LightningElement {
     const { type, typeAttributes: { isChild, isParent, childs } } =
       this._state.columns.find(e => e.fieldName === field);
     
-    const value = this._getFieldValue({ field : field, rowInfo });
+    const value = this._getFieldValue({ field, rowInfo });
 
-    if (type === 'picklist') {
+    if (['picklist', 'multipicklist'].includes(type)) {
 
-      const existingDraft = allDrafted.find(d => d.Id === rowId);
+      const existingDraft = allDrafted.find(({ Id }) => Id === rowId);
 
       if (clearChild) {
         this._pushToDraft({ allDrafted, existingDraft, field, rowId });
       } else if (value !== undefined) {
 
         let { values, controllerValues } = recordTypeInfo.picklistFieldValues[field];
-
+        
         if (isChild) {
-          values = values.filter(opt => opt.validFor.includes(controllerValues[parentValue]));
+          values = values
+            .filter(opt => opt.validFor.includes(controllerValues[parentValue]));
         }
 
-        if (!values.find(opt => opt.value === value)) {
+        const validOptions = values.map(opt => opt.value);
+
+        const valid = value.split(';')
+          .every(selected => validOptions.includes(selected));
+        
+        if (!valid) {
           clearChild = true;
           this._pushToDraft({ allDrafted, existingDraft, field, rowId });
         }

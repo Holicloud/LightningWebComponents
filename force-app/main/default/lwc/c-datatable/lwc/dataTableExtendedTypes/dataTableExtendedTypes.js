@@ -1,5 +1,6 @@
 import LightningDatatable from 'lightning/datatable';
-import multiPicklist from './multiPicklist.html';
+import multipicklist from './multipicklist.html';
+import multipicklistEdit from './multipicklistEdit.html';
 import percentFixed from './percentFixed.html';
 import percentFixedEdit from './percentFixedEdit.html';
 import picklist from './picklist.html';
@@ -26,17 +27,22 @@ export default class DataTableExtendedTypes extends LightningDatatable {
             template: time,
             standardCellLayout: true,
         },
-        ['multi-picklist'] : {
-            template: multiPicklist,
+        multipicklist : {
+            template: multipicklist,
+            editTemplate: multipicklistEdit,
             standardCellLayout: true,
-            typeAttributes: ['options'],
+            typeAttributes: [
+                'parentName',
+                'rowId',
+                'fieldName',
+                'options'
+            ],
         },
         picklist : {
             template: picklist,
             editTemplate: picklistEdit,
             standardCellLayout: true,
             typeAttributes: [
-                'recordTypeInfos',
                 'placeholder',
                 'parentName',
                 'rowId',

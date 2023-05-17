@@ -68,4 +68,30 @@
             <default>false</default>
         </values>
     </picklistValues>
+    <picklistValues>
+        <picklist>Lvl2B__c</picklist>
+        <values>
+            <fullName>G</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>H</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>test__c</picklist>
+        <values>
+            <fullName>xd</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>xd2</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>xd3</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
 </RecordType>
