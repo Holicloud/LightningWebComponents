@@ -2,6 +2,7 @@
 import { LightningElement, api, track, wire } from 'lwc';
 import getRecords from '@salesforce/apex/CustomDataTableController.getRecords';
 // import getRecordsNonCacheable from '@salesforce/apex/CustomDataTableController.getRecordsNonCacheable';
+import LightningConfirm from 'lightning/confirm';
 import { formatColumns } from 'c/customDataTableHelper';
 import { flattenRecords, cloneArray, showToastError, showToastApexError } from 'c/commonFunctionsHelper';
 
@@ -15,7 +16,6 @@ export default class Datatable extends LightningElement {
   // public props
 
   @api defaultSortDirection = 'asc';
-  
 
   // wire prop
 
@@ -44,21 +44,21 @@ export default class Datatable extends LightningElement {
       { fieldName: 'Lvl2B__c', editable: true },
       { fieldName: 'Level3__c', editable: true },
       { fieldName: 'Level4__c', editable: true },
-      // { fieldName: 'RecordTypeId', editable: true },
-      // { fieldName: 'RecordType.Name', label: 'Recordtype Name' },
-      // { fieldName: 'Currency__c', editable: true },
-      // { fieldName: 'Date__c', editable: true },
-      // { fieldName: 'DateTime__c', editable: true },
-      // { fieldName: 'Email__c', editable: true },
-      // { fieldName: 'Lookup__c', editable: true },
-      // { fieldName: 'Number__c', editable: true },
-      // { label: 'Owner', fieldName: 'Owner.Name', editable: true },
-      // { fieldName: 'Percent__c', editable: true },
-      // { fieldName: 'Phone__c' , editable: true },
-      // { fieldName: 'TextArea__c', editable: true },
-      // { fieldName: 'Text__c', editable: true },
-      // { fieldName: 'Time__c', editable: true },
-      // { fieldName: 'Url__c', editable: true },
+      { fieldName: 'RecordTypeId', editable: true },
+      { fieldName: 'RecordType.Name', label: 'Recordtype Name' },
+      { fieldName: 'Currency__c', editable: true },
+      { fieldName: 'Date__c', editable: true },
+      { fieldName: 'DateTime__c', editable: true },
+      { fieldName: 'Email__c', editable: true },
+      { fieldName: 'Lookup__c', editable: true },
+      { fieldName: 'Number__c', editable: true },
+      { label: 'Owner', fieldName: 'Owner.Name', editable: true },
+      { fieldName: 'Percent__c', editable: true },
+      { fieldName: 'Phone__c' , editable: true },
+      { fieldName: 'TextArea__c', editable: true },
+      { fieldName: 'Name', editable: true , sortable: true},
+      { fieldName: 'Time__c', editable: true },
+      { fieldName: 'Url__c', editable: true },
     ]
   };
 
@@ -146,7 +146,6 @@ export default class Datatable extends LightningElement {
   set objectApiName(value) {
     this._wiredObjectApiName.objectApiName = value;
     this._state.objectApiName = value;
-    // this._formatColumns();
   }
 
   @api
@@ -161,7 +160,6 @@ export default class Datatable extends LightningElement {
     }
 
     this._state.columns = value;
-    // this._formatColumns();
   }
 
   @api
@@ -196,7 +194,12 @@ export default class Datatable extends LightningElement {
     return [...result];
   }
 
+  get actualDraftedValues() {
+    return this.template.querySelector('c-data-table-extended-types').draftValues;
+  }
+
   // public methods
+
   // wire methods
 
   @wire(getObjectInfo, { objectApiName: '$_state.objectApiName' })
@@ -205,6 +208,7 @@ export default class Datatable extends LightningElement {
       this._recordTypeInfos = JSON.parse(JSON.stringify(data.recordTypeInfos));
       this._currentRecordType = Object.keys(data.recordTypeInfos)[0];
     } else if (error) {
+      showToastApexError.call(this, error);
       this._recordTypeInfos = null;
       this._currentRecordType = null;
     }
@@ -220,15 +224,26 @@ export default class Datatable extends LightningElement {
         this._currentRecordType = nextRecordType;
       }
     } else if (error) {
-      console.error('Error:', error);
+      showToastApexError.call(this, error);
     }
   }
 
   // event handlers
 
-  _handleSort(event) {
+  async _handleSort(event) {
+    if (this.actualDraftedValues?.length) {
+      const result = await LightningConfirm.open({
+        message: 'You have unsaved changes. Are you sure you want to DISCARD these changes?',
+        label: 'Discard Changes',
+        theme: 'warning'
+      });
+
+      if (!result) return;
+    }
+
     window.clearTimeout(this._delayTimeout);
 
+    this._draftValues = [];
     this._showSpinner = true;
 
     this._delayTimeout = setTimeout(() => {
@@ -271,7 +286,7 @@ export default class Datatable extends LightningElement {
         
         const previousOffSet = this._queryOffSet;
         const previousRecords = [...records];
-        const previous_StaticRecords = [...this._staticRecords];
+        const previousStaticRecords = [...this._staticRecords];
 
         this._queryOffSet = this._queryOffSet + limitOfRecords;
 
@@ -295,7 +310,7 @@ export default class Datatable extends LightningElement {
         } catch (error) {
           this._loadMoreStatus = '';
           showToastApexError.call(this, error);
-          this._state.records = previous_StaticRecords;
+          this._state.records = previousStaticRecords;
           this._staticRecords = previousRecords;
           this._queryOffSet = previousOffSet;
         }
