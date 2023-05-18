@@ -23,7 +23,7 @@ export default class DatatableMultipicklistEditCell extends LightningElement {
     return this._value.join(';');
   }
   set value(value) {
-    this._value = Array.isArray(value) ? value.split(';') : [];
+    this._value = value ? value.split(';') : [];
   }
 
   // public methods
