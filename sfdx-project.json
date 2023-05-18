@@ -1,15 +1,18 @@
 {
   "packageDirectories": [
     {
-      "path": "force-app",
+      "path": "src-lookup",
       "default": true
     },
     {
-      "path": "base-components-extension"
+      "path": "src-datatable"
+    },
+    {
+      "path": "src-lookup-sample"
     }
   ],
   "name": "LWCRecipes2",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "52.0"
+  "sourceApiVersion": "57.0"
 }

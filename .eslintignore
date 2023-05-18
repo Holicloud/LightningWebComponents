@@ -14,3 +14,7 @@
 **/aura/**/*.xml
 **/aura/**/*.app
 .sfdx
+
+
+src-datatable/main/default/lwc/customDataTable
+src-datatable/main/default/lwc/c-lookup/lwc

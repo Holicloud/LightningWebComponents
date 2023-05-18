@@ -18,14 +18,17 @@
   "devDependencies": {
     "@lwc/eslint-plugin-lwc": "^1.0.1",
     "@prettier/plugin-xml": "^0.13.1",
+    "@sa11y/jest": "^5.0.1",
     "@salesforce/eslint-config-lwc": "^2.0.0",
     "@salesforce/eslint-plugin-aura": "^2.0.0",
     "@salesforce/eslint-plugin-lightning": "^0.1.1",
-    "@salesforce/sfdx-lwc-jest": "^0.13.0",
+    "@salesforce/sfdx-lwc-jest": "^1.4.0",
     "eslint": "^7.29.0",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-jest": "^24.3.6",
     "husky": "^7.0.0",
+    "jest": "^29.5.0",
+    "jsdom": "^22.0.0",
     "lint-staged": "^11.0.0",
     "prettier": "^2.3.2",
     "prettier-plugin-apex": "^1.10.1"

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Lookup__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>lookup account field description</description>
+    <externalId>false</externalId>
+    <inlineHelpText>this is the help text on the field setup</inlineHelpText>
+    <label>Lookup (Account)</label>
+    <referenceTo>Account</referenceTo>
+    <relationshipLabel>Data Tests</relationshipLabel>
+    <relationshipName>Data_Tests</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

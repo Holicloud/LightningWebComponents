@@ -1,0 +1,19 @@
+<template>
+  <lightning-card title="c-custom-lookup" class={flexipageRegionWidth}>
+    <lightning-layout multiple-rows>
+      <!-- <lightning-layout-item size="12">
+				<lightning-input
+					type="text"
+					data-id="icon"
+					label="limit-of-records"
+					value={limitOfRecords}>
+				</lightning-input>
+			</lightning-layout-item> -->
+      <lightning-layout-item size="12">
+        <div style="height: calc(80vh - 100px)">
+          <c-datatable></c-datatable>
+        </div>
+      </lightning-layout-item>
+    </lightning-layout>
+  </lightning-card>
+</template>

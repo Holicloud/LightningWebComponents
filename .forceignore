@@ -11,4 +11,6 @@ package.xml
 # LWC Jest
 **/__tests__/**
 
-# force-app/main/default/lwc/customDataTable
+src-datatable/main/default/lwc/c-lookup/lwc
+
+src-datatable/main/default/lwc/customDataTable

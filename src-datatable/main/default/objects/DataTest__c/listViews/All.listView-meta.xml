@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All</fullName>
+    <columns>NAME</columns>
+    <columns>Currency__c</columns>
+    <columns>Date__c</columns>
+    <columns>DateTime__c</columns>
+    <columns>Email__c</columns>
+    <columns>Lookup__c</columns>
+    <columns>Number__c</columns>
+    <columns>Percent__c</columns>
+    <columns>Phone__c</columns>
+    <columns>TextArea__c</columns>
+    <columns>Time__c</columns>
+    <columns>Url__c</columns>
+    <columns>RECORDTYPE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>DataTest__c.AB</value>
+    </filters>
+    <label>All</label>
+</ListView>

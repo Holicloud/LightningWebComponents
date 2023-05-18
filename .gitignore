@@ -38,3 +38,6 @@ $RECYCLE.BIN/
 
 # Local environment variables
 .env
+
+src-datatable/main/default/lwc/c-lookup/lwc
+src-datatable/main/default/lwc/customDataTable
