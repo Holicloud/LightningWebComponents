@@ -5,6 +5,8 @@ import percentFixed from './percentFixed.html';
 import percentFixedEdit from './percentFixedEdit.html';
 import picklist from './picklist.html';
 import picklistEdit from './picklistEdit.html';
+import textareaEdit from './textareaEdit.html';
+import textarea from './textarea.html';
 import time from './time.html';
 
 export default class DataTableExtendedTypes extends LightningDatatable {
@@ -49,6 +51,12 @@ export default class DataTableExtendedTypes extends LightningDatatable {
                 'fieldName',
                 'options'
             ],
+        },
+        textarea: {
+            template: textarea,
+            editTemplate: textareaEdit,
+            standardCellLayout: true,
+            typeAttributes: [ 'maxLength' ],
         }
     };
 }

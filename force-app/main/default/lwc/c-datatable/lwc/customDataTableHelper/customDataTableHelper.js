@@ -63,7 +63,7 @@ async function formatColumns({ columns, objectApiName }){
 }
 
 function setTypeAttributes(column, fieldDescribe) {
-    const { type, scale, controllerName, controllerLabel, picklistValues } = fieldDescribe;
+    const { type, scale, controllerName, controllerLabel, picklistValues, length } = fieldDescribe;
     
     if (controllerName) {
         column.label += ` (ControlledBy: ${controllerLabel})`;
@@ -132,6 +132,9 @@ function setTypeAttributes(column, fieldDescribe) {
                 rowId : { fieldName: 'Id' },
                 isChild: !!controllerName,
             }
+            break;
+        case 'textarea':
+            column.typeAttributes = { maxLength: length }
             break;
         default:
             break;
