@@ -16,22 +16,22 @@ describe("c-lookup exposed functions", () => {
   it("getSelection returns correct selection when initial selection is an array", () => {
     // Create lookup
     const lookupEl = createLookupElement({
-      selection: SAMPLE_SEARCH_ITEMS
+      value: SAMPLE_SEARCH_ITEMS
     });
 
     // Verify selection
-    const selection = lookupEl.getSelection();
+    const selection = lookupEl.value;
     expect(selection.length).toBe(2);
   });
 
   it("getSelection returns correct selection when initial selection is a single item", () => {
     // Create lookup
     const lookupEl = createLookupElement({
-      selection: SAMPLE_SEARCH_ITEMS[0]
+      value: SAMPLE_SEARCH_ITEMS[0]
     });
 
     // Verify selection
-    const selection = lookupEl.getSelection();
+    const selection = lookupEl.value;
     expect(selection.length).toBe(1);
   });
 

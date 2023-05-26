@@ -1,5 +1,4 @@
 import { LightningElement, api } from "lwc";
-import { NavigationMixin } from "lightning/navigation";
 
 const SEARCH_DELAY = 300; // Wait 300 ms after user stops typing then, peform search
 
@@ -16,13 +15,12 @@ const REGEX_SOSL_RESERVED =
   /(\?|&|\||!|\{|\}|\[|\]|\(|\)|\^|~|\*|:|"|\+|-|\\)/g;
 const REGEX_EXTRA_TRAP = /(\$|\\)/g;
 
-export default class Lookup extends NavigationMixin(LightningElement) {
+export default class Lookup extends LightningElement {
   // Public properties
   @api disabled = false;
   @api isMultiEntry = false;
   @api label = "";
   @api minSearchTermLength = 2;
-  @api newRecordOptions = [];
   @api placeholder = "";
   @api required = false;
   @api scrollAfterNItems = null;
@@ -31,13 +29,14 @@ export default class Lookup extends NavigationMixin(LightningElement) {
   // Template properties
   loading = false;
   searchResultsLocalState = [];
+  _actions = [];
+  _errors = [];
 
   // Private properties
   _cancelBlur = false;
   _cleanSearchTerm;
   _curSelection = [];
   _defaultSearchResults = [];
-  _errors = [];
   _focusedResultIndex = null;
   _hasFocus = false;
   _isDirty = false;
@@ -48,11 +47,27 @@ export default class Lookup extends NavigationMixin(LightningElement) {
   // PUBLIC FUNCTIONS AND GETTERS/SETTERS
 
   @api
-  get selection() {
+  get actions() {
+    return this._actions;
+  }
+
+  set actions(value) {
+    if (Array.isArray(value)) {
+      this._actions = JSON.parse(JSON.stringify(value)).map((singleValue) => {
+        if (!singleValue.icon) {
+          singleValue.icon = "utility:add";
+        }
+        return singleValue;
+      });
+    }
+  }
+
+  @api
+  get value() {
     return this._curSelection;
   }
 
-  set selection(value) {
+  set value(value) {
     if (value) {
       this._curSelection = Array.isArray(value) ? value : [value];
       this.processSelectionUpdate(false);
@@ -75,11 +90,6 @@ export default class Lookup extends NavigationMixin(LightningElement) {
   @api
   get validity() {
     return { valid: !this._errors?.length };
-  }
-
-  @api
-  get value() {
-    return this.getSelection();
   }
 
   @api
@@ -187,11 +197,6 @@ export default class Lookup extends NavigationMixin(LightningElement) {
   }
 
   @api
-  getSelection() {
-    return this._curSelection;
-  }
-
-  @api
   setDefaultResults(results) {
     this._defaultSearchResults = [...results];
     if (!this._searchResults.length) {
@@ -245,14 +250,15 @@ export default class Lookup extends NavigationMixin(LightningElement) {
         // Display spinner until results are returned
         this.loading = true;
 
-        const searchEvent = new CustomEvent("search", {
-          detail: {
-            searchTerm: this._cleanSearchTerm,
-            rawSearchTerm: newSearchTerm,
-            selectedIds: this._curSelection.map(({ id }) => id)
-          }
-        });
-        this.dispatchEvent(searchEvent);
+        this.dispatchEvent(
+          new CustomEvent("search", {
+            detail: {
+              searchTerm: this._cleanSearchTerm,
+              rawSearchTerm: newSearchTerm,
+              selectedIds: this._curSelection.map(({ id }) => id)
+            }
+          })
+        );
       }
       this._searchThrottlingTimeout = null;
     }, SEARCH_DELAY);
@@ -279,9 +285,10 @@ export default class Lookup extends NavigationMixin(LightningElement) {
     }
     // If selection was changed by user, notify parent components
     if (isUserInteraction) {
-      const selectedIds = this._curSelection.map(({ id }) => id);
       this.dispatchEvent(
-        new CustomEvent("selectionchange", { detail: selectedIds })
+        new CustomEvent("change", {
+          detail: this._curSelection.map(({ id }) => id)
+        })
       );
     }
   }
@@ -390,26 +397,8 @@ export default class Lookup extends NavigationMixin(LightningElement) {
   }
 
   handleNewRecordClick(event) {
-    const objectApiName = event.currentTarget.dataset.sobject;
-    const selection = this.newRecordOptions.find(
-      ({ value }) => value === objectApiName
-    );
-
-    const preNavigateCallback = selection.preNavigateCallback
-      ? selection.preNavigateCallback
-      : () => Promise.resolve();
-    preNavigateCallback(selection).then(() => {
-      this[NavigationMixin.Navigate]({
-        type: "standard__objectPage",
-        attributes: {
-          objectApiName,
-          actionName: "new"
-        },
-        state: {
-          defaultFieldValues: selection.defaults
-        }
-      });
-    });
+    const actionName = event.currentTarget.dataset.name;
+    this.dispatchEvent(new CustomEvent("action", { detail: actionName }));
   }
 
   // STYLE EXPRESSIONS
@@ -425,7 +414,7 @@ export default class Lookup extends NavigationMixin(LightningElement) {
     return (
       this._hasFocus &&
       this.isSelectionAllowed() &&
-      (isSearchTermValid || this.hasResults || this.newRecordOptions?.length)
+      (isSearchTermValid || this.hasResults || this._actions?.length)
     );
   }
 

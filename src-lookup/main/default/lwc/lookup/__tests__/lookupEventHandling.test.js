@@ -1,10 +1,8 @@
 const {
   createLookupElement,
   inputSearchTerm,
-  flushPromises,
   SAMPLE_SEARCH_ITEMS
 } = require("./lookupTest.utils");
-import { getNavigateCalledWith } from "lightning/navigation";
 
 const SAMPLE_SEARCH = "sample";
 const ARROW_DOWN = 40;
@@ -22,28 +20,28 @@ describe("c-lookup event handling", () => {
     // Create lookup
     const lookupEl = createLookupElement({
       isMultiEntry: false,
-      selection: SAMPLE_SEARCH_ITEMS[0]
+      value: SAMPLE_SEARCH_ITEMS[0]
     });
 
     // Clear selection
     const clearSelButton = lookupEl.shadowRoot.querySelector("button");
     clearSelButton.click();
     // Check selection
-    expect(lookupEl.selection.length).toBe(0);
+    expect(lookupEl.value.length).toBe(0);
   });
 
   it("can clear selection when multi entry", () => {
     // Create lookup
     const lookupEl = createLookupElement({
       isMultiEntry: true,
-      selection: SAMPLE_SEARCH_ITEMS
+      value: SAMPLE_SEARCH_ITEMS
     });
 
     // Remove a selected item
     const selPills = lookupEl.shadowRoot.querySelectorAll("lightning-pill");
     selPills[0].dispatchEvent(new CustomEvent("remove"));
     // Check selection
-    expect(lookupEl.selection.length).toBe(SAMPLE_SEARCH_ITEMS.length - 1);
+    expect(lookupEl.value.length).toBe(SAMPLE_SEARCH_ITEMS.length - 1);
   });
 
   it("doesn't remove pill when multi entry and disabled", () => {
@@ -51,14 +49,14 @@ describe("c-lookup event handling", () => {
     const lookupEl = createLookupElement({
       isMultiEntry: true,
       disabled: true,
-      selection: SAMPLE_SEARCH_ITEMS
+      value: SAMPLE_SEARCH_ITEMS
     });
 
     // Remove a selected item
     const selPills = lookupEl.shadowRoot.querySelectorAll("lightning-pill");
     selPills[0].dispatchEvent(new CustomEvent("remove"));
     // Check selection
-    expect(lookupEl.selection.length).toBe(SAMPLE_SEARCH_ITEMS.length);
+    expect(lookupEl.value.length).toBe(SAMPLE_SEARCH_ITEMS.length);
   });
 
   it("can select item with mouse", async () => {
@@ -80,8 +78,8 @@ describe("c-lookup event handling", () => {
     searchResultItem.click();
 
     // Check selection
-    expect(lookupEl.selection.length).toBe(1);
-    expect(lookupEl.selection[0].id).toBe(SAMPLE_SEARCH_ITEMS[0].id);
+    expect(lookupEl.value.length).toBe(1);
+    expect(lookupEl.value[0].id).toBe(SAMPLE_SEARCH_ITEMS[0].id);
   });
 
   it("can select item with keyboard", async () => {
@@ -105,75 +103,26 @@ describe("c-lookup event handling", () => {
     searchInput.dispatchEvent(new KeyboardEvent("keydown", { keyCode: ENTER }));
 
     // Check selection
-    expect(lookupEl.selection.length).toBe(1);
-    expect(lookupEl.selection[0].id).toBe(SAMPLE_SEARCH_ITEMS[0].id);
+    expect(lookupEl.value.length).toBe(1);
+    expect(lookupEl.value[0].id).toBe(SAMPLE_SEARCH_ITEMS[0].id);
   });
 
-  it("can create new record without pre-navigate callback", async () => {
+  it("custom action is shown", async () => {
     jest.useFakeTimers();
 
     // Create lookup with search handler and new record options
-    const newRecordOptions = [{ value: "Account", label: "New Account" }];
-    const lookupEl = createLookupElement({ newRecordOptions });
-    const searchFn = (event) => {
-      event.target.setSearchResults([]);
-    };
+    const actions = [{ name: "NewAccount", label: "New Account" }];
+    const lookupEl = createLookupElement({ actions });
+    const searchFn = (event) => event.target.setSearchResults([]);
+    const actionFn = jest.fn();
     lookupEl.addEventListener("search", searchFn);
+    lookupEl.addEventListener("action", actionFn);
 
-    // Simulate search term input
+    // Simulate search term inp ut
     await inputSearchTerm(lookupEl, SAMPLE_SEARCH);
 
     // Simulate mouse selection
-    const newRecordEl = lookupEl.shadowRoot.querySelector("div[data-sobject]");
+    const newRecordEl = lookupEl.shadowRoot.querySelector("div[data-name]");
     expect(newRecordEl).not.toBeNull();
-    newRecordEl.click();
-    await flushPromises();
-
-    // Verify that we navigate to the right page
-    const { pageReference } = getNavigateCalledWith();
-    expect(pageReference.type).toBe("standard__objectPage");
-    expect(pageReference.attributes.objectApiName).toBe(
-      newRecordOptions[0].value
-    );
-    expect(pageReference.attributes.actionName).toBe("new");
-  });
-
-  it("can create new record with pre-navigate callback", async () => {
-    jest.useFakeTimers();
-
-    // Create mock pre-navigate callback
-    const preNavigateCallback = jest.fn(() => Promise.resolve());
-
-    // Create lookup with search handler and new record options
-    const newRecordOptions = [
-      { value: "Account", label: "New Account", preNavigateCallback }
-    ];
-    const lookupEl = createLookupElement({ newRecordOptions });
-    const searchFn = (event) => {
-      event.target.setSearchResults([]);
-    };
-    lookupEl.addEventListener("search", searchFn);
-
-    // Simulate search term input
-    await inputSearchTerm(lookupEl, SAMPLE_SEARCH);
-
-    // Simulate mouse selection
-    const newRecordEl = lookupEl.shadowRoot.querySelector("div[data-sobject]");
-    expect(newRecordEl).not.toBeNull();
-    newRecordEl.click();
-
-    // Verify that preNavigateCallback got called
-    expect(preNavigateCallback).toHaveBeenCalled();
-    const newRecordOption = preNavigateCallback.mock.calls[0][0];
-    expect(newRecordOption.value).toBe(newRecordOptions[0].value);
-    await flushPromises();
-
-    // Verify that we navigate to the right page
-    const { pageReference } = getNavigateCalledWith();
-    expect(pageReference.type).toBe("standard__objectPage");
-    expect(pageReference.attributes.objectApiName).toBe(
-      newRecordOptions[0].value
-    );
-    expect(pageReference.attributes.actionName).toBe("new");
   });
 });

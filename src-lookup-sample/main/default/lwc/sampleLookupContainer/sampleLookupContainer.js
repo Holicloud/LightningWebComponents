@@ -1,5 +1,6 @@
 import { LightningElement, api, wire } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
+import { NavigationMixin } from "lightning/navigation";
 
 /** Apex methods from SampleLookupController */
 import search from "@salesforce/apex/SampleLookupController.search";
@@ -7,7 +8,9 @@ import getRecentlyViewed from "@salesforce/apex/SampleLookupController.getRecent
 const ACCOUNT_ICON = "standard:account";
 const OPPORTUNITY_ICON = "standard:opportunity";
 
-export default class SampleLookupContainer extends LightningElement {
+export default class SampleLookupContainer extends NavigationMixin(
+  LightningElement
+) {
   // Use alerts instead of toasts (LEX only) to notify user
   @api notifyViaAlerts = false;
 
@@ -22,9 +25,9 @@ export default class SampleLookupContainer extends LightningElement {
   ];
   errors = [];
   recentlyViewed = [];
-  newRecordOptions = [
-    { value: "Account", label: "New Account" },
-    { value: "Opportunity", label: "New Opportunity" }
+  actions = [
+    { name: "newAccountAction", label: "New Account" },
+    { name: "newOpportunityAction", label: "New Opportunity" }
   ];
   searchResults = [];
 
@@ -135,6 +138,26 @@ export default class SampleLookupContainer extends LightningElement {
     this.checkForErrors();
   }
 
+  handleAction(event) {
+    if (event.detail === "newAccountAction") {
+      this[NavigationMixin.Navigate]({
+        type: "standard__objectPage",
+        attributes: {
+          objectApiName: "Account",
+          actionName: "new"
+        }
+      });
+    } else if (event.detail === "newOpportunityAction") {
+      this[NavigationMixin.Navigate]({
+        type: "standard__objectPage",
+        attributes: {
+          objectApiName: "Opportunity",
+          actionName: "new"
+        }
+      });
+    }
+  }
+
   // All functions below are part of the sample app form (not required by the lookup).
 
   handleLookupTypeChange(event) {
@@ -165,7 +188,7 @@ export default class SampleLookupContainer extends LightningElement {
 
   checkForErrors() {
     this.errors = [];
-    const selection = this.template.querySelector("c-lookup").getSelection();
+    const selection = this.template.querySelector("c-lookup").value;
     // Custom validation rule
     if (this.isMultiEntry && selection.length > this.maxSelectionSize) {
       this.errors.push({

@@ -23,7 +23,7 @@ describe("c-lookup event fires", () => {
     // Create lookup with mock search handler
     const lookupEl = createLookupElement({
       isMultiEntry: true,
-      selection: SAMPLE_SEARCH_ITEMS
+      value: SAMPLE_SEARCH_ITEMS
     });
     const mockSearchFn = jest.fn();
     lookupEl.addEventListener("search", mockSearchFn);
@@ -157,7 +157,26 @@ describe("c-lookup event fires", () => {
     });
   });
 
-  it("should substract", () => {
-    expect(3 + 2).toBe(5);
+  it("fires action event when action is clicked", async () => {
+    jest.useFakeTimers();
+
+    // Create lookup with search handler and new record options
+    const actions = [{ name: "NewAccount", label: "New Account" }];
+    const lookupEl = createLookupElement({ actions });
+    const mockSearchFn = jest.fn();
+    const actionFn = jest.fn();
+    lookupEl.addEventListener("search", mockSearchFn);
+    lookupEl.addEventListener("action", actionFn);
+
+    // Simulate search term input
+    await inputSearchTerm(lookupEl, SAMPLE_SEARCH_RAW);
+
+    // Simulate mouse selection
+    const newRecordEl = lookupEl.shadowRoot.querySelector("div[data-name]");
+    newRecordEl.click();
+
+    // Check fired search event
+    expect(newRecordEl).not.toBeNull();
+    expect(actionFn).toHaveBeenCalledTimes(1);
   });
 });

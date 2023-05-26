@@ -28,16 +28,17 @@
       </p>
 
       <c-lookup
-        selection={initialSelection}
+        value={initialSelection}
         errors={errors}
         onsearch={handleLookupSearch}
         search-results={searchResults}
         default-search-results={recentlyViewed}
-        onselectionchange={handleLookupSelectionChange}
+        onchange={handleLookupSelectionChange}
         label="Search"
         placeholder="Search Salesforce"
         is-multi-entry={isMultiEntry}
-        new-record-options={newRecordOptions}
+        actions={actions}
+        onaction={handleAction}
         required
       >
       </c-lookup>

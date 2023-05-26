@@ -131,7 +131,7 @@ describe("c-lookup rendering", () => {
   it("renders title on selection in single-select", async () => {
     const lookupEl = createLookupElement({
       isMultiEntry: false,
-      selection: SAMPLE_SEARCH_ITEMS[0]
+      value: SAMPLE_SEARCH_ITEMS[0]
     });
 
     const inputBox = lookupEl.shadowRoot.querySelector("input");
@@ -143,7 +143,7 @@ describe("c-lookup rendering", () => {
   it("renders title on selection in multi-select", async () => {
     const lookupEl = createLookupElement({
       isMultiEntry: true,
-      selection: SAMPLE_SEARCH_ITEMS
+      value: SAMPLE_SEARCH_ITEMS
     });
 
     const inputBox = lookupEl.shadowRoot.querySelector("input");
@@ -161,7 +161,7 @@ describe("c-lookup rendering", () => {
   it("does not shows default search results when they are already selected", async () => {
     const lookupEl = createLookupElement({
       isMultiEntry: true,
-      selection: SAMPLE_SEARCH_ITEMS
+      value: SAMPLE_SEARCH_ITEMS
     });
     lookupEl.setDefaultResults(SAMPLE_SEARCH_ITEMS);
     await flushPromises();
@@ -178,7 +178,7 @@ describe("c-lookup rendering", () => {
 
   it("renders new record creation option when no selection", async () => {
     const lookupEl = createLookupElement({
-      newRecordOptions: [{ value: "Account", label: "New Account" }]
+      actions: [{ name: "Account", label: "New Account" }]
     });
 
     // Query for rendered list items
@@ -208,7 +208,7 @@ describe("c-lookup rendering", () => {
     // Create lookup
     const lookupEl = createLookupElement({
       disabled: true,
-      selection: SAMPLE_SEARCH_ITEMS[0]
+      value: SAMPLE_SEARCH_ITEMS[0]
     });
 
     // Clear selection
