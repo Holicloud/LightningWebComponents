@@ -60,11 +60,6 @@ public with sharing class SampleLookupController {
       WHERE Id IN :recentIds
     ];
 
-    List<List<SObject>> searchResults = new List<List<SObject>>{
-      accounts,
-      opps
-    };
-
-    return searchResults;
+    return new List<List<SObject>>{ accounts, opps };
   }
 }

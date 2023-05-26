@@ -9,6 +9,9 @@
     },
     {
       "path": "src-lookup-sample"
+    },
+    {
+      "path": "src-utils"
     }
   ],
   "name": "LWCRecipes2",
