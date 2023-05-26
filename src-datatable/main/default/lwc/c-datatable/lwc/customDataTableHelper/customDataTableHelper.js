@@ -196,7 +196,7 @@ function formatfieldNamesProperties(
     if (prop === "fieldName") {
       apexApiNames.add(object.fieldName);
 
-      if (object.fieldName.equalIgnoreCase(topLevelFieldName)) {
+      if (equalIgnoreCase(object.fieldName, topLevelFieldName)) {
         object.fieldName = topLevelFieldName;
       }
     }

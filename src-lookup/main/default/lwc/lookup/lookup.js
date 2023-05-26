@@ -10,6 +10,7 @@ const KEY_ENTER = 13;
 const VARIANT_LABEL_STACKED = "label-stacked";
 const VARIANT_LABEL_INLINE = "label-inline";
 const VARIANT_LABEL_HIDDEN = "label-hidden";
+const MATCHER_REGEX = "<strong>$1</strong>";
 
 const REGEX_SOSL_RESERVED =
   /(\?|&|\||!|\{|\}|\[|\]|\(|\)|\^|~|\*|:|"|\+|-|\\)/g;
@@ -17,64 +18,63 @@ const REGEX_EXTRA_TRAP = /(\$|\\)/g;
 
 export default class Lookup extends NavigationMixin(LightningElement) {
   // Public properties
-  @api variant = VARIANT_LABEL_STACKED;
-  @api label = "";
-  @api required = false;
   @api disabled = false;
-  @api placeholder = "";
   @api isMultiEntry = false;
-  @api scrollAfterNItems = null;
-  @api newRecordOptions = [];
+  @api label = "";
   @api minSearchTermLength = 2;
+  @api newRecordOptions = [];
+  @api placeholder = "";
+  @api required = false;
+  @api scrollAfterNItems = null;
+  @api variant = VARIANT_LABEL_STACKED;
 
   // Template properties
-  searchResultsLocalState = [];
   loading = false;
+  searchResultsLocalState = [];
 
   // Private properties
+  _cancelBlur = false;
+  _cleanSearchTerm;
+  _curSelection = [];
+  _defaultSearchResults = [];
   _errors = [];
+  _focusedResultIndex = null;
   _hasFocus = false;
   _isDirty = false;
-  _searchTerm = "";
-  _cleanSearchTerm;
-  _cancelBlur = false;
-  _searchThrottlingTimeout;
   _searchResults = [];
-  _defaultSearchResults = [];
-  _curSelection = [];
-  _focusedResultIndex = null;
+  _searchTerm = "";
+  _searchThrottlingTimeout;
 
   // PUBLIC FUNCTIONS AND GETTERS/SETTERS
-  @api
-  set selection(initialSelection) {
-    if (initialSelection) {
-      this._curSelection = Array.isArray(initialSelection)
-        ? initialSelection
-        : [initialSelection];
-      this.processSelectionUpdate(false);
-    }
-  }
 
+  @api
   get selection() {
     return this._curSelection;
   }
 
-  @api
-  set errors(errors) {
-    this._errors = errors;
-    // Blur component if errors are passed
-    if (this._errors?.length > 0) {
-      this.blur();
+  set selection(value) {
+    if (value) {
+      this._curSelection = Array.isArray(value) ? value : [value];
+      this.processSelectionUpdate(false);
     }
   }
 
+  @api
   get errors() {
     return this._errors;
   }
 
+  set errors(errors) {
+    this._errors = errors;
+    // Blur component if errors are passed
+    if (this._errors?.length) {
+      this.blur();
+    }
+  }
+
   @api
   get validity() {
-    return { valid: !this._errors || this._errors.length === 0 };
+    return { valid: !this._errors?.length };
   }
 
   @api
@@ -83,15 +83,36 @@ export default class Lookup extends NavigationMixin(LightningElement) {
   }
 
   @api
+  get searchResults() {
+    return this._searchResults;
+  }
+
+  set searchResults(value) {
+    if (Array.isArray(value)) {
+      this.setSearchResults(value);
+    }
+  }
+
+  @api
+  get defaultSearchResults() {
+    return this._defaultSearchResults;
+  }
+
+  set defaultSearchResults(value) {
+    if (Array.isArray(value)) {
+      this.setDefaultResults(value);
+    }
+  }
+
+  @api
   setSearchResults(results) {
     // Reset the spinner
     this.loading = false;
-    // Clone results before modifying them to avoid Locker restriction
-    let resultsLocal = JSON.parse(JSON.stringify(results));
     // Remove selected items from search results
     const selectedIds = this._curSelection.map((sel) => sel.id);
-    resultsLocal = resultsLocal.filter(
-      (result) => selectedIds.indexOf(result.id) === -1
+    // Clone results before modifying them to avoid Locker restriction
+    const resultsLocal = JSON.parse(JSON.stringify(results)).filter(
+      ({ id }) => !selectedIds.includes(id)
     );
     // Format results
     const cleanSearchTerm = this._searchTerm
@@ -99,35 +120,47 @@ export default class Lookup extends NavigationMixin(LightningElement) {
       .replace(REGEX_EXTRA_TRAP, "\\$1");
     const regex = new RegExp(`(${cleanSearchTerm})`, "gi");
     this._searchResults = resultsLocal.map((result) => {
-      // Format title and subtitle
-      if (this._searchTerm.length > 0) {
+      // Format title and subtitles
+      if (this._searchTerm.length) {
         result.titleFormatted = result.title
-          ? result.title.replace(regex, "<strong>$1</strong>")
+          ? result.title.replace(regex, MATCHER_REGEX)
           : result.title;
 
-        if (result.subTitles?.length) {
-          result.subtitlesFormatted = result.subTitles.map(
-            (subtitleFormatted) => {
-              subtitleFormatted =
-                result.subtitle && subtitleFormatted.highlightSearchTerm
-                  ? result.subtitle.replace(regex, "<strong>$1</strong>")
-                  : result.subtitle;
-              return subtitleFormatted;
+        if (result.subtitles?.length) {
+          result.hasSubtitles = true;
+          result.subtitlesFormatted = result.subtitles.map(
+            (subtitle, index) => {
+              subtitle.index = index;
+              subtitle.value =
+                subtitle.value && subtitle.highlightSearchTerm
+                  ? subtitle.value.replace(regex, MATCHER_REGEX)
+                  : subtitle.value;
+              return subtitle;
             }
           );
         }
 
         result.subtitleFormatted = result.subtitle
-          ? result.subtitle.replace(regex, "<strong>$1</strong>")
+          ? result.subtitle.replace(regex, MATCHER_REGEX)
           : result.subtitle;
       } else {
         result.titleFormatted = result.title;
         result.subtitleFormatted = result.subtitle;
+
+        if (result.subtitles?.length) {
+          result.hasSubtitles = true;
+          result.subtitlesFormatted = result.subtitles.map(
+            (subtitle, index) => {
+              subtitle.index = index;
+              return subtitle;
+            }
+          );
+        }
       }
+
       // Add icon if missing
-      if (typeof result.icon === "undefined") {
-        result.icon = "standard:default";
-      }
+      result.icon = result.icon || "standard:default";
+
       return result;
     });
     // Add local state and dynamic class to search results
@@ -138,15 +171,16 @@ export default class Lookup extends NavigationMixin(LightningElement) {
         result,
         state: {},
         get classes() {
-          let cls =
-            "slds-media slds-media_center slds-listbox__option slds-listbox__option_entity";
-          if (result.subtitleFormatted) {
-            cls += " slds-listbox__option_has-meta";
-          }
-          if (self._focusedResultIndex === i) {
-            cls += " slds-has-focus";
-          }
-          return cls;
+          return [
+            "slds-media",
+            "slds-media_center",
+            "slds-listbox__option",
+            "slds-listbox__option_entity",
+            ...(result.subtitlesFormatted?.length
+              ? ["slds-listbox__option_has-meta"]
+              : []),
+            ...(self._focusedResultIndex === i ? ["slds-has-focus"] : [])
+          ].join(" ");
         }
       };
     });
@@ -160,7 +194,7 @@ export default class Lookup extends NavigationMixin(LightningElement) {
   @api
   setDefaultResults(results) {
     this._defaultSearchResults = [...results];
-    if (this._searchResults.length === 0) {
+    if (!this._searchResults.length) {
       this.setSearchResults(this._defaultSearchResults);
     }
   }
@@ -215,7 +249,7 @@ export default class Lookup extends NavigationMixin(LightningElement) {
           detail: {
             searchTerm: this._cleanSearchTerm,
             rawSearchTerm: newSearchTerm,
-            selectedIds: this._curSelection.map((element) => element.id)
+            selectedIds: this._curSelection.map(({ id }) => id)
           }
         });
         this.dispatchEvent(searchEvent);
@@ -225,14 +259,11 @@ export default class Lookup extends NavigationMixin(LightningElement) {
   }
 
   isSelectionAllowed() {
-    if (this.isMultiEntry) {
-      return true;
-    }
-    return !this.hasSelection();
+    return this.isMultiEntry || !this.hasSelection();
   }
 
   hasSelection() {
-    return this._curSelection.length > 0;
+    return this._curSelection.length;
   }
 
   processSelectionUpdate(isUserInteraction) {
@@ -248,7 +279,7 @@ export default class Lookup extends NavigationMixin(LightningElement) {
     }
     // If selection was changed by user, notify parent components
     if (isUserInteraction) {
-      const selectedIds = this._curSelection.map((sel) => sel.id);
+      const selectedIds = this._curSelection.map(({ id }) => id);
       this.dispatchEvent(
         new CustomEvent("selectionchange", { detail: selectedIds })
       );
@@ -290,8 +321,8 @@ export default class Lookup extends NavigationMixin(LightningElement) {
     ) {
       // If the user presses enter, and the box is open, and we have used arrows,
       // treat this just like a click on the listbox item
-      const selectedId = this._searchResults[this._focusedResultIndex].id;
-      this.template.querySelector(`[data-recordid="${selectedId}"]`).click();
+      const { id } = this._searchResults[this._focusedResultIndex];
+      this.template.querySelector(`[data-recordid="${id}"]`).click();
       event.preventDefault();
     }
   }
@@ -300,15 +331,12 @@ export default class Lookup extends NavigationMixin(LightningElement) {
     const recordId = event.currentTarget.dataset.recordid;
 
     // Save selection
-    const selectedItem = this._searchResults.find(
-      (result) => result.id === recordId
-    );
+    const selectedItem = this._searchResults.find(({ id }) => id === recordId);
+
     if (!selectedItem) {
       return;
     }
-    const newSelection = [...this._curSelection];
-    newSelection.push(selectedItem);
-    this._curSelection = newSelection;
+    this._curSelection = [...this._curSelection, selectedItem];
 
     // Process selection update
     this.processSelectionUpdate(true);
@@ -349,9 +377,7 @@ export default class Lookup extends NavigationMixin(LightningElement) {
       return;
     }
     const recordId = event.currentTarget.name;
-    this._curSelection = this._curSelection.filter(
-      (item) => item.id !== recordId
-    );
+    this._curSelection = this._curSelection.filter(({ id }) => id !== recordId);
     // Process selection update
     this.processSelectionUpdate(true);
   }
@@ -366,7 +392,7 @@ export default class Lookup extends NavigationMixin(LightningElement) {
   handleNewRecordClick(event) {
     const objectApiName = event.currentTarget.dataset.sobject;
     const selection = this.newRecordOptions.find(
-      (option) => option.value === objectApiName
+      ({ value }) => value === objectApiName
     );
 
     const preNavigateCallback = selection.preNavigateCallback
@@ -399,14 +425,12 @@ export default class Lookup extends NavigationMixin(LightningElement) {
     return (
       this._hasFocus &&
       this.isSelectionAllowed() &&
-      (isSearchTermValid ||
-        this.hasResults ||
-        this.newRecordOptions?.length > 0)
+      (isSearchTermValid || this.hasResults || this.newRecordOptions?.length)
     );
   }
 
   get hasResults() {
-    return this._searchResults.length > 0;
+    return this._searchResults.length;
   }
 
   get getFormElementClass() {
@@ -422,66 +446,70 @@ export default class Lookup extends NavigationMixin(LightningElement) {
   }
 
   get getContainerClass() {
-    let css = "slds-combobox_container ";
-    if (this._errors.length > 0) {
-      css += "has-custom-error";
-    }
-    return css;
+    return !this._errors.length
+      ? "slds-combobox_container"
+      : "slds-combobox_container has-custom-error";
   }
 
   get getDropdownClass() {
-    let css =
-      "slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click ";
-    if (this.isListboxOpen) {
-      css += "slds-is-open";
-    }
-    return css;
+    return [
+      "slds-combobox",
+      "slds-dropdown-trigger",
+      "slds-dropdown-trigger_click",
+      ...(this.isListboxOpen ? ["slds-is-open"] : [])
+    ].join(" ");
   }
 
   get getInputClass() {
-    let css = "slds-input slds-combobox__input has-custom-height ";
-    if (this._hasFocus && this.hasResults) {
-      css += "slds-has-focus ";
-    }
-    if (
-      this._errors.length > 0 ||
-      (this._isDirty && this.required && !this.hasSelection())
-    ) {
-      css += "has-custom-error ";
-    }
+    const hasCustomError =
+      this._errors.length ||
+      (this._isDirty && this.required && !this.hasSelection());
+    const setFocus = this._hasFocus && this.hasResults;
+    const css = [
+      "slds-input",
+      "slds-combobox__input",
+      "has-custom-height",
+      ...(setFocus ? ["slds-has-focus"] : []),
+      ...(hasCustomError ? ["has-custom-error"] : [])
+    ];
+
     if (!this.isMultiEntry) {
-      css +=
-        "slds-combobox__input-value " +
-        (this.hasSelection() ? "has-custom-border" : "");
+      css.push(
+        ...[
+          "slds-combobox__input-value",
+          ...(this.hasSelection() ? ["has-custom-border"] : [])
+        ]
+      );
     }
-    return css;
+    return css.join(" ");
   }
 
   get getComboboxClass() {
-    let css = "slds-combobox__form-element slds-input-has-icon ";
-    if (this.isMultiEntry) {
-      css += "slds-input-has-icon_right";
-    } else {
-      css += this.hasSelection()
-        ? "slds-input-has-icon_left-right"
-        : "slds-input-has-icon_right";
-    }
-    return css;
+    return [
+      "slds-combobox__form-element",
+      "slds-input-has-icon",
+      ...(this.isMultiEntry || !this.hasSelection()
+        ? ["slds-input-has-icon_right"]
+        : ["slds-input-has-icon_left-right"])
+    ].join(" ");
   }
 
   get getSearchIconClass() {
-    let css = "slds-input__icon slds-input__icon_right ";
-    if (!this.isMultiEntry) {
-      css += this.hasSelection() ? "slds-hide" : "";
-    }
-    return css;
+    return [
+      "slds-input__icon",
+      "slds-input__icon_right",
+      ...(!this.isMultiEntry && this.hasSelection() ? ["slds-hide"] : [])
+    ].join(" ");
   }
 
   get getClearSelectionButtonClass() {
-    return (
-      "slds-button slds-button_icon slds-input__icon slds-input__icon_right " +
-      (this.hasSelection() ? "" : "slds-hide")
-    );
+    return [
+      "slds-button",
+      "slds-button_icon",
+      "slds-input__icon",
+      "slds-input__icon_right",
+      ...(!this.hasSelection() ? ["slds-hide"] : [])
+    ].join(" ");
   }
 
   get getSelectIconName() {
@@ -498,33 +526,28 @@ export default class Lookup extends NavigationMixin(LightningElement) {
   }
 
   get getInputValue() {
-    if (this.isMultiEntry) {
-      return this._searchTerm;
-    }
-    return this.hasSelection() ? this._curSelection[0].title : this._searchTerm;
+    return this.isMultiEntry || !this.hasSelection()
+      ? this._searchTerm
+      : this._curSelection[0].title;
   }
 
   get getInputTitle() {
-    if (this.isMultiEntry) {
-      return "";
-    }
-    return this.hasSelection() ? this._curSelection[0].title : "";
+    return this.isMultiEntry || !this.hasSelection()
+      ? ""
+      : this._curSelection[0].title;
   }
 
   get getListboxClass() {
-    return (
-      "slds-dropdown " +
-      (this.scrollAfterNItems
-        ? `slds-dropdown_length-with-icon-${this.scrollAfterNItems} `
-        : "") +
-      "slds-dropdown_fluid"
-    );
+    return [
+      "slds-dropdown",
+      "slds-dropdown_fluid",
+      ...(this.scrollAfterNItems
+        ? [`slds-dropdown_length-with-icon-${this.scrollAfterNItems}`]
+        : [])
+    ].join(" ");
   }
 
   get isInputReadonly() {
-    if (this.isMultiEntry) {
-      return false;
-    }
-    return this.hasSelection();
+    return this.isMultiEntry ? false : this.hasSelection();
   }
 }

@@ -47,7 +47,7 @@ describe("c-lookup exposed functions", () => {
     const resultItemEls = listItemEls[0].querySelectorAll(
       "lightning-formatted-rich-text"
     );
-    expect(resultItemEls.length).toBe(2);
+    expect(resultItemEls.length).toBe(5);
   });
 
   it("setSearchResults supports special regex characters in search term", async () => {

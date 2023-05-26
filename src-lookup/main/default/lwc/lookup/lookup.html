@@ -129,16 +129,27 @@
                         >
                         </lightning-formatted-rich-text>
                       </span>
-                      <span
-                        lwc:if={item.result.subtitleFormatted}
-                        class="slds-listbox__option-meta slds-listbox__option-meta_entity"
+                      <template
+                        for:each={item.result.subtitlesFormatted}
+                        for:item="subtitleItem"
+                        for:index="index"
+                        lwc:if={item.result.hasSubtitles}
                       >
-                        <lightning-formatted-rich-text
-                          value={item.result.subtitleFormatted}
-                          disable-linkify
+                        <span
+                          key={subtitleItem.index}
+                          class="slds-listbox__option-meta slds-listbox__option-meta_entity"
                         >
-                        </lightning-formatted-rich-text>
-                      </span>
+                          <lightning-formatted-rich-text
+                            value={subtitleItem.label}
+                            disable-linkify
+                          ></lightning-formatted-rich-text>
+                          <span> : </span>
+                          <lightning-formatted-rich-text
+                            value={subtitleItem.value}
+                            disable-linkify
+                          ></lightning-formatted-rich-text>
+                        </span>
+                      </template>
                     </span>
                   </div>
                 </li>

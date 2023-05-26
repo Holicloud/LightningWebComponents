@@ -4,6 +4,8 @@ import { ShowToastEvent } from "lightning/platformShowToastEvent";
 /** Apex methods from SampleLookupController */
 import search from "@salesforce/apex/SampleLookupController.search";
 import getRecentlyViewed from "@salesforce/apex/SampleLookupController.getRecentlyViewed";
+const ACCOUNT_ICON = "standard:account";
+const OPPORTUNITY_ICON = "standard:opportunity";
 
 export default class SampleLookupContainer extends LightningElement {
   // Use alerts instead of toasts (LEX only) to notify user
@@ -14,10 +16,8 @@ export default class SampleLookupContainer extends LightningElement {
   initialSelection = [
     {
       id: "na",
-      sObjectType: "na",
       icon: "standard:lightning_component",
-      title: "Inital selection",
-      subtitle: "Not a valid record"
+      title: "Inital selection"
     }
   ];
   errors = [];
@@ -26,6 +26,7 @@ export default class SampleLookupContainer extends LightningElement {
     { value: "Account", label: "New Account" },
     { value: "Opportunity", label: "New Opportunity" }
   ];
+  searchResults = [];
 
   /**
    * Loads recently viewed records and set them as default lookpup search results (optional)
@@ -33,23 +34,11 @@ export default class SampleLookupContainer extends LightningElement {
   @wire(getRecentlyViewed)
   getRecentlyViewed({ data }) {
     if (data) {
-      this.recentlyViewed = data;
-      this.initLookupDefaultResults();
-    }
-  }
-
-  connectedCallback() {
-    this.initLookupDefaultResults();
-  }
-
-  /**
-   * Initializes the lookup default results with a list of recently viewed records (optional)
-   */
-  initLookupDefaultResults() {
-    // Make sure that the lookup is present and if so, set its default results
-    const lookup = this.template.querySelector("c-lookup");
-    if (lookup) {
-      lookup.setDefaultResults(this.recentlyViewed);
+      const [accounts, opportunities] = data;
+      this.recentlyViewed = [
+        ...this.formatAccounts(accounts),
+        ...this.formatOpportunities(opportunities)
+      ];
     }
   }
 
@@ -59,11 +48,15 @@ export default class SampleLookupContainer extends LightningElement {
    * @param {event} event `search` event emmitted by the lookup
    */
   handleLookupSearch(event) {
-    const lookupElement = event.target;
+    // const lookupElement = event.target;
     // Call Apex endpoint to search for records and pass results to the lookup
     search(event.detail)
-      .then((results) => {
-        lookupElement.setSearchResults(results);
+      .then((data) => {
+        const [accounts, opportunities] = data;
+        this.searchResults = [
+          ...this.formatAccounts(accounts),
+          ...this.formatOpportunities(opportunities)
+        ];
       })
       .catch((error) => {
         this.notifyUser(
@@ -75,6 +68,61 @@ export default class SampleLookupContainer extends LightningElement {
         console.error("Lookup error", JSON.stringify(error));
         this.errors = [error];
       });
+  }
+
+  formatAccounts(accounts) {
+    return accounts.map(
+      ({ Id, Name, BillingCity, AccountNumber, OwnerId }) => ({
+        id: Id,
+        title: Name,
+        icon: ACCOUNT_ICON,
+        subtitle: !BillingCity ? "Account" : "Account • " + BillingCity,
+        subtitles: [
+          {
+            label: "Account Number Label",
+            value: AccountNumber,
+            highlightSearchTerm: true
+          },
+          {
+            label: "subtitle",
+            value: BillingCity,
+            highlightSearchTerm: true
+          },
+          {
+            label: "OwnerId",
+            value: OwnerId,
+            highlightSearchTerm: true
+          }
+        ]
+      })
+    );
+  }
+
+  formatOpportunities(opportunities) {
+    return opportunities.map(
+      ({ Id, Name, StageName, LeadSource, OwnerId }) => ({
+        id: Id,
+        title: Name,
+        icon: OPPORTUNITY_ICON,
+        subtitles: [
+          {
+            label: "StageName",
+            value: "Opportunity • " + StageName,
+            highlightSearchTerm: true
+          },
+          {
+            label: "Sattus",
+            value: LeadSource,
+            highlightSearchTerm: true
+          },
+          {
+            label: "OwnerId",
+            value: OwnerId,
+            highlightSearchTerm: true
+          }
+        ]
+      })
+    );
   }
 
   /**

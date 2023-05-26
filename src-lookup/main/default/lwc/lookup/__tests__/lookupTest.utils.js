@@ -44,13 +44,19 @@ export const SAMPLE_SEARCH_ITEMS = [
     id: "id1",
     icon: "standard:default",
     title: "Sample item 1",
-    subtitle: "sub1"
+    subtitles: [
+      { label: "sub1", value: "sub1" },
+      { label: "sub2", value: "sub2" }
+    ]
   },
   {
     id: "id2",
     icon: "standard:default",
     title: "Sample item 2",
-    subtitle: "sub2"
+    subtitles: [
+      { label: "sub1", value: "sub1" },
+      { label: "sub2", value: "sub2" }
+    ]
   }
 ];
 

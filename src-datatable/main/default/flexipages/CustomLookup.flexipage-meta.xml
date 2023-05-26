@@ -3,8 +3,8 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
-                <componentName>customLookupSample</componentName>
-                <identifier>customLookupSample</identifier>
+                <componentName>sampleLookupContainer</componentName>
+                <identifier>c_sampleLookupContainer</identifier>
             </componentInstance>
         </itemInstances>
         <name>main</name>
