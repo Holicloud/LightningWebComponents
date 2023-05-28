@@ -3,11 +3,11 @@
     <label lwc:if={label} class={getLabelClass} for="combobox">
       <abbr lwc:if={required} title="required" class="slds-required">*</abbr>
       {label}
+      <lightning-helptext
+        lwc:if={helpText}
+        content={helpText}
+      ></lightning-helptext>
     </label>
-    <lightning-helptext
-      lwc:if={helpText}
-      content={helpText}
-    ></lightning-helptext>
     <div class="slds-form-element__control">
       <div class={getContainerClass}>
         <div

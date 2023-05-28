@@ -28,21 +28,21 @@
       </p>
 
       <c-sobject-lookup
-        value={value}
         actions={actions}
-        errors={errors}
-        help-text={helpText}
         disabled={disabled}
+        errors={errors}
+        help-text="some help text"
         is-multi-entry={isMultiEntry}
-        min-search-term-length={minSearchTermLength}
-        label={label}
+        label="SObject Search"
+        min-search-term-length="3"
         onaction={handleAction}
         onchange={handleChange}
-        placeholder={placeholder}
-        required={required}
-        scroll-after-n-items={scrollAfterNItems}
+        placeholder="some place holder"
+        required
+        scroll-after-n-items="5"
         sets={sets}
-        variant={variant}
+        value={value}
+        variant="label-stacked"
       ></c-sobject-lookup>
 
       <div class="slds-var-m-top_large">

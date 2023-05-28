@@ -8,16 +8,9 @@ export default class SobjectLookupSample extends NavigationMixin(
   LightningElement
 ) {
   disabled = false;
-  helpText = "some help text";
   isMultiEntry = true;
-  label = "label";
   maxSelectionSize = 2;
-  minSearchTermLength = 3;
   notifyViaAlerts = false;
-  placeholder = "some place holder";
-  required = true;
-  scrollAfterNItems = 4;
-  variant = "label-stacked";
   errors = [];
   value;
   actions = [
