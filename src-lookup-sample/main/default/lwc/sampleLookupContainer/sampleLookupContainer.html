@@ -1,13 +1,13 @@
 <template>
-  <lightning-card title="Sample Lookup (Lightning Web Component)">
+  <lightning-card title="c-lookup (Base Lookup Lightning Web Component)">
     <div class="slds-form slds-form_stacked slds-var-m-around_xx-large">
       <div class="slds-grid slds-gutters">
         <div class="slds-col">
           <lightning-input
             type="toggle"
-            label="Mutli entry lookup"
+            label="isMultiEntry"
             checked={isMultiEntry}
-            onchange={handleLookupTypeChange}
+            onchange={handleMultyEntryChange}
           ></lightning-input>
         </div>
         <div class="slds-col" lwc:if={isMultiEntry}>
@@ -23,26 +23,26 @@
       </div>
 
       <p class="slds-var-m-vertical_large">
-        <strong>Note:</strong> new record creation options only work in
-        Lightning Experience.
+        <strong>Note:</strong> start by typing "New data" in the search box
       </p>
 
       <c-lookup
-        value={initialSelection}
-        errors={errors}
-        onsearch={handleLookupSearch}
-        search-results={searchResults}
-        default-search-results={recentlyViewed}
-        onchange={handleLookupSelectionChange}
-        label="Search"
-        placeholder="Search Salesforce"
-        is-multi-entry={isMultiEntry}
-        help-text="some help text"
         actions={actions}
+        default-search-results={defaultSearchResults}
+        errors={errors}
+        help-text="some help text"
+        is-multi-entry={isMultiEntry}
+        label="Search"
+        min-search-term-length="2"
         onaction={handleAction}
+        onchange={handleChange}
+        onsearch={handleSearch}
+        placeholder="Search Lookup"
         required
-      >
-      </c-lookup>
+        scroll-after-n-items="5"
+        search-results={searchResults}
+        value={initialSelection}
+      ></c-lookup>
 
       <div class="slds-var-m-top_large">
         <lightning-button label="Focus" onclick={handleFocus}></lightning-button

@@ -1,167 +1,81 @@
-import { LightningElement, api, wire } from "lwc";
+import { LightningElement } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { NavigationMixin } from "lightning/navigation";
-
-/** Apex methods from SampleLookupController */
-import search from "@salesforce/apex/SampleLookupController.search";
-import getRecentlyViewed from "@salesforce/apex/SampleLookupController.getRecentlyViewed";
 const ACCOUNT_ICON = "standard:account";
 const OPPORTUNITY_ICON = "standard:opportunity";
 
 export default class SampleLookupContainer extends NavigationMixin(
   LightningElement
 ) {
-  // Use alerts instead of toasts (LEX only) to notify user
-  @api notifyViaAlerts = false;
-
   isMultiEntry = false;
   maxSelectionSize = 2;
-  initialSelection = [
-    {
-      id: "na",
-      icon: "standard:lightning_component",
-      title: "Inital selection"
-    }
-  ];
-  errors = [];
-  recentlyViewed = [];
-  actions = [
-    { name: "newAccountAction", label: "New Account" },
-    { name: "newOpportunityAction", label: "New Opportunity" }
-  ];
+  initialSelection = [{ id: "1", icon: ACCOUNT_ICON, title: "Account 1" }];
+
   searchResults = [];
 
-  /**
-   * Loads recently viewed records and set them as default lookpup search results (optional)
-   */
-  @wire(getRecentlyViewed)
-  getRecentlyViewed({ data }) {
-    if (data) {
-      const [accounts, opportunities] = data;
-      this.recentlyViewed = [
-        ...this.formatAccounts(accounts),
-        ...this.formatOpportunities(opportunities)
-      ];
-    }
+  defaultSearchResults = [...Array(4).keys()].map((e) => ({
+    id: "" + e,
+    icon: e < 2 ? ACCOUNT_ICON : OPPORTUNITY_ICON,
+    title: "Account " + e,
+    subtitles: [
+      {
+        label: "Sub 1",
+        value: "Sub 1"
+      },
+      {
+        label: "Account Number",
+        value: "" + e,
+        highlightSearchTerm: true // hightlight the searchTerm for the subtitle (so that your users know that this field is being used in the search)
+      }
+    ]
+  }));
+
+  errors = [];
+
+  actions = [
+    { name: "actionA", label: "Custom Action" },
+    { name: "actionB", label: "Custom Action B" }
+  ];
+
+  handleSearch(event) {
+    // eslint-disable-next-line no-unused-vars
+    const { selectedIds, searchTerm, rawSearchTerm } = event.detail;
+    // get the new data you can use selectedIds, searchTerm, rawSearchTerm to filter the new data example:
+    // ID NOT IN :selectedIds, (LIKE title Like '%searchTerm%') OR (Sub 2 LIKE '%searchTerm%')
+    this.searchResults = [...Array(10).keys()].map((e) => ({
+      id: "" + e,
+      icon: e < 5 ? ACCOUNT_ICON : OPPORTUNITY_ICON,
+      title: "New data " + e,
+      subtitles: [
+        {
+          label: "Subtitle 1",
+          value: "Sub1 " + e
+        },
+        {
+          label: "Sub 2",
+          value: "Sub2 " + e,
+          highlightSearchTerm: true // hightlight the searchTerm for the subtitle (so that your users know that this field is being used in the search)
+        }
+      ]
+    }));
   }
 
-  /**
-   * Handles the lookup search event.
-   * Calls the server to perform the search and returns the resuls to the lookup.
-   * @param {event} event `search` event emmitted by the lookup
-   */
-  handleLookupSearch(event) {
-    // Call Apex endpoint to search for records and pass results to the lookup
-    search(event.detail)
-      .then((data) => {
-        const [accounts, opportunities] = data;
-        this.searchResults = [
-          ...this.formatAccounts(accounts),
-          ...this.formatOpportunities(opportunities)
-        ];
-      })
-      .catch((error) => {
-        this.notifyUser(
-          "Lookup Error",
-          "An error occured while searching with the lookup field.",
-          "error"
-        );
-        // eslint-disable-next-line no-console
-        console.error("Lookup error", JSON.stringify(error));
-        this.errors = [error];
-      });
-  }
-
-  formatAccounts(accounts) {
-    return accounts.map(
-      ({ Id, Name, BillingCity, AccountNumber, OwnerId }) => ({
-        id: Id,
-        title: Name,
-        icon: ACCOUNT_ICON,
-        subtitle: !BillingCity ? "Account" : "Account • " + BillingCity,
-        subtitles: [
-          {
-            label: "Account Number Label",
-            value: AccountNumber,
-            highlightSearchTerm: true
-          },
-          {
-            label: "subtitle",
-            value: BillingCity,
-            highlightSearchTerm: true
-          },
-          {
-            label: "OwnerId",
-            value: OwnerId,
-            highlightSearchTerm: true
-          }
-        ]
-      })
-    );
-  }
-
-  formatOpportunities(opportunities) {
-    return opportunities.map(
-      ({ Id, Name, StageName, LeadSource, OwnerId }) => ({
-        id: Id,
-        title: Name,
-        icon: OPPORTUNITY_ICON,
-        subtitles: [
-          {
-            label: "StageName",
-            value: "Opportunity • " + StageName,
-            highlightSearchTerm: true
-          },
-          {
-            label: "Sattus",
-            value: LeadSource,
-            highlightSearchTerm: true
-          },
-          {
-            label: "OwnerId",
-            value: OwnerId,
-            highlightSearchTerm: true
-          }
-        ]
-      })
-    );
-  }
-
-  /**
-   * Handles the lookup selection change
-   * @param {event} event `selectionchange` event emmitted by the lookup.
-   * The event contains the list of selected ids.
-   */
   // eslint-disable-next-line no-unused-vars
-  handleLookupSelectionChange(event) {
+  handleChange(event) {
     this.checkForErrors();
   }
 
   handleAction(event) {
-    if (event.detail === "newAccountAction") {
-      this[NavigationMixin.Navigate]({
-        type: "standard__objectPage",
-        attributes: {
-          objectApiName: "Account",
-          actionName: "new"
-        }
-      });
-    } else if (event.detail === "newOpportunityAction") {
-      this[NavigationMixin.Navigate]({
-        type: "standard__objectPage",
-        attributes: {
-          objectApiName: "Opportunity",
-          actionName: "new"
-        }
-      });
+    if (event.detail === "actionA") {
+      // navigate to account page
+    } else if (event.detail === "actionB") {
+      // navigate to new opportunity page
     }
   }
 
   // All functions below are part of the sample app form (not required by the lookup).
 
-  handleLookupTypeChange(event) {
-    this.initialSelection = [];
-    this.errors = [];
+  handleMultyEntryChange(event) {
     this.isMultiEntry = event.target.checked;
   }
 
@@ -171,8 +85,15 @@ export default class SampleLookupContainer extends NavigationMixin(
 
   handleSubmit() {
     this.checkForErrors();
-    if (this.errors.length === 0) {
-      this.notifyUser("Success", "The form was submitted.", "success");
+
+    if (!this.errors.length) {
+      this.dispatchEvent(
+        new ShowToastEvent({
+          title: "Success",
+          message: "The form was submitted.",
+          variant: "success"
+        })
+      );
     }
   }
 
@@ -195,20 +116,8 @@ export default class SampleLookupContainer extends NavigationMixin(
       });
     }
     // Enforcing required field
-    if (selection.length === 0) {
+    if (!selection.length) {
       this.errors.push({ message: "Please make a selection." });
-    }
-  }
-
-  notifyUser(title, message, variant) {
-    if (this.notifyViaAlerts) {
-      // Notify via alert
-      // eslint-disable-next-line no-alert
-      alert(`${title}\n${message}`);
-    } else {
-      // Notify via toast (only works in LEX)
-      const toastEvent = new ShowToastEvent({ title, message, variant });
-      this.dispatchEvent(toastEvent);
     }
   }
 }

@@ -24,7 +24,7 @@ export default class Lookup extends LightningElement {
   @api minSearchTermLength = 2;
   @api placeholder = "";
   @api required = false;
-  @api scrollAfterNItems = null;
+  @api scrollAfterNItems = "*";
   @api variant = VARIANT_LABEL_STACKED;
 
   // Template properties
@@ -528,13 +528,13 @@ export default class Lookup extends LightningElement {
   }
 
   get getListboxClass() {
-    return [
-      "slds-dropdown",
-      "slds-dropdown_fluid",
-      ...(this.scrollAfterNItems
-        ? [`slds-dropdown_length-with-icon-${this.scrollAfterNItems}`]
-        : [])
-    ].join(" ");
+    return (
+      "slds-dropdown " +
+      (this.scrollAfterNItems
+        ? `slds-dropdown_length-with-icon-${this.scrollAfterNItems} `
+        : "") +
+      "slds-dropdown_fluid"
+    );
   }
 
   get isInputReadonly() {

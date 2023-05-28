@@ -7,7 +7,6 @@ import getInitialSelection from "@salesforce/apex/SobjectLookupSampleController.
 export default class SobjectLookupSample extends NavigationMixin(
   LightningElement
 ) {
-  disabled = false;
   isMultiEntry = true;
   maxSelectionSize = 2;
   notifyViaAlerts = false;
@@ -25,19 +24,19 @@ export default class SobjectLookupSample extends NavigationMixin(
       fields: [
         { label: "Name", fieldName: "Name", primary: true },
         { label: "Phone", fieldName: "Phone" },
-        { label: "Owner", fieldName: "Owner.Name" }
+        { label: "Owner", fieldName: "Owner.Name", searchable: true }
       ],
-      whereClause: "Id != NULL"
+      whereClause: "OwnerId != NULL"
     },
     {
       sobjectApiName: "Opportunity",
       icon: "standard:opportunity",
       fields: [
         { label: "Name", fieldName: "Name", primary: true },
-        { label: "StageName", fieldName: "StageName" },
-        { label: "Owner", fieldName: "Owner.Name", searchable: true }
+        { label: "StageName", fieldName: "StageName", searchable: true },
+        { label: "Owner", fieldName: "Owner.Name" }
       ],
-      whereClause: "Id != NULL"
+      whereClause: "StageName != NULL"
     },
     {
       sobjectApiName: "Contact",
@@ -47,7 +46,7 @@ export default class SobjectLookupSample extends NavigationMixin(
         { label: "Email", fieldName: "Email", searchable: true },
         { label: "Title", fieldName: "Title" }
       ],
-      whereClause: "Id != NULL"
+      whereClause: "Email != NULL"
     }
   ];
 
@@ -97,8 +96,6 @@ export default class SobjectLookupSample extends NavigationMixin(
   // All functions below are part of the sample app form (not required by the lookup).
 
   handleLookupTypeChange(event) {
-    this.value = [];
-    this.errors = [];
     this.isMultiEntry = event.target.checked;
   }
 

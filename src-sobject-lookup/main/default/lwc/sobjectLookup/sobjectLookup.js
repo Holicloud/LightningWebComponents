@@ -7,6 +7,7 @@ import getRecentlyViewed from "@salesforce/apex/SObjectLookupController.getRecen
 import getInitialSelection from "@salesforce/apex/SObjectLookupController.getInitialSelection";
 
 export default class SobjectLookup extends LightningElement {
+  @api actions;
   @api disabled;
   @api helpText;
   @api isMultiEntry;
@@ -17,7 +18,6 @@ export default class SobjectLookup extends LightningElement {
   @api required;
   @api scrollAfterNItems;
   @api variant;
-  @api actions;
 
   _errors = [];
   _searchResults;
@@ -27,22 +27,10 @@ export default class SobjectLookup extends LightningElement {
   recentlyViewed = [];
 
   @api
-  get value() {
-    return this._value;
-  }
-  set value(value) {
-    this._value = value;
-  }
-
-  @api
-  get validity() {
-    return this.lookupElement?.validity;
-  }
-
-  @api
   get errors() {
     return this._errors;
   }
+
   set errors(errors) {
     this._errors = errors;
   }
@@ -57,6 +45,7 @@ export default class SobjectLookup extends LightningElement {
       this._sets = clone(sets).map((set) => {
         const { fields } = set;
 
+        // set primary if not defined
         if (!fields.find((field) => field.searchable)) {
           fields[0].primary = true;
         }
@@ -73,6 +62,20 @@ export default class SobjectLookup extends LightningElement {
   }
 
   @api
+  get validity() {
+    return this.lookupElement?.validity;
+  }
+
+  @api
+  get value() {
+    return this._value;
+  }
+
+  set value(value) {
+    this._value = value;
+  }
+
+  @api
   focus() {
     this.lookupElement?.focus();
   }
@@ -82,6 +85,7 @@ export default class SobjectLookup extends LightningElement {
     this.lookupElement?.blur();
   }
 
+  // sets the initial selection if there is one
   @wire(getInitialSelection, {
     initialSelection: "$value",
     datasets: "$datasets"
@@ -94,6 +98,7 @@ export default class SobjectLookup extends LightningElement {
     }
   }
 
+  // gets recentlyViewed that match the each set criteria
   @wire(getRecentlyViewed, { datasets: "$datasets" })
   getRecentlyViewed({ data, error }) {
     if (data) {
@@ -103,6 +108,7 @@ export default class SobjectLookup extends LightningElement {
     }
   }
 
+  // gets database data that match set criteria, searchTerm and is not already selected
   handleSearch(event) {
     const { searchTerm, selectedIds } = event.detail;
 
@@ -121,9 +127,12 @@ export default class SobjectLookup extends LightningElement {
 
     for (let index = 0; index < privateData.length; index++) {
       const { fields, primaryField, icon } = this._sets[index];
-      const records = flatObjectsInArray(privateData[index]);
+      // flat inner objects so that {Id: '1', Owner: {Id: '1'}} becomes => {Id: '1', Owner.id: '1'}
+      const setRecords = flatObjectsInArray(privateData[index]);
+
       result.push(
-        records.map((record) => {
+        setRecords.map((record) => {
+          // build the subtitles for each record
           const subtitles = fields
             .filter((field) => !field.primary)
             .map(({ label, fieldName, searchable }) => ({
@@ -154,10 +163,6 @@ export default class SobjectLookup extends LightningElement {
     this.dispatchEvent(new CustomEvent("action", { detail }));
   }
 
-  get lookupElement() {
-    return this.template.querySelector("c-lookup");
-  }
-
   get datasets() {
     return JSON.stringify(
       this._sets.map(
@@ -169,5 +174,9 @@ export default class SobjectLookup extends LightningElement {
         })
       )
     );
+  }
+
+  get lookupElement() {
+    return this.template.querySelector("c-lookup");
   }
 }

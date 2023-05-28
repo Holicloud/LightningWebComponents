@@ -1,5 +1,7 @@
 <template>
-  <lightning-card title="Sample Lookup (Lightning Web Component)">
+  <lightning-card
+    title="c-sobject-lookup (SObject Lookup Lightning Web Component)"
+  >
     <div class="slds-form slds-form_stacked slds-var-m-around_xx-large">
       <div class="slds-grid slds-gutters">
         <div class="slds-col">
@@ -29,7 +31,6 @@
 
       <c-sobject-lookup
         actions={actions}
-        disabled={disabled}
         errors={errors}
         help-text="some help text"
         is-multi-entry={isMultiEntry}
@@ -42,7 +43,6 @@
         scroll-after-n-items="5"
         sets={sets}
         value={value}
-        variant="label-stacked"
       ></c-sobject-lookup>
 
       <div class="slds-var-m-top_large">
