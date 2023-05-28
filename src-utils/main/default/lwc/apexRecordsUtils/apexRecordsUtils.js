@@ -1,9 +1,9 @@
-export { flattObjectsInArray };
+export { flatObjectsInArray };
 /**
  * @param  {Array} array
  * @return array of records flattened
  */
-function flattObjectsInArray(array) {
+function flatObjectsInArray(array) {
   array.forEach((element) => {
     Object.getOwnPropertyNames(element).forEach((property) => {
       const curCol = element[property];

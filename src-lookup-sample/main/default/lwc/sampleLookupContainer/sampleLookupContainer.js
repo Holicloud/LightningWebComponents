@@ -51,7 +51,6 @@ export default class SampleLookupContainer extends NavigationMixin(
    * @param {event} event `search` event emmitted by the lookup
    */
   handleLookupSearch(event) {
-    // const lookupElement = event.target;
     // Call Apex endpoint to search for records and pass results to the lookup
     search(event.detail)
       .then((data) => {

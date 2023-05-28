@@ -1,5 +1,0 @@
-.input-combobox:focus-within > .slds-dropdown {
-  display: block;
-  visibility: visible;
-  opacity: 1;
-}

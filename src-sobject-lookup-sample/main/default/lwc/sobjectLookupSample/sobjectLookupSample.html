@@ -27,22 +27,23 @@
         Lightning Experience.
       </p>
 
-      <c-lookup
-        value={initialSelection}
-        errors={errors}
-        onsearch={handleLookupSearch}
-        search-results={searchResults}
-        default-search-results={recentlyViewed}
-        onchange={handleLookupSelectionChange}
-        label="Search"
-        placeholder="Search Salesforce"
-        is-multi-entry={isMultiEntry}
-        help-text="some help text"
+      <c-sobject-lookup
+        value={value}
         actions={actions}
+        errors={errors}
+        help-text={helpText}
+        disabled={disabled}
+        is-multi-entry={isMultiEntry}
+        min-search-term-length={minSearchTermLength}
+        label={label}
         onaction={handleAction}
-        required
-      >
-      </c-lookup>
+        onchange={handleChange}
+        placeholder={placeholder}
+        required={required}
+        scroll-after-n-items={scrollAfterNItems}
+        sets={sets}
+        variant={variant}
+      ></c-sobject-lookup>
 
       <div class="slds-var-m-top_large">
         <lightning-button label="Focus" onclick={handleFocus}></lightning-button

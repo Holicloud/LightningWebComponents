@@ -4,6 +4,10 @@
       <abbr lwc:if={required} title="required" class="slds-required">*</abbr>
       {label}
     </label>
+    <lightning-helptext
+      lwc:if={helpText}
+      content={helpText}
+    ></lightning-helptext>
     <div class="slds-form-element__control">
       <div class={getContainerClass}>
         <div
@@ -136,6 +140,7 @@
                         lwc:if={item.result.hasSubtitles}
                       >
                         <span
+                          lwc:if={subtitleItem.value}
                           key={subtitleItem.index}
                           class="slds-listbox__option-meta slds-listbox__option-meta_entity"
                         >

@@ -18,6 +18,7 @@ const REGEX_EXTRA_TRAP = /(\$|\\)/g;
 export default class Lookup extends LightningElement {
   // Public properties
   @api disabled = false;
+  @api helpText = "";
   @api isMultiEntry = false;
   @api label = "";
   @api minSearchTermLength = 2;

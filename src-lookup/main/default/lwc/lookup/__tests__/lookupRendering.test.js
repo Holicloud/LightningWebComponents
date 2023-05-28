@@ -263,4 +263,16 @@ describe("c-lookup rendering", () => {
     jest.useRealTimers();
     await expect(lookupEl).toBeAccessible();
   });
+
+  it("renders helptext by default", async () => {
+    const props = { helpText: "some help text" };
+    const lookupEl = createLookupElement(props);
+
+    // Verify label
+    const helpTextElement =
+      lookupEl.shadowRoot.querySelector("lightning-helptext");
+    expect(helpTextElement.content).toBe(props.helpText);
+
+    await expect(lookupEl).toBeAccessible();
+  });
 });
