@@ -7,12 +7,22 @@
                 <identifier>c_sampleLookupContainer</identifier>
             </componentInstance>
         </itemInstances>
-        <name>main</name>
+        <name>column1</name>
+        <type>Region</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentName>sobjectLookupSample</componentName>
+                <identifier>c_sobjectLookupSample</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>column2</name>
         <type>Region</type>
     </flexiPageRegions>
     <masterLabel>CustomLookup</masterLabel>
     <template>
-        <name>flexipage:defaultAppHomeTemplate</name>
+        <name>flexipage:appHomeTemplateTwoColumns</name>
     </template>
     <type>AppPage</type>
 </FlexiPage>

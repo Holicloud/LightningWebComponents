@@ -1,11 +1,14 @@
 {
   "packageDirectories": [
     {
-      "path": "src-lookup",
+      "path": "src-lookup"
+    },
+    {
+      "path": "src-datatable",
       "default": true
     },
     {
-      "path": "src-datatable"
+      "path": "src-datatable-sample"
     },
     {
       "path": "src-lookup-sample"

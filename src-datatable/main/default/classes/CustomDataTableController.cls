@@ -18,7 +18,7 @@ public with sharing class CustomDataTableController {
 
   @AuraEnabled(cacheable=true)
   public static Map<String, Object> getFieldInformation(
-    String objectAPIName,
+    String objectApiName,
     List<String> fieldApiNames
   ) {
     objectApiName = Schema.getGlobalDescribe()
@@ -35,7 +35,7 @@ public with sharing class CustomDataTableController {
         if (fieldApiName.contains('.')) {
           UtilityDescribe fieldDescribeUtil = getFieldDescribe(
             fieldApiName,
-            objectAPIName
+            objectApiName
           );
           describe = fieldDescribeUtil.fieldDescribe;
           describeAsMap = (Map<String, Object>) JSON.deserializeUntyped(
@@ -45,7 +45,7 @@ public with sharing class CustomDataTableController {
           describeAsMap.put('name', fieldDescribeUtil.fullApiName);
         } else {
           describe = FieldUtilityClass.getFieldDescribe(
-            objectAPIName,
+            objectApiName,
             fieldApiName
           );
           describeAsMap = (Map<String, Object>) JSON.deserializeUntyped(

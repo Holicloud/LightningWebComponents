@@ -11,17 +11,15 @@ const TYPES = {
   reference: "text"
 };
 
-const PERCENT_STEP = `.${Array.apply(null, { length: 17 })
-  .map(() => "0")
-  .join("")}1`;
+export { formatColumns };
+
 /**
- * @todo inner "fieldName"  has to apply column.fieldName.split('.').join('_');
  * @return promise
  */
 async function formatColumns({ columns, objectApiName }) {
   try {
     const fieldInformation = await getFieldInformation({
-      objectAPIName: objectApiName,
+      objectApiName: objectApiName,
       fieldApiNames: columns.map((e) => e.fieldName)
     }).catch((error) => {
       throw error;
@@ -126,7 +124,7 @@ function setTypeAttributes(column, fieldDescribe) {
         minimumFractionDigits: scale,
         maximumFractionDigits: scale,
         formatStyle: "percent-fixed",
-        step: PERCENT_STEP
+        step: ".000000000000000001"
       };
       break;
     case "picklist":
@@ -205,5 +203,3 @@ function formatfieldNamesProperties(
   object.apexFieldsReferenced = apexApiNames;
   return object;
 }
-
-export { formatColumns };

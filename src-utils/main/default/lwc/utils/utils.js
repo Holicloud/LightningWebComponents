@@ -1,7 +1,7 @@
 export { isBlank, clone };
 
-function clone(arrayOfRecords) {
-  return JSON.parse(JSON.stringify(arrayOfRecords));
+function clone(any) {
+  return JSON.parse(JSON.stringify(any));
 }
 
 /**

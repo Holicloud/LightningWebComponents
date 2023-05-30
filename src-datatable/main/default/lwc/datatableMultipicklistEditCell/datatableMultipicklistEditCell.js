@@ -34,19 +34,17 @@ export default class DatatableMultipicklistEditCell extends LightningElement {
 
   @api
   get validity() {
-    return this.template.querySelector("lightning-checkbox-group").validity;
+    return this.checkBoxElement.validity;
   }
 
   @api
   showHelpMessageIfInvalid() {
-    this.template
-      .querySelector("lightning-checkbox-group")
-      .showHelpMessageIfInvalid();
+    this.checkBoxElement.showHelpMessageIfInvalid();
   }
 
   @api
   focus() {
-    this.template.querySelector("lightning-checkbox-group").focus();
+    this.checkBoxElement.focus();
   }
 
   // wire methods
@@ -96,7 +94,7 @@ export default class DatatableMultipicklistEditCell extends LightningElement {
       this._subscription = subscribe(
         this.messageContext,
         dataTableMessageChannel,
-        (message) => this._handleMessage(message),
+        (message) => this.handleMessage(message),
         { scope: APPLICATION_SCOPE }
       );
     }
@@ -107,7 +105,7 @@ export default class DatatableMultipicklistEditCell extends LightningElement {
     this._subscription = null;
   }
 
-  _handleMessage({ action, detail }) {
+  handleMessage({ action, detail }) {
     const { rowId, values } = detail;
     if (action === "rowinforesponse" && this.rowId === rowId) {
       this._options = values;
@@ -134,5 +132,9 @@ export default class DatatableMultipicklistEditCell extends LightningElement {
 
   disconnectedCallback() {
     this._unsubscribeToMessageChannel();
+  }
+
+  get checkBoxElement() {
+    return this.template.querySelector("lightning-checkbox-group");
   }
 }

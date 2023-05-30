@@ -1,16 +1,11 @@
-/* eslint-disable no-console */
 import { LightningElement, api, track, wire } from "lwc";
 import getRecords from "@salesforce/apex/CustomDataTableController.getRecords";
 // import getRecordsNonCacheable from '@salesforce/apex/CustomDataTableController.getRecordsNonCacheable';
 import LightningConfirm from "lightning/confirm";
 import { formatColumns } from "c/customDataTableHelper";
-import {
-  flattenRecords,
-  cloneArray,
-  showToastError,
-  showToastApexError
-} from "c/commonFunctionsHelper";
-
+import { ShowToastEvent } from "lightning/platformShowToastEvent";
+import { clone } from "c/utils";
+import { flatObjectsInArray } from "c/apexRecordsUtils";
 import {
   getObjectInfo,
   getPicklistValuesByRecordType
@@ -18,7 +13,7 @@ import {
 import { publish, MessageContext } from "lightning/messageService";
 import dataTableMessageChannel from "@salesforce/messageChannel/DataTable__c";
 
-const DELAY = 800;
+const DELAY = 300;
 const RECORD_TYPE_ID_FIELD = "RecordTypeId";
 export default class Datatable extends LightningElement {
   // public props
@@ -72,13 +67,13 @@ export default class Datatable extends LightningElement {
 
   @track _draftValues = [];
 
-  _currentRecordType = null;
   _delayTimeout;
   _loadMoreStatus;
   _queryOffSet = 0;
   _recordTypeInfos = [];
   _showSpinner = true;
   _staticRecords;
+  _currentRecordType = null;
   _totalNumberOfRecords;
 
   // public getters-setters
@@ -162,15 +157,9 @@ export default class Datatable extends LightningElement {
   }
 
   set columns(value) {
-    if (!value || !Array.isArray(value) || !value.length) {
-      showToastError.call(
-        this,
-        `invalid value for columns ${JSON.stringify(value)}`
-      );
-      return;
+    if (Array.isArray(value) && !value.length) {
+      this._state.columns = value;
     }
-
-    this._state.columns = value;
   }
 
   @api
@@ -205,9 +194,8 @@ export default class Datatable extends LightningElement {
     return [...result];
   }
 
-  get actualDraftedValues() {
-    return this.template.querySelector("c-data-table-extended-types")
-      .draftValues;
+  get tableElement() {
+    return this.template.querySelector("c-data-table-extended-types");
   }
 
   // public methods
@@ -220,14 +208,15 @@ export default class Datatable extends LightningElement {
       this._recordTypeInfos = JSON.parse(JSON.stringify(data.recordTypeInfos));
       this._currentRecordType = Object.keys(data.recordTypeInfos)[0];
     } else if (error) {
-      showToastApexError.call(this, error);
+      this.showToastApexError(error);
       this._recordTypeInfos = null;
       this._currentRecordType = null;
     }
   }
 
+  // fetches all the picklist information for all the recordtypes for the sobject
   @wire(getPicklistValuesByRecordType, {
-    objectApiName: "$_state.objectApiName",
+    objectApiName: "$objectApiName",
     recordTypeId: "$_currentRecordType"
   })
   async wiredData({ error, data }) {
@@ -241,14 +230,14 @@ export default class Datatable extends LightningElement {
         this._currentRecordType = nextRecordType;
       }
     } else if (error) {
-      showToastApexError.call(this, error);
+      this.showToastApexError(error);
     }
   }
 
   // event handlers
 
   async _handleSort(event) {
-    if (this.actualDraftedValues?.length) {
+    if (this.tableElement.draftValues?.length) {
       const result = await LightningConfirm.open({
         message:
           "You have unsaved changes. Are you sure you want to DISCARD these changes?",
@@ -321,7 +310,7 @@ export default class Datatable extends LightningElement {
         const result = await getRecords({
           queryParameters: JSON.stringify({
             limitOfRecords,
-            objectApiName: objectApiName,
+            objectApiName,
             fields: this._fields,
             offSet: this._queryOffSet,
             sortedBy,
@@ -329,16 +318,14 @@ export default class Datatable extends LightningElement {
           })
         });
 
-        if (result) {
-          const newData = flattenRecords(cloneArray(result.records));
-          this._state.records = this._state.records.concat(newData);
-          this._staticRecords = this._staticRecords.concat(newData);
-          this._loadMoreStatus = "";
-          this._totalNumberOfRecords = result.totalRecordCount;
-        }
+        const newData = flatObjectsInArray(clone(result.records));
+        this._state.records = this._state.records.concat(newData);
+        this._staticRecords = this._staticRecords.concat(newData);
+        this._loadMoreStatus = "";
+        this._totalNumberOfRecords = result.totalRecordCount;
       } catch (error) {
         this._loadMoreStatus = "";
-        showToastApexError.call(this, error);
+        this.showToastApexError(error);
         this._state.records = previousStaticRecords;
         this._staticRecords = previousRecords;
         this._queryOffSet = previousOffSet;
@@ -350,32 +337,34 @@ export default class Datatable extends LightningElement {
   }
 
   _handleSave(event) {
-    event.preventDefault();
-    // this.draftValues = [{Level1__c: false, Id: 'a018b00000yi4VeAAI'}];
-    // this.draftValues = event.detail.draftValues;
+    const theEvent = new CustomEvent("save", { detail: event.detail });
+    this.dispatchEvent(theEvent);
   }
 
+  // a child edit table requested current row information
   _handleRowInfoRequest(event) {
     event.stopPropagation();
 
     const { rowId, fieldName, parentName } = event.detail;
 
-    const rowInfo = this._getRow({ rowId });
+    const row = this.getRow({ rowId });
 
     let { values, controllerValues } = {
-      ...this._recordTypeInfos[
-        this._getFieldValue({ field: RECORD_TYPE_ID_FIELD, rowInfo })
-      ].picklistFieldValues[fieldName]
+      ...this._recordTypeInfos[row[RECORD_TYPE_ID_FIELD]].picklistFieldValues[
+        fieldName
+      ]
     };
 
     if (!values) return;
 
     if (parentName) {
-      const parentValue = this._getFieldValue({ field: parentName, rowInfo });
-      values = values.filter((opt) =>
-        opt.validFor.includes(controllerValues[parentValue])
+      const parentValue = row[parentName];
+      values = values.filter(({ validFor }) =>
+        validFor.includes(controllerValues[parentValue])
       );
     }
+
+    // publish message so the child gets the row data aswell as que recordtype information for the current recordtype
 
     publish(this.messageContext, dataTableMessageChannel, {
       action: "rowinforesponse",
@@ -385,40 +374,9 @@ export default class Datatable extends LightningElement {
 
   _handleChange(event) {
     event.stopPropagation();
-
-    const allDrafted = this.template.querySelector(
-      "c-data-table-extended-types"
-    ).draftValues;
-
-    for (const cellChangeDraft of event.detail.draftValues) {
-      const [field] = Object.getOwnPropertyNames(cellChangeDraft);
-
-      const { type, typeAttributes } = this._state.columns.find(
-        (e) => e.fieldName === field
-      );
-
-      const rowId = cellChangeDraft.Id;
-      const rowInfo = this._getRow({ rowId });
-      const recordTypeInfo =
-        this._recordTypeInfos[
-          this._getFieldValue({ field: RECORD_TYPE_ID_FIELD, rowInfo })
-        ];
-
-      if (["picklist", "boolean", "multipicklist"].includes(type)) {
-        this._updateDependencies({
-          allDrafted,
-          field,
-          recordTypeInfo,
-          rowId,
-          rowInfo,
-          parentValue:
-            typeAttributes?.isChild &&
-            this._getFieldValue({ field: typeAttributes.parentName, rowInfo })
-        });
-      }
-    }
-
-    this._draftValues = [...allDrafted];
+    this.updatePicklistDependenciesWhenControllingFieldChanged(
+      event.detail.draftValues
+    );
   }
   // private methods
 
@@ -429,7 +387,7 @@ export default class Datatable extends LightningElement {
       if (data) {
         this._state.columns = data;
       } else {
-        showToastApexError.call(this, error);
+        this.showToastApexError(error);
       }
       this.formatColumnsHasRun = true;
     } else {
@@ -454,14 +412,12 @@ export default class Datatable extends LightningElement {
         })
       });
 
-      if (result) {
-        this._totalNumberOfRecords = result.totalRecordCount;
-        const records = flattenRecords(cloneArray(result.records));
-        this._staticRecords = [...records];
-        this._state.records = records;
-      }
+      this._totalNumberOfRecords = result.totalRecordCount;
+      const records = flatObjectsInArray(clone(result.records));
+      this._staticRecords = [...records];
+      this._state.records = records;
     } catch (error) {
-      showToastApexError.call(this, error);
+      this.showToastApexError(error);
       this._state.records = null;
       this._staticRecords = null;
     }
@@ -469,14 +425,57 @@ export default class Datatable extends LightningElement {
     this._showSpinner = false;
   }
 
-  _getRow({ rowId }) {
-    const drafted = this.template
-      .querySelector("c-data-table-extended-types")
-      .draftValues.find((e) => e.Id === rowId);
+  getRow({ rowId }) {
+    return {
+      ...this._state.records.find((e) => e.Id === rowId),
+      ...this.tableElement.draftValues.find((e) => e.Id === rowId)
+    };
+  }
 
-    const record = this._state.records.find((e) => e.Id === rowId);
+  showToastApexError({ title, message, variant }) {
+    this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
+  }
 
-    return { drafted, record };
+  // hooks
+
+  async connectedCallback() {
+    await this._formatColumns();
+    await this._showRecords();
+  }
+
+  handlePicklistValuesByRecordTypeFetched(event) {
+    this._recordTypeInfos = event.detail;
+  }
+
+  // dependency fields
+
+  updatePicklistDependenciesWhenControllingFieldChanged(changedRecords) {
+    const allDrafted = [...this.tableElement.draftValues];
+
+    for (const changedRecord of changedRecords) {
+      const [field] = Object.getOwnPropertyNames(changedRecord);
+      const { type, typeAttributes } = this._state.columns.find(
+        ({ fieldName }) => fieldName === field
+      );
+
+      if (["picklist", "boolean", "multipicklist"].includes(type)) {
+        const rowId = changedRecord.Id;
+        const row = this.getRow({ rowId });
+        this._updateDependencies({
+          allDrafted,
+          field,
+          recordTypeInfo: this._recordTypeInfos[row[RECORD_TYPE_ID_FIELD]],
+          rowId,
+          row,
+          parentValue: typeAttributes?.isChild
+            ? row[typeAttributes.parentName]
+            : null
+        });
+      }
+    }
+
+    // updates the data table
+    this._draftValues = [...allDrafted];
   }
 
   _updateDependencies({
@@ -486,27 +485,26 @@ export default class Datatable extends LightningElement {
     parentValue,
     recordTypeInfo,
     rowId,
-    rowInfo
+    row
   }) {
     const {
       type,
       typeAttributes: { isChild, isParent, childs }
     } = this._state.columns.find((e) => e.fieldName === field);
 
-    const value = this._getFieldValue({ field, rowInfo });
+    const value = row[field];
 
     if (["picklist", "multipicklist"].includes(type)) {
-      const existingDraft = allDrafted.find(({ Id }) => Id === rowId);
-
       if (clearChild) {
-        this._pushToDraft({ allDrafted, existingDraft, field, rowId });
+        this.pushToDraft({ field, rowId, allDrafted });
       } else if (value !== undefined) {
+        // there is a value in the field or the value on the field changed
         let { values, controllerValues } =
           recordTypeInfo.picklistFieldValues[field];
 
         if (isChild) {
-          values = values.filter((opt) =>
-            opt.validFor.includes(controllerValues[parentValue])
+          values = values.filter(({ validFor }) =>
+            validFor.includes(controllerValues[parentValue])
           );
         }
 
@@ -517,8 +515,10 @@ export default class Datatable extends LightningElement {
           .every((selected) => validOptions.includes(selected));
 
         if (!valid) {
+          // current selected option is not valid because of the recordtype and field dependency so
+          // clear this field and all dependent fields as well
           clearChild = true;
-          this._pushToDraft({ allDrafted, existingDraft, field, rowId });
+          this.pushToDraft({ field, rowId, allDrafted });
         }
       }
     }
@@ -526,39 +526,24 @@ export default class Datatable extends LightningElement {
     if (isParent && (value !== undefined || clearChild)) {
       for (const childField of childs) {
         this._updateDependencies({
-          rowId,
           allDrafted,
+          rowId,
           field: childField,
           parentValue: value,
           recordTypeInfo,
-          rowInfo,
+          row,
           clearChild
         });
       }
     }
   }
 
-  _pushToDraft({ allDrafted, existingDraft, field, rowId }) {
+  pushToDraft({ field, rowId, allDrafted }) {
+    const existingDraft = allDrafted.find(({ Id }) => Id === rowId);
     if (!existingDraft) {
       allDrafted.push({ [field]: "", Id: rowId });
     } else {
       existingDraft[field] = "";
     }
-  }
-
-  _getFieldValue({ field, rowInfo }) {
-    const valueInDrafted = rowInfo.drafted?.[field];
-    if (typeof valueInDrafted === "boolean" || valueInDrafted) {
-      return valueInDrafted;
-    }
-
-    return rowInfo.record?.[field];
-  }
-
-  // hooks
-
-  async connectedCallback() {
-    await this._formatColumns();
-    await this._showRecords();
   }
 }
