@@ -8,7 +8,7 @@ import getInitialSelection from "@salesforce/apex/SObjectLookupController.getIni
 
 export default class SobjectLookup extends LightningElement {
   @api actions;
-  @api disabled;
+
   @api helpText;
   @api isMultiEntry;
   @api label;
@@ -25,6 +25,7 @@ export default class SobjectLookup extends LightningElement {
   _sets = [];
   _value;
   recentlyViewed = [];
+  _disabled = false;
 
   @api
   get errors() {
@@ -36,8 +37,17 @@ export default class SobjectLookup extends LightningElement {
   }
 
   @api
+  get disabled() {
+    return this._disabled;
+  }
+
+  set disabled(value) {
+    this._disabled = value;
+  }
+
+  @api
   get sets() {
-    return this.sets;
+    return this._sets;
   }
 
   set sets(sets) {
@@ -46,15 +56,15 @@ export default class SobjectLookup extends LightningElement {
         const { fields } = set;
 
         // set primary if not defined
-        if (!fields.find((field) => field.searchable)) {
+        if (!fields.find(({ searchable }) => searchable)) {
           fields[0].primary = true;
         }
 
         set.searchByFields = fields
           .filter(({ searchable, primary }) => searchable || primary)
-          .map(({ fieldName }) => fieldName);
+          .map(({ name }) => name);
         set.primaryField = fields.find(({ primary }) => primary);
-        set.fieldApiNames = fields.map(({ fieldName }) => fieldName);
+        set.fieldApiNames = fields.map(({ name }) => name);
 
         return set;
       });
@@ -93,6 +103,7 @@ export default class SobjectLookup extends LightningElement {
   wiredInitialSelection({ error, data }) {
     if (data) {
       this._selection = this.processSearch(data);
+      this._disabled = false;
     } else if (error) {
       this._errors = reduceErrors(error);
     }
@@ -134,16 +145,16 @@ export default class SobjectLookup extends LightningElement {
         setRecords.map((record) => {
           // build the subtitles for each record
           const subtitles = fields
-            .filter((field) => !field.primary)
-            .map(({ label, fieldName, searchable }) => ({
+            .filter(({ primary }) => !primary)
+            .map(({ label, name, searchable }) => ({
               label,
-              value: record[fieldName],
+              value: record[name],
               highlightSearchTerm: searchable
             }));
 
           return {
             id: record.Id,
-            title: record[primaryField.fieldName],
+            title: record[primaryField.name],
             icon,
             subtitles
           };
@@ -163,6 +174,14 @@ export default class SobjectLookup extends LightningElement {
     this.dispatchEvent(new CustomEvent("action", { detail }));
   }
 
+  handleFocus() {
+    this.dispatchEvent(new CustomEvent("focus"));
+  }
+
+  handleBlur() {
+    this.dispatchEvent(new CustomEvent("blur"));
+  }
+
   get datasets() {
     return JSON.stringify(
       this._sets.map(
@@ -178,5 +197,11 @@ export default class SobjectLookup extends LightningElement {
 
   get lookupElement() {
     return this.template.querySelector("c-lookup");
+  }
+
+  connectedCallback() {
+    if (this.value && this.datasets?.length) {
+      this._disabled = true;
+    }
   }
 }

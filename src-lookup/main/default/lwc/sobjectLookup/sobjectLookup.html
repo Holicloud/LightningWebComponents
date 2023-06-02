@@ -2,13 +2,15 @@
   <c-lookup
     actions={actions}
     default-search-results={recentlyViewed}
-    disabled={disabled}
+    disabled={_disabled}
     errors={_errors}
     help-text={helpText}
     is-multi-entry={isMultiEntry}
     label={label}
     min-search-term-length={minSearchTermLength}
     onaction={handleAction}
+    onblur={handleBlur}
+    onfocus={handleFocus}
     onchange={handleChange}
     onsearch={handleSearch}
     placeholder={placeholder}

@@ -281,8 +281,8 @@ export default class Lookup extends LightningElement {
     // Indicate that component was interacted with
     this._isDirty = isUserInteraction;
     // Blur input after single select lookup selection
-    if (!this.isMultiEntry && this.hasSelection()) {
-      this._hasFocus = false;
+    if (this.isSingleEntry && this.hasSelection()) {
+      // this._hasFocus = false;
     }
     // If selection was changed by user, notify parent components
     if (isUserInteraction) {
@@ -365,11 +365,12 @@ export default class Lookup extends LightningElement {
 
   handleFocus() {
     // Prevent action if selection is not allowed
-    if (!this.isSelectionAllowed()) {
-      return;
-    }
+    // if (!this.isSelectionAllowed()) {
+    //   return;
+    // }
     this._hasFocus = true;
     this._focusedResultIndex = null;
+    this.dispatchEvent(new CustomEvent("focus"));
   }
 
   handleBlur() {
@@ -378,6 +379,7 @@ export default class Lookup extends LightningElement {
       return;
     }
     this._hasFocus = false;
+    this.dispatchEvent(new CustomEvent("blur"));
   }
 
   handleRemoveSelectedItem(event) {
@@ -388,6 +390,14 @@ export default class Lookup extends LightningElement {
     this._curSelection = this._curSelection.filter(({ id }) => id !== recordId);
     // Process selection update
     this.processSelectionUpdate(true);
+    this._cancelBlur = true;
+
+    if (!this.hasSelection()) {
+      // eslint-disable-next-line @lwc/lwc/no-async-operation
+      setTimeout(() => {
+        this.template.querySelector("input").focus();
+      }, 0);
+    }
   }
 
   handleClearSelection() {
@@ -395,6 +405,10 @@ export default class Lookup extends LightningElement {
     this._hasFocus = false;
     // Process selection update
     this.processSelectionUpdate(true);
+    // eslint-disable-next-line @lwc/lwc/no-async-operation
+    setTimeout(() => {
+      this.template.querySelector("input").focus();
+    }, 0);
   }
 
   handleNewRecordClick(event) {
