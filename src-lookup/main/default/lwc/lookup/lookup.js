@@ -374,8 +374,8 @@ export default class Lookup extends LightningElement {
   }
 
   handleBlur() {
-    // Prevent action if selection is either not allowed or cancelled
-    if (!this.isSelectionAllowed() || this._cancelBlur) {
+    // Prevent action if cancelled
+    if (this._cancelBlur) {
       return;
     }
     this._hasFocus = false;
