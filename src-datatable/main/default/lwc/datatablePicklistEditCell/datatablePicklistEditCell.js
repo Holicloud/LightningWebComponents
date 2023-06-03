@@ -35,19 +35,17 @@ export default class DatatablePicklistEditCell extends LightningElement {
 
   @api
   get validity() {
-    return this.template.querySelector("lightning-combobox").validity;
+    return this.inputElement.validity;
   }
 
   @api
   showHelpMessageIfInvalid() {
-    this.template
-      .querySelector("lightning-combobox")
-      .showHelpMessageIfInvalid();
+    this.inputElement.showHelpMessageIfInvalid();
   }
 
   @api
   focus() {
-    this.template.querySelector("lightning-combobox").focus();
+    this.inputElement.focus();
   }
 
   // wire methods
@@ -136,5 +134,9 @@ export default class DatatablePicklistEditCell extends LightningElement {
 
   disconnectedCallback() {
     this._unsubscribeToMessageChannel();
+  }
+
+  get inputElement() {
+    return this.template.querySelector("lightning-combobox");
   }
 }
