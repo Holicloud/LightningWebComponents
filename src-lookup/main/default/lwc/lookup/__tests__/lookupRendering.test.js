@@ -1,7 +1,6 @@
 const {
   createLookupElement,
   flushPromises,
-  inputSearchTerm,
   SAMPLE_SEARCH_ITEMS,
   LABEL_NO_RESULTS
 } = require("./lookupTest.utils");
@@ -86,8 +85,7 @@ describe("c-lookup rendering", () => {
     const lookupEl = createLookupElement(props);
 
     // Verify form element
-    const formElementEl = lookupEl.shadowRoot.querySelector("div:first-child");
-    expect(formElementEl.classList).toContain("slds-form-element_horizontal");
+    expect(lookupEl.classList).toContain("slds-form-element_horizontal");
 
     await expect(lookupEl).toBeAccessible();
   });
@@ -219,48 +217,17 @@ describe("c-lookup rendering", () => {
   });
 
   it("renders errors", async () => {
-    const errors = [
-      { id: "e1", message: "Sample error 1" },
-      { id: "e2", message: "Sample error 2" }
-    ];
-    const lookupEl = createLookupElement({
-      errors
-    });
+    const lookupEl = createLookupElement();
+    const message = "Sample error";
+
+    lookupEl.setCustomValidity(message);
 
     // Verify errors
-    const errorEls = lookupEl.shadowRoot.querySelectorAll("div.form-error");
-    expect(errorEls.length).toBe(errors.length);
-    expect(errorEls[0].textContent).toBe(errors[0].message);
-    expect(errorEls[1].textContent).toBe(errors[1].message);
-
-    await expect(lookupEl).toBeAccessible();
-  });
-
-  it("blurs on error and closes dropdown", async () => {
-    jest.useFakeTimers();
-
-    // Create lookup with search handler
-    const lookupEl = createLookupElement();
-    const searchFn = (event) => {
-      event.target.setSearchResults(SAMPLE_SEARCH_ITEMS);
-    };
-    lookupEl.addEventListener("search", searchFn);
-
-    // Simulate search term input (forces focus on lookup and opens drowdown)
-    await inputSearchTerm(lookupEl, "sample");
-
-    // Simulate error
-    lookupEl.errors = [{ id: "e1", message: "Sample error 1" }];
     await flushPromises();
 
-    // Check that lookup no longer has focus and that dropdown is closed
-    expect(document.activeElement).not.toBe(lookupEl);
-    const dropdownEl = lookupEl.shadowRoot.querySelector(
-      'div[role="combobox"]'
-    );
-    expect(dropdownEl.classList).not.toContain("slds-is-open");
+    const error = lookupEl.shadowRoot.querySelector("[data-help-text]");
+    expect(error.textContent).toBe(message);
 
-    jest.useRealTimers();
     await expect(lookupEl).toBeAccessible();
   });
 

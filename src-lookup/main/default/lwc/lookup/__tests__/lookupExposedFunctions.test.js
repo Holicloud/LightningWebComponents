@@ -113,7 +113,7 @@ describe("c-lookup exposed functions", () => {
   it("reports non valid when there are errors", async () => {
     // Create lookup
     const lookupEl = createLookupElement();
-    lookupEl.errors = [{ id: "e1", message: "Some error" }];
+    lookupEl.setCustomValidity("Some error");
 
     // Verify validity
     expect(lookupEl.validity).toEqual({ valid: false });

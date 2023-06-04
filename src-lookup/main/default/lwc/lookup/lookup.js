@@ -1,4 +1,5 @@
 import { LightningElement, api } from "lwc";
+import { classSet, classListMutation } from "c/utils";
 
 const SEARCH_DELAY = 300; // Wait 300 ms after user stops typing then, peform search
 
@@ -25,15 +26,16 @@ export default class Lookup extends LightningElement {
   @api placeholder = "";
   @api required = false;
   @api scrollAfterNItems = "*";
-  @api variant = VARIANT_LABEL_STACKED;
+  @api messageWhenValueMissing = "Complete this field.";
 
   // Template properties
   loading = false;
   searchResultsLocalState = [];
   _actions = [];
-  _errors = [];
+  _helpMessage;
 
   // Private properties
+  _variant = VARIANT_LABEL_STACKED;
   _cancelBlur = false;
   _cleanSearchTerm;
   _curSelection = [];
@@ -46,6 +48,16 @@ export default class Lookup extends LightningElement {
   _searchThrottlingTimeout;
 
   // PUBLIC FUNCTIONS AND GETTERS/SETTERS
+
+  @api
+  get variant() {
+    return this._variant;
+  }
+
+  set variant(value) {
+    this._variant = value;
+    this.updateClassList();
+  }
 
   @api
   get actions() {
@@ -76,21 +88,42 @@ export default class Lookup extends LightningElement {
   }
 
   @api
-  get errors() {
-    return this._errors;
-  }
-
-  set errors(errors) {
-    this._errors = errors;
-    // Blur component if errors are passed
-    if (this._errors?.length) {
-      this.blur();
-    }
+  get validity() {
+    return { valid: !this.hasMissingValue() && !this._helpMessage };
   }
 
   @api
-  get validity() {
-    return { valid: !this._errors?.length };
+  checkValidity() {
+    const valid = this.validity.valid;
+
+    if (!valid) {
+      this.dispatchEvent(new CustomEvent("invalid", { cancellable: true }));
+    }
+
+    return valid;
+  }
+
+  @api
+  reportValidity() {
+    if (this.hasMissingValue()) {
+      this._helpMessage = this.messageWhenValueMissing;
+    } else if (this._helpMessage === this.messageWhenValueMissing) {
+      this._helpMessage = "";
+    }
+
+    const valid = this.checkValidity();
+
+    this.classList.toggle("slds-has-error", !valid);
+  }
+
+  @api
+  setCustomValidity(message) {
+    this._helpMessage = message;
+  }
+
+  @api
+  showHelpMessageIfInvalid() {
+    this.reportValidity();
   }
 
   @api
@@ -182,16 +215,15 @@ export default class Lookup extends LightningElement {
         result,
         state: {},
         get classes() {
-          return [
-            "slds-media",
-            "slds-media_center",
-            "slds-listbox__option",
-            "slds-listbox__option_entity",
-            ...(result.subtitlesFormatted?.length
-              ? ["slds-listbox__option_has-meta"]
-              : []),
-            ...(self._focusedResultIndex === i ? ["slds-has-focus"] : [])
-          ].join(" ");
+          return classSet("slds-media")
+            .add("slds-media_center")
+            .add("slds-listbox__option")
+            .add("slds-listbox__option_entity")
+            .add({
+              "slds-listbox__option_has-meta": result.subtitlesFormatted?.length
+            })
+            .add({ "slds-has-focus": self._focusedResultIndex === i })
+            .toString();
         }
       };
     });
@@ -376,9 +408,11 @@ export default class Lookup extends LightningElement {
   handleBlur() {
     // Prevent action if cancelled
     if (this._cancelBlur) {
+      this._cancelBlur = false;
       return;
     }
     this._hasFocus = false;
+    this.showHelpMessageIfInvalid();
     this.dispatchEvent(new CustomEvent("blur"));
   }
 
@@ -390,7 +424,7 @@ export default class Lookup extends LightningElement {
     this._curSelection = this._curSelection.filter(({ id }) => id !== recordId);
     // Process selection update
     this.processSelectionUpdate(true);
-    this._cancelBlur = true;
+    // this._cancelBlur = true;
 
     if (!this.hasSelection()) {
       // eslint-disable-next-line @lwc/lwc/no-async-operation
@@ -437,83 +471,61 @@ export default class Lookup extends LightningElement {
     return this._searchResults.length;
   }
 
-  get getFormElementClass() {
-    return this.variant === VARIANT_LABEL_INLINE
-      ? "slds-form-element slds-form-element_horizontal"
-      : "slds-form-element";
-  }
-
-  get getLabelClass() {
-    return this.variant === VARIANT_LABEL_HIDDEN
-      ? "slds-form-element__label slds-assistive-text"
-      : "slds-form-element__label";
-  }
-
   get getContainerClass() {
-    return !this._errors.length
-      ? "slds-combobox_container"
-      : "slds-combobox_container has-custom-error";
+    return classSet("slds-combobox_container")
+      .add({ "has-custom-error": this._helpMessage })
+      .toString();
   }
 
   get getDropdownClass() {
-    return [
-      "slds-combobox",
-      "slds-dropdown-trigger",
-      "slds-dropdown-trigger_click",
-      ...(this.isListboxOpen ? ["slds-is-open"] : [])
-    ].join(" ");
+    return classSet("slds-combobox")
+      .add("slds-dropdown-trigger")
+      .add("slds-dropdown-trigger_click")
+      .add({ "slds-is-open": this.isListboxOpen })
+      .toString();
   }
 
   get getInputClass() {
-    const hasCustomError =
-      this._errors.length ||
-      (this._isDirty && this.required && !this.hasSelection());
-    const setFocus = this._hasFocus && this.hasResults;
-    const css = [
-      "slds-input",
-      "slds-combobox__input",
-      "has-custom-height",
-      ...(setFocus ? ["slds-has-focus"] : []),
-      ...(hasCustomError ? ["has-custom-error"] : [])
-    ];
+    const css = classSet("slds-input")
+      .add("slds-combobox__input")
+      .add("has-custom-height")
+      .add({ "slds-has-focus": this._hasFocus && this.hasResults })
+      .add({ "has-custom-error": this._helpMessage });
 
     if (!this.isMultiEntry) {
-      css.push(
-        ...[
-          "slds-combobox__input-value",
-          ...(this.hasSelection() ? ["has-custom-border"] : [])
-        ]
-      );
+      css.add("slds-combobox__input-value");
+      css.add({ "has-custom-border": this.hasSelection() });
     }
-    return css.join(" ");
+
+    return css.toString();
   }
 
   get getComboboxClass() {
-    return [
-      "slds-combobox__form-element",
-      "slds-input-has-icon",
-      ...(this.isMultiEntry || !this.hasSelection()
-        ? ["slds-input-has-icon_right"]
-        : ["slds-input-has-icon_left-right"])
-    ].join(" ");
+    const iconClass =
+      this.isMultiEntry || !this.hasSelection()
+        ? "slds-input-has-icon_right"
+        : "slds-input-has-icon_left-right";
+
+    return classSet("slds-combobox__form-element")
+      .add("slds-input-has-icon")
+      .add(iconClass)
+      .toString();
   }
 
   get getSearchIconClass() {
-    return [
-      "slds-input__icon",
-      "slds-input__icon_right",
-      ...(!this.isMultiEntry && this.hasSelection() ? ["slds-hide"] : [])
-    ].join(" ");
+    return classSet("slds-input__icon")
+      .add("slds-input__icon_right")
+      .add({ "slds-hide": !this.isMultiEntry && this.hasSelection() })
+      .toString();
   }
 
   get getClearSelectionButtonClass() {
-    return [
-      "slds-button",
-      "slds-button_icon",
-      "slds-input__icon",
-      "slds-input__icon_right",
-      ...(!this.hasSelection() ? ["slds-hide"] : [])
-    ].join(" ");
+    return classSet("slds-button")
+      .add("slds-button_icon")
+      .add("slds-input__icon")
+      .add("slds-input__icon_right")
+      .add({ "slds-hide": !this.hasSelection() })
+      .toString();
   }
 
   get getSelectIconName() {
@@ -523,10 +535,9 @@ export default class Lookup extends LightningElement {
   }
 
   get getSelectIconClass() {
-    return (
-      "slds-combobox__input-entity-icon " +
-      (this.hasSelection() ? "" : "slds-hide")
-    );
+    return classSet("slds-combobox__input-entity-icon")
+      .add({ "slds-hide": !this.hasSelection() })
+      .toString();
   }
 
   get getInputValue() {
@@ -542,16 +553,36 @@ export default class Lookup extends LightningElement {
   }
 
   get getListboxClass() {
-    return (
-      "slds-dropdown " +
-      (this.scrollAfterNItems
-        ? `slds-dropdown_length-with-icon-${this.scrollAfterNItems} `
-        : "") +
-      "slds-dropdown_fluid"
-    );
+    const iconClass = `slds-dropdown_length-with-icon-${this.scrollAfterNItems}`;
+    return classSet("slds-dropdown")
+      .add({ [iconClass]: this.scrollAfterNItems })
+      .add("slds-dropdown_fluid")
+      .toString();
   }
 
   get isInputReadonly() {
     return this.isMultiEntry ? false : this.hasSelection();
+  }
+
+  connectedCallback() {
+    this.classList.add("slds-form-element");
+    this.updateClassList();
+  }
+
+  updateClassList() {
+    classListMutation(this.classList, {
+      "slds-form-element_stacked": this._variant === VARIANT_LABEL_STACKED,
+      "slds-form-element_horizontal": this._variant === VARIANT_LABEL_INLINE
+    });
+  }
+
+  get computedLabelClass() {
+    return classSet("slds-form-element__label")
+      .add({ "slds-assistive-text": this.variant === VARIANT_LABEL_HIDDEN })
+      .toString();
+  }
+
+  hasMissingValue() {
+    return this.required && !this.disabled && !this.hasSelection();
   }
 }
