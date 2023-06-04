@@ -8,8 +8,8 @@ import getInitialSelection from "@salesforce/apex/SObjectLookupController.getIni
 
 export default class SobjectLookup extends LightningElement {
   @api actions;
-
-  @api helpText;
+  @api messageWhenValueMissing;
+  @api fieldLevelText;
   @api isMultiEntry;
   @api label;
   @api minSearchTermLength;
@@ -19,22 +19,12 @@ export default class SobjectLookup extends LightningElement {
   @api scrollAfterNItems;
   @api variant;
 
-  _errors = [];
   _searchResults;
   _selection = [];
   _sets = [];
   _value;
   recentlyViewed = [];
   _disabled = false;
-
-  @api
-  get errors() {
-    return this._errors;
-  }
-
-  set errors(errors) {
-    this._errors = errors;
-  }
 
   @api
   get disabled() {
@@ -77,6 +67,26 @@ export default class SobjectLookup extends LightningElement {
   }
 
   @api
+  checkValidity() {
+    return this.lookupElement?.checkValidity();
+  }
+
+  @api
+  reportValidity() {
+    return this.lookupElement?.reportValidity();
+  }
+
+  @api
+  setCustomValidity(message) {
+    return this.lookupElement?.setCustomValidity(message);
+  }
+
+  @api
+  showHelpMessageIfInvalid() {
+    this.lookupElement?.reportValidity();
+  }
+
+  @api
   get value() {
     return this._value;
   }
@@ -105,7 +115,8 @@ export default class SobjectLookup extends LightningElement {
       this._selection = this.processSearch(data);
       this._disabled = false;
     } else if (error) {
-      this._errors = reduceErrors(error);
+      this.setCustomValidity(reduceErrors(error).join(", "));
+      this.reportValidity();
     }
   }
 
@@ -115,7 +126,8 @@ export default class SobjectLookup extends LightningElement {
     if (data) {
       this.recentlyViewed = this.processSearch(data);
     } else if (error) {
-      this._errors = reduceErrors(error);
+      this.setCustomValidity(reduceErrors(error).join(", "));
+      this.reportValidity();
     }
   }
 
@@ -128,7 +140,8 @@ export default class SobjectLookup extends LightningElement {
         this._searchResults = this.processSearch(data);
       })
       .catch((error) => {
-        this._errors = reduceErrors(error);
+        this.setCustomValidity(reduceErrors(error).join(", "));
+        this.reportValidity();
       });
   }
 

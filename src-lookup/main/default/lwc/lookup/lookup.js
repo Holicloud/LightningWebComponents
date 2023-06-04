@@ -19,7 +19,7 @@ const REGEX_EXTRA_TRAP = /(\$|\\)/g;
 export default class Lookup extends LightningElement {
   // Public properties
   @api disabled = false;
-  @api helpText = "";
+  @api fieldLevelText = "";
   @api isMultiEntry = false;
   @api label = "";
   @api minSearchTermLength = 2;
@@ -114,6 +114,8 @@ export default class Lookup extends LightningElement {
     const valid = this.checkValidity();
 
     this.classList.toggle("slds-has-error", !valid);
+
+    this._showHelpMessage = !valid;
   }
 
   @api
@@ -574,6 +576,10 @@ export default class Lookup extends LightningElement {
       "slds-form-element_stacked": this._variant === VARIANT_LABEL_STACKED,
       "slds-form-element_horizontal": this._variant === VARIANT_LABEL_INLINE
     });
+  }
+
+  get displayHelpMessage() {
+    return this._showHelpMessage && this._helpMessage;
   }
 
   get computedLabelClass() {

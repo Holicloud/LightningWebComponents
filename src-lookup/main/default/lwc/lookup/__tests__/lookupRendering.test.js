@@ -216,29 +216,30 @@ describe("c-lookup rendering", () => {
     await expect(lookupEl).toBeAccessible();
   });
 
-  it("renders errors", async () => {
+  it("renders error", async () => {
     const lookupEl = createLookupElement();
     const message = "Sample error";
 
     lookupEl.setCustomValidity(message);
+    lookupEl.reportValidity();
 
-    // Verify errors
+    // Verify error
     await flushPromises();
 
-    const error = lookupEl.shadowRoot.querySelector("[data-help-text]");
+    const error = lookupEl.shadowRoot.querySelector("[data-field-level-text]");
     expect(error.textContent).toBe(message);
 
     await expect(lookupEl).toBeAccessible();
   });
 
   it("renders helptext by default", async () => {
-    const props = { helpText: "some help text" };
+    const props = { fieldLevelText: "some help text" };
     const lookupEl = createLookupElement(props);
 
     // Verify label
     const helpTextElement =
       lookupEl.shadowRoot.querySelector("lightning-helptext");
-    expect(helpTextElement.content).toBe(props.helpText);
+    expect(helpTextElement.content).toBe(props.fieldLevelText);
 
     await expect(lookupEl).toBeAccessible();
   });

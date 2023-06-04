@@ -3,8 +3,8 @@
     <abbr lwc:if={required} title="required" class="slds-required">*</abbr>
     {label}
     <lightning-helptext
-      lwc:if={helpText}
-      content={helpText}
+      lwc:if={fieldLevelText}
+      content={fieldLevelText}
     ></lightning-helptext>
   </label>
   <div class="slds-form-element__control">
@@ -242,15 +242,15 @@
     <!-- Multi-selection end -->
   </div>
   <!-- Help Message start -->
-  <!-- <template if:true={_helpMessage}> -->
-  <div
-    id="help-text"
-    data-help-text
-    class="slds-form-element__help"
-    aria-live="assertive"
-  >
-    {_helpMessage}
-  </div>
-  <!-- </template> -->
+  <template if:true={displayHelpMessage}>
+    <div
+      id="field-level-text"
+      data-field-level-text
+      class="slds-form-element__help"
+      aria-live="assertive"
+    >
+      {_helpMessage}
+    </div>
+  </template>
   <!-- Help Message end -->
 </template>
