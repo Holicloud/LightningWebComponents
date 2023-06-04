@@ -30,8 +30,6 @@ export default class SampleLookupContainer extends NavigationMixin(
     ]
   }));
 
-  errors = [];
-
   actions = [
     { name: "actionA", label: "Custom Action" },
     { name: "actionB", label: "Custom Action B" }
@@ -62,7 +60,18 @@ export default class SampleLookupContainer extends NavigationMixin(
 
   // eslint-disable-next-line no-unused-vars
   handleChange(event) {
-    this.checkForErrors();
+    const input = this.template.querySelector("c-lookup");
+    const { value } = input;
+    // Custom validation rule
+    if (this.isMultiEntry && value.length > this.maxSelectionSize) {
+      input.setCustomValidity(
+        `You may only select up to ${this.maxSelectionSize} items.`
+      );
+    } else {
+      input.setCustomValidity(""); // if there was a custom error before, reset it
+    }
+
+    input.reportValidity(); // Tells lightning-input to show the error right away without needing interaction
   }
 
   handleAction(event) {
@@ -84,9 +93,15 @@ export default class SampleLookupContainer extends NavigationMixin(
   }
 
   handleSubmit() {
-    this.checkForErrors();
+    const allValid = [
+      ...this.template.querySelectorAll("lightning-input"),
+      this.template.querySelector("c-lookup")
+    ].reduce((validSoFar, inputCmp) => {
+      inputCmp.reportValidity();
+      return validSoFar && inputCmp.checkValidity();
+    }, true);
 
-    if (!this.errors.length) {
+    if (allValid) {
       this.dispatchEvent(
         new ShowToastEvent({
           title: "Success",
@@ -94,30 +109,22 @@ export default class SampleLookupContainer extends NavigationMixin(
           variant: "success"
         })
       );
+    } else {
+      this.dispatchEvent(
+        new ShowToastEvent({
+          title: "Error",
+          message: "Please update the invalid form entries and try again.",
+          variant: "error"
+        })
+      );
     }
   }
 
   handleClear() {
     this.initialSelection = [];
-    this.errors = [];
   }
 
   handleFocus() {
     this.template.querySelector("c-lookup").focus();
-  }
-
-  checkForErrors() {
-    this.errors = [];
-    const selection = this.template.querySelector("c-lookup").value;
-    // Custom validation rule
-    if (this.isMultiEntry && selection.length > this.maxSelectionSize) {
-      this.errors.push({
-        message: `You may only select up to ${this.maxSelectionSize} items.`
-      });
-    }
-    // Enforcing required field
-    if (!selection.length) {
-      this.errors.push({ message: "Please make a selection." });
-    }
   }
 }

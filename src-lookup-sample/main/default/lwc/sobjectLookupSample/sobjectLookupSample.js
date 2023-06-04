@@ -10,7 +10,6 @@ export default class SobjectLookupSample extends NavigationMixin(
   isMultiEntry = true;
   maxSelectionSize = 2;
   notifyViaAlerts = false;
-  errors = [];
   value;
   actions = [
     { name: "newAccountAction", label: "New Account" },
@@ -22,9 +21,9 @@ export default class SobjectLookupSample extends NavigationMixin(
       sobjectApiName: "Account",
       icon: "standard:account",
       fields: [
-        { label: "Name", fieldName: "Name", primary: true },
-        { label: "Phone", fieldName: "Phone" },
-        { label: "Owner", fieldName: "Owner.Name", searchable: true }
+        { label: "Name", name: "Name", primary: true },
+        { label: "Phone", name: "Phone" },
+        { label: "Owner", name: "Owner.Name", searchable: true }
       ],
       whereClause: "OwnerId != NULL"
     },
@@ -32,9 +31,9 @@ export default class SobjectLookupSample extends NavigationMixin(
       sobjectApiName: "Opportunity",
       icon: "standard:opportunity",
       fields: [
-        { label: "Name", fieldName: "Name", primary: true },
-        { label: "StageName", fieldName: "StageName", searchable: true },
-        { label: "Owner", fieldName: "Owner.Name" }
+        { label: "Name", name: "Name", primary: true },
+        { label: "StageName", name: "StageName", searchable: true },
+        { label: "Owner", name: "Owner.Name" }
       ],
       whereClause: "StageName != NULL"
     },
@@ -42,9 +41,9 @@ export default class SobjectLookupSample extends NavigationMixin(
       sobjectApiName: "Contact",
       icon: "standard:contact",
       fields: [
-        { label: "Name", fieldName: "Name", primary: true },
-        { label: "Email", fieldName: "Email", searchable: true },
-        { label: "Title", fieldName: "Title" }
+        { label: "Name", name: "Name", primary: true },
+        { label: "Email", name: "Email", searchable: true },
+        { label: "Title", name: "Title" }
       ],
       whereClause: "Email != NULL"
     }
@@ -105,15 +104,27 @@ export default class SobjectLookupSample extends NavigationMixin(
   }
 
   handleSubmit() {
-    this.checkForErrors();
-    if (!this.errors.length) {
+    const allValid = [
+      ...this.template.querySelectorAll("lightning-input"),
+      this.template.querySelector("c-sobject-lookup")
+    ].reduce((validSoFar, inputCmp) => {
+      inputCmp.reportValidity();
+      return validSoFar && inputCmp.checkValidity();
+    }, true);
+
+    if (allValid) {
       this.notifyUser("Success", "The form was submitted.", "success");
+    } else {
+      this.notifyUser(
+        "Error",
+        "Please update the invalid form entries and try again.",
+        "error"
+      );
     }
   }
 
   handleClear() {
     this.value = [];
-    this.errors = [];
   }
 
   handleFocus() {
@@ -121,20 +132,18 @@ export default class SobjectLookupSample extends NavigationMixin(
   }
 
   checkForErrors() {
-    const { value: selection } = this.lookupElement;
-
-    this.errors = [];
-
+    const input = this.template.querySelector("c-sobject-lookup");
+    const { value } = input;
     // Custom validation rule
-    if (this.isMultiEntry && selection.length > this.maxSelectionSize) {
-      this.errors.push({
-        message: `You may only select up to ${this.maxSelectionSize} items.`
-      });
+    if (this.isMultiEntry && value.length > this.maxSelectionSize) {
+      input.setCustomValidity(
+        `You may only select up to ${this.maxSelectionSize} items.`
+      );
+    } else {
+      input.setCustomValidity(""); // if there was a custom error before, reset it
     }
-    // Enforcing required field
-    if (!selection.length) {
-      this.errors.push({ message: "Please make a selection." });
-    }
+
+    input.reportValidity(); // Tells lightning-input to show the error right away without needing interaction
   }
 
   async notifyUser(title, message, variant) {

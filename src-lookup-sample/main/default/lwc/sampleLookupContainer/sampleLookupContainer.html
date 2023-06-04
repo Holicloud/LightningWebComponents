@@ -29,8 +29,7 @@
       <c-lookup
         actions={actions}
         default-search-results={defaultSearchResults}
-        errors={errors}
-        help-text="some help text"
+        field-level-text="some help text"
         is-multi-entry={isMultiEntry}
         label="Search"
         min-search-term-length="2"
@@ -40,6 +39,7 @@
         placeholder="Search Lookup"
         required
         scroll-after-n-items="5"
+        message-when-value-missing="Complete the field or else!"
         search-results={searchResults}
         value={initialSelection}
       ></c-lookup>
