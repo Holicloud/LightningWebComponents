@@ -116,6 +116,8 @@ export default class Lookup extends LightningElement {
     this.classList.toggle("slds-has-error", !valid);
 
     this._showHelpMessage = !valid;
+
+    return valid;
   }
 
   @api
