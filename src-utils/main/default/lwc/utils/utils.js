@@ -1,4 +1,6 @@
 export { isBlank, clone };
+export { classSet } from "./classSet";
+export { classListMutation } from "./classListMutation";
 
 function clone(any) {
   return JSON.parse(JSON.stringify(any));
