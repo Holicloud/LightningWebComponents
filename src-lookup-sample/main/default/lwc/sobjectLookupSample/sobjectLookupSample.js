@@ -99,8 +99,8 @@ export default class SobjectLookupSample extends NavigationMixin(
   }
 
   handleMaxSelectionSizeChange(event) {
-    this.checkForErrors();
     this.maxSelectionSize = event.target.value;
+    this.checkForErrors();
   }
 
   handleSubmit() {
