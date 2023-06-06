@@ -20,7 +20,7 @@ export default class SobjectLookup extends LightningElement {
   @api variant;
 
   _searchResults;
-  _selection = [];
+  _initialSelection = [];
   _sets = [];
   _value;
   recentlyViewed = [];
@@ -112,7 +112,7 @@ export default class SobjectLookup extends LightningElement {
   })
   wiredInitialSelection({ error, data }) {
     if (data) {
-      this._selection = this.processSearch(data);
+      this._initialSelection = this.processSearch(data);
       this._disabled = false;
     } else if (error) {
       this.setCustomValidity(reduceErrors(error).join(", "));
@@ -150,37 +150,56 @@ export default class SobjectLookup extends LightningElement {
     const result = [];
 
     for (let index = 0; index < privateData.length; index++) {
-      const { fields, primaryField, icon } = this._sets[index];
-      // flat inner objects so that {Id: '1', Owner: {Id: '1'}} becomes => {Id: '1', Owner.id: '1'}
+      const { fields, primaryField, icon, name } = this._sets[index];
+      // flat inner objects so that {Id: '1', Owner: {Id: '1'}} becomes => {Id: '1', Owner.Id: '1'}
       const setRecords = flatObjectsInArray(privateData[index]);
 
-      result.push(
-        setRecords.map((record) => {
-          // build the subtitles for each record
-          const subtitles = fields
-            .filter(({ primary }) => !primary)
-            .map(({ label, name, searchable }) => ({
-              label,
-              value: record[name],
-              highlightSearchTerm: searchable
-            }));
+      for (const record of setRecords) {
+        // build the subtitles for each record
+        const subtitles = fields
+          .filter(({ primary }) => !primary)
+          .map(({ label, name: subtitleName, searchable }) => ({
+            label,
+            value: record[subtitleName],
+            highlightSearchTerm: searchable
+          }));
 
-          return {
-            id: record.Id,
-            title: record[primaryField.name],
-            icon,
-            subtitles
-          };
-        })
-      );
+        result.push({
+          id: record.Id + ":set:" + name,
+          title: record[primaryField.name],
+          icon,
+          subtitles
+        });
+      }
     }
 
-    return result.flat();
+    return result;
   }
 
   handleChange({ detail }) {
-    this._value = detail;
-    this.dispatchEvent(new CustomEvent("change", { detail }));
+    const valuesBySet = new Map();
+
+    const data = detail.map((record) => {
+      const [id, set] = record.split(":set:");
+
+      if (!valuesBySet.has(set)) {
+        valuesBySet.set(set, [id]);
+      } else {
+        valuesBySet.set(set, [...valuesBySet.get(set), id]);
+      }
+
+      return { id, set };
+    });
+
+    this._value = data.map(({ id }) => id);
+    this.dispatchEvent(
+      new CustomEvent("change", {
+        detail: {
+          value: this._value,
+          valuesBySet
+        }
+      })
+    );
   }
 
   handleAction({ detail }) {

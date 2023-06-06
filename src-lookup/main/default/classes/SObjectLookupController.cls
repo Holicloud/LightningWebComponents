@@ -7,6 +7,7 @@ public with sharing class SObjectLookupController {
   ) {
     try {
       List<List<SObject>> result = new List<List<SObject>>();
+      Set<Id> resultIds = new Set<Id>();
 
       List<QueryParameters> listOfParameters = (List<QueryParameters>) JSON.deserialize(
         datasets,
@@ -24,7 +25,16 @@ public with sharing class SObjectLookupController {
         applyWhereClause(queryFactory, parameters.whereClause);
         applySelectedIds(queryFactory, selectedIds);
 
-        result.add(Database.query(queryFactory.toSOQL()));
+        List<SObject> singleResult = new List<SObject>();
+
+        for (SObject record : Database.query(queryFactory.toSOQL())) {
+          if (!resultIds.contains(record.Id)) {
+            singleResult.add(record);
+            resultIds.add(record.Id);
+          }
+        }
+
+        result.add(singleResult);
       }
 
       return result;
@@ -42,6 +52,7 @@ public with sharing class SObjectLookupController {
 
     try {
       List<List<SObject>> result = new List<List<SObject>>();
+      Set<Id> resultIds = new Set<Id>();
 
       List<QueryParameters> listOfParameters = (List<QueryParameters>) JSON.deserialize(
         datasets,
@@ -59,7 +70,16 @@ public with sharing class SObjectLookupController {
 
         applyWhereClause(queryFactory, parameters.whereClause);
 
-        result.add(Database.query(queryFactory.toSOQL()));
+        List<SObject> singleResult = new List<SObject>();
+
+        for (SObject record : Database.query(queryFactory.toSOQL())) {
+          if (!resultIds.contains(record.Id)) {
+            singleResult.add(record);
+            resultIds.add(record.Id);
+          }
+        }
+
+        result.add(singleResult);
       }
 
       return result;
@@ -76,6 +96,7 @@ public with sharing class SObjectLookupController {
 
     try {
       List<List<SObject>> result = new List<List<SObject>>();
+      Set<Id> resultIds = new Set<Id>();
 
       List<QueryParameters> parameters = (List<QueryParameters>) JSON.deserialize(
         datasets,
@@ -95,7 +116,16 @@ public with sharing class SObjectLookupController {
 
         applyWhereClause(queryFactory, param.whereClause);
 
-        result.add(Database.query(queryFactory.toSOQL()));
+        List<SObject> singleResult = new List<SObject>();
+
+        for (SObject record : Database.query(queryFactory.toSOQL())) {
+          if (!resultIds.contains(record.Id)) {
+            singleResult.add(record);
+            resultIds.add(record.Id);
+          }
+        }
+
+        result.add(singleResult);
       }
 
       return result;
