@@ -7,6 +7,7 @@ public with sharing class SObjectLookupController {
   ) {
     try {
       List<List<SObject>> result = new List<List<SObject>>();
+      Set<Id> resultIds = new Set<Id>();
 
       List<QueryParameters> listOfParameters = (List<QueryParameters>) JSON.deserialize(
         datasets,
@@ -14,17 +15,25 @@ public with sharing class SObjectLookupController {
       );
 
       for (QueryParameters parameters : listOfParameters) {
-        fflib_QueryFactory queryFactory = new fflib_QueryFactory(
-          Schema.getGlobalDescribe().get(parameters.sobjectApiName)
-        );
+        Schema.SObjectType objectType = Schema.getGlobalDescribe().get(parameters.sobjectApiName);
+        fflib_QueryFactory queryFactory = new fflib_QueryFactory(objectType);
 
         queryFactory.setLimit(50).selectFields(parameters.queryFields);
 
-        applySearchTerm(queryFactory, searchTerm, parameters.searchByFields);
+        applySearchTerm(queryFactory, searchTerm, parameters.searchByFields, parameters.sobjectApiName);
         applyWhereClause(queryFactory, parameters.whereClause);
         applySelectedIds(queryFactory, selectedIds);
 
-        result.add(Database.query(queryFactory.toSOQL()));
+        List<SObject> singleResult = new List<SObject>();
+
+        for (SObject record : Database.query(queryFactory.toSOQL())) {
+          if (!resultIds.contains(record.Id)) {
+            singleResult.add(record);
+            resultIds.add(record.Id);
+          }
+        }
+
+        result.add(singleResult);
       }
 
       return result;
@@ -42,6 +51,7 @@ public with sharing class SObjectLookupController {
 
     try {
       List<List<SObject>> result = new List<List<SObject>>();
+      Set<Id> resultIds = new Set<Id>();
 
       List<QueryParameters> listOfParameters = (List<QueryParameters>) JSON.deserialize(
         datasets,
@@ -59,7 +69,16 @@ public with sharing class SObjectLookupController {
 
         applyWhereClause(queryFactory, parameters.whereClause);
 
-        result.add(Database.query(queryFactory.toSOQL()));
+        List<SObject> singleResult = new List<SObject>();
+
+        for (SObject record : Database.query(queryFactory.toSOQL())) {
+          if (!resultIds.contains(record.Id)) {
+            singleResult.add(record);
+            resultIds.add(record.Id);
+          }
+        }
+
+        result.add(singleResult);
       }
 
       return result;
@@ -71,11 +90,12 @@ public with sharing class SObjectLookupController {
   }
 
   @AuraEnabled(cacheable=true)
-  public static List<List<SObject>> getRecentlyViewed(String datasets) {
+  public static List<List<SObject>> getRecentlyVieweds(String datasets) {
     fflib_QueryFactory queryFactory;
 
     try {
       List<List<SObject>> result = new List<List<SObject>>();
+      Set<Id> resultIds = new Set<Id>();
 
       List<QueryParameters> parameters = (List<QueryParameters>) JSON.deserialize(
         datasets,
@@ -95,7 +115,16 @@ public with sharing class SObjectLookupController {
 
         applyWhereClause(queryFactory, param.whereClause);
 
-        result.add(Database.query(queryFactory.toSOQL()));
+        List<SObject> singleResult = new List<SObject>();
+
+        for (SObject record : Database.query(queryFactory.toSOQL())) {
+          if (!resultIds.contains(record.Id)) {
+            singleResult.add(record);
+            resultIds.add(record.Id);
+          }
+        }
+
+        result.add(singleResult);
       }
 
       return result;
@@ -138,13 +167,23 @@ public with sharing class SObjectLookupController {
   private static void applySearchTerm(
     fflib_QueryFactory queryFactory,
     String searchTerm,
-    List<String> searchByFields
+    List<String> searchByFields,
+    String sObjectType
   ) {
     if (String.isNotBlank(searchTerm)) {
       Set<String> conditions = new Set<String>();
 
+      Map<String, Object> fieldInformation = CustomDataTableController.getFieldInformation(sObjectType.getName, searchByFields)
       for (String field : searchByFields) {
-        conditions.add(field + ' LIKE \'%' + searchTerm + '%\'');
+        Schema.DescribeFieldResult fieldDescribe = sObjectType
+          .getDescribe()
+          .fields
+          .getMap()
+          .get(field)
+          .getDescribe();
+        if (fieldDescribe.isFilterable()) {
+          conditions.add(field + ' LIKE \'%' + searchTerm + '%\'');
+        }
       }
 
       queryFactory.setCondition(

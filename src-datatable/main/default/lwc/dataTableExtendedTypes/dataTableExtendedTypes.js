@@ -7,6 +7,8 @@ import picklist from "./picklist.html";
 import picklistEdit from "./picklistEdit.html";
 import textareaEdit from "./textareaEdit.html";
 import textarea from "./textarea.html";
+import lookup from "./lookup.html";
+import lookupEdit from "./lookupEdit.html";
 import time from "./time.html";
 import timeEdit from "./timeEdit.html";
 
@@ -54,7 +56,13 @@ export default class DataTableExtendedTypes extends LightningDatatable {
       template: textarea,
       editTemplate: textareaEdit,
       standardCellLayout: true,
-      typeAttributes: ["maxLength"]
+      typeAttributes: ["maxLength", "linkify"]
+    },
+    lookup: {
+      template: lookup,
+      editTemplate: lookupEdit,
+      standardCellLayout: true,
+      typeAttributes: [ "view", "edit"]
     }
   };
 }
