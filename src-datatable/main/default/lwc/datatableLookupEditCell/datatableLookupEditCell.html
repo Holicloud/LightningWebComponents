@@ -1,0 +1,20 @@
+<template>
+  <!-- actions={actions} -->
+  <!-- onaction={handleAction} -->
+  <div onkeydown={handleKeyDown}>
+    <c-sobject-lookup
+      onfocus={handleFocus}
+      onblur={handleBlur}
+      onchange={handleChange}
+      label={label}
+      placeholder={placeholder}
+      value={_value}
+      sets={_sets}
+      variant="label-hidden"
+      disabled={disabled}
+    ></c-sobject-lookup>
+  </div>
+  <span if:true={inputHasFocus} class="slds-text-body_small">
+    To remove the selected record, press Backspace or Del.
+  </span>
+</template>

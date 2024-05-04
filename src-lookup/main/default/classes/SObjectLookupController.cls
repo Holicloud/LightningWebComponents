@@ -15,13 +15,12 @@ public with sharing class SObjectLookupController {
       );
 
       for (QueryParameters parameters : listOfParameters) {
-        fflib_QueryFactory queryFactory = new fflib_QueryFactory(
-          Schema.getGlobalDescribe().get(parameters.sobjectApiName)
-        );
+        Schema.SObjectType objectType = Schema.getGlobalDescribe().get(parameters.sobjectApiName);
+        fflib_QueryFactory queryFactory = new fflib_QueryFactory(objectType);
 
         queryFactory.setLimit(50).selectFields(parameters.queryFields);
 
-        applySearchTerm(queryFactory, searchTerm, parameters.searchByFields);
+        applySearchTerm(queryFactory, searchTerm, parameters.searchByFields, parameters.sobjectApiName);
         applyWhereClause(queryFactory, parameters.whereClause);
         applySelectedIds(queryFactory, selectedIds);
 
@@ -91,7 +90,7 @@ public with sharing class SObjectLookupController {
   }
 
   @AuraEnabled(cacheable=true)
-  public static List<List<SObject>> getRecentlyViewed(String datasets) {
+  public static List<List<SObject>> getRecentlyVieweds(String datasets) {
     fflib_QueryFactory queryFactory;
 
     try {
@@ -168,13 +167,23 @@ public with sharing class SObjectLookupController {
   private static void applySearchTerm(
     fflib_QueryFactory queryFactory,
     String searchTerm,
-    List<String> searchByFields
+    List<String> searchByFields,
+    String sObjectType
   ) {
     if (String.isNotBlank(searchTerm)) {
       Set<String> conditions = new Set<String>();
 
+      Map<String, Object> fieldInformation = CustomDataTableController.getFieldInformation(sObjectType.getName, searchByFields)
       for (String field : searchByFields) {
-        conditions.add(field + ' LIKE \'%' + searchTerm + '%\'');
+        Schema.DescribeFieldResult fieldDescribe = sObjectType
+          .getDescribe()
+          .fields
+          .getMap()
+          .get(field)
+          .getDescribe();
+        if (fieldDescribe.isFilterable()) {
+          conditions.add(field + ' LIKE \'%' + searchTerm + '%\'');
+        }
       }
 
       queryFactory.setCondition(

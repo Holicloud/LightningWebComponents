@@ -8,7 +8,7 @@ const TYPES = {
   datetime: "date",
   percent: "percent-fixed",
   date: "date-local",
-  reference: "text"
+  reference: "lookup"
 };
 
 export { formatColumns };
@@ -51,7 +51,9 @@ async function formatColumns({ columns, objectApiName }) {
         setTypeAttributes(column, fieldDescribe);
       }
 
-      result.push(formatfieldNamesProperties(column, column.fieldName));
+      const { object, apexApiNames} = formatfieldNamesProperties(column, column.fieldName);
+      object.apexFieldsReferenced = apexApiNames;
+      result.push(object);
     }
 
     setParenting(result);
@@ -75,7 +77,8 @@ function setTypeAttributes(column, fieldDescribe) {
     controllerName,
     controllerLabel,
     picklistValues,
-    length
+    length,
+    referenceTo,
   } = fieldDescribe;
 
   if (controllerName) {
@@ -121,9 +124,9 @@ function setTypeAttributes(column, fieldDescribe) {
       break;
     case "percent":
       column.typeAttributes = {
+        formatStyle: "percent-fixed",
         minimumFractionDigits: scale,
         maximumFractionDigits: scale,
-        formatStyle: "percent-fixed",
         step: ".000000000000000001"
       };
       break;
@@ -155,6 +158,37 @@ function setTypeAttributes(column, fieldDescribe) {
       column.typeAttributes = {
         placeholder: "Choose a Time"
       };
+      break;
+    case "reference":
+      column.typeAttributes = {
+        tooltip: 'xd',
+        target: '_parent',
+        label: 'some labe',
+        placeholder: 'some placeholder',
+        sets: [
+          {
+            sobjectApiName: "Account",
+            icon: "standard:account",
+            fields: [
+              { label: "Name", name: "Name", primary: true },
+              { label: "Phone", name: "Phone" },
+              { label: "Owner", name: "Owner.Name", searchable: true }
+            ],
+            whereClause: "OwnerId != NULL"
+          },
+          {
+            sobjectApiName: "Opportunity",
+            icon: "standard:opportunity",
+            fields: [
+              { label: "Name", name: "Name", primary: true },
+              { label: "StageName", name: "StageName", searchable: true },
+              { label: "Owner", name: "Owner.Name" }
+            ],
+            whereClause: "StageName != NULL"
+          },
+        ]
+      };
+      
       break;
     default:
       break;
@@ -200,6 +234,5 @@ function formatfieldNamesProperties(
     }
   }
 
-  object.apexFieldsReferenced = apexApiNames;
-  return object;
+  return { object, apexApiNames };
 }

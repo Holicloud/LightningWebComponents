@@ -1,20 +1,4 @@
 public with sharing class CustomDataTableController {
-  @AuraEnabled(cacheable=true)
-  public static string getRecordTypeFromDeveloperName(
-    String recordTypeDeveloperName,
-    String objectApiName
-  ) {
-    try {
-      return Schema.getGlobalDescribe()
-        .get(objectApiName)
-        .getDescribe()
-        .getRecordTypeInfosByDeveloperName()
-        .get(recordTypeDeveloperName)
-        .getRecordTypeId();
-    } catch (Exception e) {
-      throw new AuraHandledException(e.getMessage());
-    }
-  }
 
   @AuraEnabled(cacheable=true)
   public static Map<String, Object> getFieldInformation(
@@ -25,47 +9,34 @@ public with sharing class CustomDataTableController {
       .get(objectApiName)
       .getDescribe()
       .getName();
-    Map<String, Object> fieldDescribeByApiName = new Map<String, Object>();
+    Map<String, Object> result = new Map<String, Object>();
 
     try {
-      for (String fieldApiName : fieldApiNames) {
-        Schema.DescribeFieldResult describe;
-        Map<String, Object> describeAsMap;
 
+      Map<String, Schema.DescribeFieldResult> describeByField = FieldUtil.getDescribeByField(objectApiName, new Set<String>(fieldApiNames), true);
+
+      for (String fieldApiName : describeByField.keySet()) {
+        
+        Schema.DescribeFieldResult describe = describeByField.get(fieldApiName);
+        Map<String, Object> singleResult = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(describe));
+  
         if (fieldApiName.contains('.')) {
-          UtilityDescribe fieldDescribeUtil = getFieldDescribe(
-            fieldApiName,
-            objectApiName
-          );
-          describe = fieldDescribeUtil.fieldDescribe;
-          describeAsMap = (Map<String, Object>) JSON.deserializeUntyped(
-            JSON.serialize(describe)
-          );
-          describeAsMap.put('updateable', false);
-          describeAsMap.put('name', fieldDescribeUtil.fullApiName);
+          singleResult.put('updateable', false);
+          singleResult.put('name', fieldApiName);
         } else {
-          describe = FieldUtilityClass.getFieldDescribe(
-            objectApiName,
-            fieldApiName
-          );
-          describeAsMap = (Map<String, Object>) JSON.deserializeUntyped(
-            JSON.serialize(describe)
-          );
-          describeAsMap.put('name', describe.getName());
+          singleResult.put('name', describe.getName());
           if (describe.getController() != null) {
-            describeAsMap.put(
+            singleResult.put(
               'controllerLabel',
               describe.getController().getDescribe().getLabel()
             );
           }
         }
 
-        describeAsMap.put('accesible', describe.isAccessible());
-
-        fieldDescribeByApiName.put(fieldApiName, describeAsMap);
+        result.put(fieldApiName, singleResult);
       }
 
-      return fieldDescribeByApiName;
+      return result;
     } catch (Exception e) {
       throw new AuraHandledException(e.getMessage());
     }
@@ -122,61 +93,6 @@ public with sharing class CustomDataTableController {
     }
   }
 
-  private static UtilityDescribe getFieldDescribe(
-    String relationship,
-    String objectApiName
-  ) {
-    try {
-      relationship = relationship.toUpperCase();
-      List<String> fields = relationship.split('\\.');
-      List<String> finalRelationShip = new List<String>();
-      // everything but the last one
-      String theField = fields.remove(fields.size() - 1);
-
-      for (String lookupField : fields) {
-        Map<String, Schema.SObjectField> mapOfDescribes = Schema.getGlobalDescribe()
-          .get(objectApiName)
-          .getDescribe()
-          .fields
-          .getMap();
-
-        for (Schema.SObjectField field : mapOfDescribes.values()) {
-          DescribeFieldResult theFieldDescribe = field.getDescribe();
-
-          if (
-            String.valueOf(theFieldDescribe.getType()) == 'reference' &&
-            theFieldDescribe.getRelationshipName().toUpperCase() == lookupField
-          ) {
-            objectApiName = theFieldDescribe.getReferenceto()[0]
-              .getDescribe()
-              .getName();
-            finalRelationShip.add(theFieldDescribe.getRelationshipName());
-            break;
-          }
-        }
-      }
-
-      Schema.DescribeFieldResult lastField = FieldUtilityClass.getFieldDescribe(
-        objectApiName,
-        theField
-      );
-      finalRelationShip.add(lastField.getName());
-
-      return new UtilityDescribe(
-        String.join(finalRelationShip, '.'),
-        lastField
-      );
-    } catch (Exception e) {
-      throw new AuraHandledException(
-        e.getMessage() +
-          ' objectApiName: ' +
-          objectApiName +
-          ' relationship: ' +
-          relationship
-      );
-    }
-  }
-
   @AuraEnabled(cacheable=false)
   public static FindRecordsWrapper getRecordsNonCacheable(
     String queryParameters
@@ -194,19 +110,6 @@ public with sharing class CustomDataTableController {
     public FindRecordsWrapper(Integer totalRecordCount, List<SObject> records) {
       this.totalRecordCount = totalRecordCount;
       this.records = records;
-    }
-  }
-
-  public class UtilityDescribe {
-    public String fullApiName { get; set; }
-    public DescribeFieldResult fieldDescribe { get; set; }
-
-    public UtilityDescribe(
-      String fullApiName,
-      DescribeFieldResult fieldDescribe
-    ) {
-      this.fullApiName = fullApiName;
-      this.fieldDescribe = fieldDescribe;
     }
   }
 
