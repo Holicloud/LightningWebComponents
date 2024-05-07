@@ -4,9 +4,10 @@
   </div>
   <template lwc:else>
     <div lwc:if={_state.records.length} style="height: 100%">
+      <!-- data={_state.records} -->
       <c-data-table-extended-types
         columns={_state.columns}
-        data={_state.records}
+        records={_state.records}
         default-sort-direction={defaultSortDirection}
         draft-values={_draftValues}
         enable-infinite-loading={_state.enableInfiniteLoading}

@@ -1,5 +1,4 @@
 public with sharing class CustomDataTableController {
-
   @AuraEnabled(cacheable=true)
   public static Map<String, Object> getFieldInformation(
     String objectApiName,
@@ -12,14 +11,18 @@ public with sharing class CustomDataTableController {
     Map<String, Object> result = new Map<String, Object>();
 
     try {
-
-      Map<String, Schema.DescribeFieldResult> describeByField = FieldUtil.getDescribeByField(objectApiName, new Set<String>(fieldApiNames), true);
+      Map<String, Schema.DescribeFieldResult> describeByField = FieldUtil.getDescribeByField(
+        objectApiName,
+        new Set<String>(fieldApiNames),
+        true
+      );
 
       for (String fieldApiName : describeByField.keySet()) {
-        
         Schema.DescribeFieldResult describe = describeByField.get(fieldApiName);
-        Map<String, Object> singleResult = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(describe));
-  
+        Map<String, Object> singleResult = (Map<String, Object>) JSON.deserializeUntyped(
+          JSON.serialize(describe)
+        );
+
         if (fieldApiName.contains('.')) {
           singleResult.put('updateable', false);
           singleResult.put('name', fieldApiName);
@@ -32,6 +35,8 @@ public with sharing class CustomDataTableController {
             );
           }
         }
+
+        singleResult.put('accesible', describe.isAccessible());
 
         result.put(fieldApiName, singleResult);
       }

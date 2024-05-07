@@ -5,7 +5,6 @@ import LightningConfirm from "lightning/confirm";
 import { formatColumns } from "c/customDataTableHelper";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { clone } from "c/utils";
-import { flatObjectsInArray } from "c/apexRecordsUtils";
 import {
   getObjectInfo,
   getPicklistValuesByRecordType
@@ -318,7 +317,7 @@ export default class Datatable extends LightningElement {
           })
         });
 
-        const newData = flatObjectsInArray(clone(result.records));
+        const newData = clone(result.records);
         this._state.records = this._state.records.concat(newData);
         this._staticRecords = this._staticRecords.concat(newData);
         this._loadMoreStatus = "";
@@ -413,7 +412,7 @@ export default class Datatable extends LightningElement {
       });
 
       this._totalNumberOfRecords = result.totalRecordCount;
-      const records = flatObjectsInArray(clone(result.records));
+      const records = clone(result.records);
       this._staticRecords = [...records];
       this._state.records = records;
     } catch (error) {
