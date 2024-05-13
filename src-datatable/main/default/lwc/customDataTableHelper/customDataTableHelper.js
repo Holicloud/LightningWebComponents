@@ -6,10 +6,10 @@ const TYPES = {
   double: "number",
   string: "text",
   datetime: "date",
-  percent: "percent-fixed",
+  percent: "c-percent",
   date: "date-local",
   reference: "lookup",
-  multipicklist: "lightning-checkbox-group"
+  multipicklist: "c-lightning-checkbox-group"
 };
 
 export { formatColumns };
@@ -125,10 +125,16 @@ function setTypeAttributes(column, fieldDescribe) {
       break;
     case "percent":
       column.typeAttributes = {
-        formatStyle: "percent-fixed",
-        minimumFractionDigits: scale,
-        maximumFractionDigits: scale,
-        step: ".000000000000000001"
+        view: {
+          minimumFractionDigits: scale,
+          maximumFractionDigits: scale,
+          formatStyle: "percent-fixed",
+        },
+        edit: {
+          type: "number",
+          formatter: "percent-fixed",
+          step: ".000000000000000001"
+        }
       };
       break;
     case "picklist":
