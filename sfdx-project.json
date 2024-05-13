@@ -1,20 +1,8 @@
 {
   "packageDirectories": [
     {
-      "path": "src-lookup"
-    },
-    {
       "path": "src-datatable",
       "default": true
-    },
-    {
-      "path": "src-datatable-sample"
-    },
-    {
-      "path": "src-lookup-sample"
-    },
-    {
-      "path": "src-utils"
     }
   ],
   "name": "LWCRecipes2",

@@ -4,7 +4,7 @@
   </div>
   <template lwc:else>
     <div lwc:if={_state.records.length} style="height: 100%">
-      <c-data-table-extended-types
+      <c-datatable-plus
         data={_state.records}
         columns={_state.columns}
         default-sort-direction={defaultSortDirection}
@@ -24,7 +24,7 @@
         show-row-number-column
         sorted-by={_state.sortedBy}
         sorted-direction={_state.sortDirection}
-      ></c-data-table-extended-types>
+      ></c-datatable-plus>
       <!-- data-id="theDataTable"
                     oncellchange={handleCellChange}
                     draft-values={_draftValues}

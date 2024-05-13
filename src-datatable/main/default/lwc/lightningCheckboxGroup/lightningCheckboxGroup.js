@@ -1,6 +1,6 @@
 import { LightningElement, api } from "lwc";
 
-export default class DatatableMultiPicklistCell extends LightningElement {
+export default class LightningCheckboxGroup extends LightningElement {
   @api value = "";
   _typeAttributes = {};
 

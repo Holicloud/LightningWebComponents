@@ -8,7 +8,8 @@ const TYPES = {
   datetime: "date",
   percent: "percent-fixed",
   date: "date-local",
-  reference: "lookup"
+  reference: "lookup",
+  multipicklist: "lightning-checkbox-group"
 };
 
 export { formatColumns };

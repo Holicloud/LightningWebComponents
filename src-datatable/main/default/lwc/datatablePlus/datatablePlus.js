@@ -1,18 +1,16 @@
 import LightningDatatable from "lightning/datatable";
-import multipicklist from "./multipicklist.html";
-import multipicklistEdit from "./multipicklistEdit.html";
+import lightningCheckboxGroup from "./lightningCheckboxGroup.html";
+import lightningCheckboxGroupEdit from "./lightningCheckboxGroupEdit.html";
 import percentFixed from "./percentFixed.html";
 import percentFixedEdit from "./percentFixedEdit.html";
 import picklist from "./picklist.html";
 import picklistEdit from "./picklistEdit.html";
 import textareaEdit from "./textareaEdit.html";
 import textarea from "./textarea.html";
-import lookup from "./lookup.html";
-import lookupEdit from "./lookupEdit.html";
 import time from "./time.html";
 import timeEdit from "./timeEdit.html";
 
-export default class DataTableExtendedTypes extends LightningDatatable {
+export default class DataTablePlus extends LightningDatatable {
   static customTypes = {
     "percent-fixed": {
       template: percentFixed,
@@ -34,9 +32,9 @@ export default class DataTableExtendedTypes extends LightningDatatable {
       standardCellLayout: true,
       typeAttributes: ["placeholder"]
     },
-    multipicklist: {
-      template: multipicklist,
-      editTemplate: multipicklistEdit,
+    "lightning-checkbox-group": {
+      template: lightningCheckboxGroup,
+      editTemplate: lightningCheckboxGroupEdit,
       standardCellLayout: true,
       typeAttributes: ["typeAttributes"]
     },
@@ -51,12 +49,6 @@ export default class DataTableExtendedTypes extends LightningDatatable {
       editTemplate: textareaEdit,
       standardCellLayout: true,
       typeAttributes: ["maxLength", "linkify"]
-    },
-    lookup: {
-      template: lookup,
-      editTemplate: lookupEdit,
-      standardCellLayout: true,
-      typeAttributes: ["view", "edit"]
     }
   };
 }
