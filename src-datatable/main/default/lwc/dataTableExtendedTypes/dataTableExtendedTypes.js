@@ -11,8 +11,6 @@ import lookup from "./lookup.html";
 import lookupEdit from "./lookupEdit.html";
 import time from "./time.html";
 import timeEdit from "./timeEdit.html";
-import { api } from "lwc";
-import { flatObjectsInArray } from "c/apexRecordsUtils";
 
 export default class DataTableExtendedTypes extends LightningDatatable {
   static customTypes = {
@@ -40,19 +38,13 @@ export default class DataTableExtendedTypes extends LightningDatatable {
       template: multipicklist,
       editTemplate: multipicklistEdit,
       standardCellLayout: true,
-      typeAttributes: ["parentName", "rowId", "fieldName", "options"]
+      typeAttributes: ["typeAttributes"]
     },
     picklist: {
       template: picklist,
       editTemplate: picklistEdit,
       standardCellLayout: true,
-      typeAttributes: [
-        "placeholder",
-        "parentName",
-        "rowId",
-        "fieldName",
-        "options"
-      ]
+      typeAttributes: ["typeAttributes"]
     },
     textarea: {
       template: textarea,
@@ -67,14 +59,4 @@ export default class DataTableExtendedTypes extends LightningDatatable {
       typeAttributes: ["view", "edit"]
     }
   };
-
-  @api
-  get records() {
-    return this.data;
-  }
-  set records(value) {
-    if (value.length) {
-      this.data = flatObjectsInArray(JSON.parse(JSON.stringify(value)));
-    }
-  }
 }

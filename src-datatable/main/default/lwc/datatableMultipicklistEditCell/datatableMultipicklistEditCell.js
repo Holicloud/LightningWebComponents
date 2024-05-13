@@ -1,36 +1,25 @@
-import { LightningElement, api, wire } from "lwc";
-import {
-  subscribe,
-  unsubscribe,
-  APPLICATION_SCOPE,
-  MessageContext
-} from "lightning/messageService";
-import dataTableMessageChannel from "@salesforce/messageChannel/DataTable__c";
+import { LightningElement, api } from "lwc";
 
 export default class DatatableMultipicklistEditCell extends LightningElement {
-  // public properties
+  _typeAttributes = {};
 
-  @api parentName;
-  @api rowId;
-  @api fieldName;
-  // private properties
+  @api
+  get typeAttributes() {
+    return this._typeAttributes;
+  }
+  set typeAttributes(value) {
+    this._typeAttributes = JSON.parse(value);
+  }
 
-  _disabled = true;
-  _subscription = null;
   _value = [];
-  _options = [];
-
-  // public getters-setters
 
   @api
   get value() {
     return this._value.join(";");
   }
   set value(value) {
-    this._value = value ? value.split(";") : [];
+    this._value = value.length ? value.split(";") : [];
   }
-
-  // public methods
 
   @api
   get validity() {
@@ -47,16 +36,10 @@ export default class DatatableMultipicklistEditCell extends LightningElement {
     this.checkBoxElement.focus();
   }
 
-  // wire methods
-
-  @wire(MessageContext)
-  messageContext;
-
-  // private methods
-
   _handleChange(e) {
     e.stopPropagation();
     this._value = e.detail.value;
+
     this.dispatchEvent(
       new CustomEvent("change", {
         bubbles: true,
@@ -87,51 +70,6 @@ export default class DatatableMultipicklistEditCell extends LightningElement {
         composed: true
       })
     );
-  }
-
-  _subscribeToMessageChannel() {
-    if (!this._subscription) {
-      this._subscription = subscribe(
-        this.messageContext,
-        dataTableMessageChannel,
-        (message) => this.handleMessage(message),
-        { scope: APPLICATION_SCOPE }
-      );
-    }
-  }
-
-  _unsubscribeToMessageChannel() {
-    unsubscribe(this._subscription);
-    this._subscription = null;
-  }
-
-  handleMessage({ action, detail }) {
-    const { rowId, values } = detail;
-    if (action === "rowinforesponse" && this.rowId === rowId) {
-      this._options = values;
-      this._disabled = false;
-    }
-  }
-
-  // hooks
-
-  connectedCallback() {
-    this._subscribeToMessageChannel();
-    this.dispatchEvent(
-      new CustomEvent("rowinforequest", {
-        detail: {
-          rowId: this.rowId,
-          fieldName: this.fieldName,
-          parentName: this.parentName
-        },
-        bubbles: true,
-        composed: true
-      })
-    );
-  }
-
-  disconnectedCallback() {
-    this._unsubscribeToMessageChannel();
   }
 
   get checkBoxElement() {

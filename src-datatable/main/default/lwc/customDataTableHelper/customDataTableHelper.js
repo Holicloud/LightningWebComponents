@@ -132,21 +132,17 @@ function setTypeAttributes(column, fieldDescribe) {
       break;
     case "picklist":
       column.typeAttributes = {
-        placeholder: "Select an Option",
-        parentName: controllerName,
-        isChild: !!controllerName,
-        rowId: { fieldName: "Id" },
-        fieldName: column.fieldName,
-        options: JSON.stringify(picklistValues)
+        typeAttributes: JSON.stringify({
+          options: picklistValues,
+          placeholder: "Test Placeholder"
+        }),
       };
       break;
     case "multipicklist":
       column.typeAttributes = {
-        options: JSON.stringify(picklistValues),
-        parentName: controllerName,
-        fieldName: column.fieldName,
-        rowId: { fieldName: "Id" },
-        isChild: !!controllerName
+        typeAttributes: JSON.stringify({
+          options: picklistValues,
+        }),
       };
       break;
     case "textarea":

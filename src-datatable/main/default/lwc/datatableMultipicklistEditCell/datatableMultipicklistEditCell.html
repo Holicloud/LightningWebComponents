@@ -1,13 +1,11 @@
 <template>
   <lightning-checkbox-group
-    name="Checkbox Group"
-    label="Checkbox Group"
+    data-inputable="true"
     variant="label-hidden"
-    options={_options}
     onfocus={_handleFocus}
     onblur={_handleBlur}
-    disabled={_disabled}
     value={_value}
     onchange={_handleChange}
+    lwc:spread={_typeAttributes}
   ></lightning-checkbox-group>
 </template>

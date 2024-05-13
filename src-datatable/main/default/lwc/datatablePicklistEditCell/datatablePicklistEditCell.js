@@ -1,27 +1,15 @@
-import { LightningElement, api, wire } from "lwc";
-import {
-  subscribe,
-  unsubscribe,
-  APPLICATION_SCOPE,
-  MessageContext
-} from "lightning/messageService";
-import dataTableMessageChannel from "@salesforce/messageChannel/DataTable__c";
+import { LightningElement, api } from "lwc";
 
 export default class DatatablePicklistEditCell extends LightningElement {
-  // public properties
+  _typeAttributes = {};
 
-  @api parentName;
-  @api placeholder = "Select an option";
-  @api rowId;
-  @api fieldName;
-  // private properties
-
-  _disabled = true;
-  _subscription = null;
-  _value = "";
-  _options = [];
-
-  // public getters-setters
+  @api
+  get typeAttributes() {
+    return this._typeAttributes;
+  }
+  set typeAttributes(value) {
+    this._typeAttributes = JSON.parse(value);
+  }
 
   @api
   get value() {
@@ -47,11 +35,6 @@ export default class DatatablePicklistEditCell extends LightningElement {
   focus() {
     this.inputElement.focus();
   }
-
-  // wire methods
-
-  @wire(MessageContext)
-  messageContext;
 
   // private methods
 
@@ -89,51 +72,6 @@ export default class DatatablePicklistEditCell extends LightningElement {
         composed: true
       })
     );
-  }
-
-  _subscribeToMessageChannel() {
-    if (!this._subscription) {
-      this._subscription = subscribe(
-        this.messageContext,
-        dataTableMessageChannel,
-        (message) => this._handleMessage(message),
-        { scope: APPLICATION_SCOPE }
-      );
-    }
-  }
-
-  _unsubscribeToMessageChannel() {
-    unsubscribe(this._subscription);
-    this._subscription = null;
-  }
-
-  _handleMessage({ action, detail }) {
-    const { rowId, values } = detail;
-    if (action === "rowinforesponse" && this.rowId === rowId) {
-      this._options = values;
-      this._disabled = false;
-    }
-  }
-
-  // hooks
-
-  connectedCallback() {
-    this._subscribeToMessageChannel();
-    this.dispatchEvent(
-      new CustomEvent("rowinforequest", {
-        detail: {
-          rowId: this.rowId,
-          fieldName: this.fieldName,
-          parentName: this.parentName
-        },
-        bubbles: true,
-        composed: true
-      })
-    );
-  }
-
-  disconnectedCallback() {
-    this._unsubscribeToMessageChannel();
   }
 
   get inputElement() {

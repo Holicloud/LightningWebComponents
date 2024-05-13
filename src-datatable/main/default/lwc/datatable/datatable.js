@@ -1,28 +1,17 @@
-import { LightningElement, api, track, wire } from "lwc";
+import { LightningElement, api, track } from "lwc";
 import getRecords from "@salesforce/apex/CustomDataTableController.getRecords";
 // import getRecordsNonCacheable from '@salesforce/apex/CustomDataTableController.getRecordsNonCacheable';
 import LightningConfirm from "lightning/confirm";
 import { formatColumns } from "c/customDataTableHelper";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { clone } from "c/utils";
-import {
-  getObjectInfo,
-  getPicklistValuesByRecordType
-} from "lightning/uiObjectInfoApi";
-import { publish, MessageContext } from "lightning/messageService";
-import dataTableMessageChannel from "@salesforce/messageChannel/DataTable__c";
-
 const DELAY = 300;
-const RECORD_TYPE_ID_FIELD = "RecordTypeId";
+
 export default class Datatable extends LightningElement {
   // public props
 
   @api defaultSortDirection = "asc";
 
-  // wire prop
-
-  @wire(MessageContext)
-  messageContext;
 
   // private props
 
@@ -199,40 +188,6 @@ export default class Datatable extends LightningElement {
 
   // public methods
 
-  // wire methods
-
-  @wire(getObjectInfo, { objectApiName: "$_state.objectApiName" })
-  wiredObjectInfo({ data, error }) {
-    if (data) {
-      this._recordTypeInfos = JSON.parse(JSON.stringify(data.recordTypeInfos));
-      this._currentRecordType = Object.keys(data.recordTypeInfos)[0];
-    } else if (error) {
-      this.showToastApexError(error);
-      this._recordTypeInfos = null;
-      this._currentRecordType = null;
-    }
-  }
-
-  // fetches all the picklist information for all the recordtypes for the sobject
-  @wire(getPicklistValuesByRecordType, {
-    objectApiName: "$objectApiName",
-    recordTypeId: "$_currentRecordType"
-  })
-  async wiredData({ error, data }) {
-    if (data) {
-      this._recordTypeInfos[this._currentRecordType].picklistFieldValues =
-        data.picklistFieldValues;
-      const nextRecordType = Object.values(this._recordTypeInfos).find(
-        (e) => !e.picklistFieldValues
-      )?.recordTypeId;
-      if (nextRecordType) {
-        this._currentRecordType = nextRecordType;
-      }
-    } else if (error) {
-      this.showToastApexError(error);
-    }
-  }
-
   // event handlers
 
   async _handleSort(event) {
@@ -339,44 +294,6 @@ export default class Datatable extends LightningElement {
     const theEvent = new CustomEvent("save", { detail: event.detail });
     this.dispatchEvent(theEvent);
   }
-
-  // a child edit table requested current row information
-  _handleRowInfoRequest(event) {
-    event.stopPropagation();
-
-    const { rowId, fieldName, parentName } = event.detail;
-
-    const row = this.getRow({ rowId });
-
-    let { values, controllerValues } = {
-      ...this._recordTypeInfos[row[RECORD_TYPE_ID_FIELD]].picklistFieldValues[
-        fieldName
-      ]
-    };
-
-    if (!values) return;
-
-    if (parentName) {
-      const parentValue = row[parentName];
-      values = values.filter(({ validFor }) =>
-        validFor.includes(controllerValues[parentValue])
-      );
-    }
-
-    // publish message so the child gets the row data aswell as que recordtype information for the current recordtype
-
-    publish(this.messageContext, dataTableMessageChannel, {
-      action: "rowinforesponse",
-      detail: { rowId, values }
-    });
-  }
-
-  _handleChange(event) {
-    event.stopPropagation();
-    this.updatePicklistDependenciesWhenControllingFieldChanged(
-      event.detail.draftValues
-    );
-  }
   // private methods
 
   async _formatColumns() {
@@ -440,109 +357,5 @@ export default class Datatable extends LightningElement {
   async connectedCallback() {
     await this._formatColumns();
     await this._showRecords();
-  }
-
-  handlePicklistValuesByRecordTypeFetched(event) {
-    this._recordTypeInfos = event.detail;
-  }
-
-  // dependency fields
-
-  updatePicklistDependenciesWhenControllingFieldChanged(changedRecords) {
-    const allDrafted = [...this.tableElement.draftValues];
-
-    for (const changedRecord of changedRecords) {
-      const [field] = Object.getOwnPropertyNames(changedRecord);
-      const { type, typeAttributes } = this._state.columns.find(
-        ({ fieldName }) => fieldName === field
-      );
-
-      if (["picklist", "boolean", "multipicklist"].includes(type)) {
-        const rowId = changedRecord.Id;
-        const row = this.getRow({ rowId });
-        this._updateDependencies({
-          allDrafted,
-          field,
-          recordTypeInfo: this._recordTypeInfos[row[RECORD_TYPE_ID_FIELD]],
-          rowId,
-          row,
-          parentValue: typeAttributes?.isChild
-            ? row[typeAttributes.parentName]
-            : null
-        });
-      }
-    }
-
-    // updates the data table
-    this._draftValues = [...allDrafted];
-  }
-
-  _updateDependencies({
-    allDrafted,
-    clearChild = false,
-    field,
-    parentValue,
-    recordTypeInfo,
-    rowId,
-    row
-  }) {
-    const {
-      type,
-      typeAttributes: { isChild, isParent, childs }
-    } = this._state.columns.find((e) => e.fieldName === field);
-
-    const value = row[field];
-
-    if (["picklist", "multipicklist"].includes(type)) {
-      if (clearChild) {
-        this.pushToDraft({ field, rowId, allDrafted });
-      } else if (value !== undefined) {
-        // there is a value in the field or the value on the field changed
-        let { values, controllerValues } =
-          recordTypeInfo.picklistFieldValues[field];
-
-        if (isChild) {
-          values = values.filter(({ validFor }) =>
-            validFor.includes(controllerValues[parentValue])
-          );
-        }
-
-        const validOptions = values.map((opt) => opt.value);
-
-        const valid = value
-          .split(";")
-          .every((selected) => validOptions.includes(selected));
-
-        if (!valid) {
-          // current selected option is not valid because of the recordtype and field dependency so
-          // clear this field and all dependent fields as well
-          clearChild = true;
-          this.pushToDraft({ field, rowId, allDrafted });
-        }
-      }
-    }
-
-    if (isParent && (value !== undefined || clearChild)) {
-      for (const childField of childs) {
-        this._updateDependencies({
-          allDrafted,
-          rowId,
-          field: childField,
-          parentValue: value,
-          recordTypeInfo,
-          row,
-          clearChild
-        });
-      }
-    }
-  }
-
-  pushToDraft({ field, rowId, allDrafted }) {
-    const existingDraft = allDrafted.find(({ Id }) => Id === rowId);
-    if (!existingDraft) {
-      allDrafted.push({ [field]: "", Id: rowId });
-    } else {
-      existingDraft[field] = "";
-    }
   }
 }
