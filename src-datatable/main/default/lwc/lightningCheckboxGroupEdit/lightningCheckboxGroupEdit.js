@@ -15,25 +15,25 @@ export default class LightningCheckboxGroupEdit extends LightningElement {
 
   @api
   get value() {
-    return this._value.join(";");
+    return this._value;
   }
   set value(value) {
-    this._value = value.length ? value.split(";") : [];
+    this._value = value;
   }
 
   @api
   get validity() {
-    return this.checkBoxElement.validity;
+    return this.input.validity;
   }
 
   @api
   showHelpMessageIfInvalid() {
-    this.checkBoxElement.showHelpMessageIfInvalid();
+    this.input.showHelpMessageIfInvalid();
   }
 
   @api
   focus() {
-    this.checkBoxElement.focus();
+    this.input.focus();
   }
 
   _handleChange(e) {
@@ -72,7 +72,7 @@ export default class LightningCheckboxGroupEdit extends LightningElement {
     );
   }
 
-  get checkBoxElement() {
+  get input() {
     return this.template.querySelector("lightning-checkbox-group");
   }
 }

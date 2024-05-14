@@ -147,7 +147,11 @@ function setTypeAttributes(column, fieldDescribe) {
       break;
     case "multipicklist":
       column.typeAttributes = {
-        typeAttributes: JSON.stringify({
+        view: {
+          options: picklistValues,
+          separator: ','
+        },
+        edit: JSON.stringify({
           options: picklistValues,
         }),
       };

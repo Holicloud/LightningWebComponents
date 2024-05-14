@@ -1,5 +1,5 @@
 import LightningDatatable from "lightning/datatable";
-import lightningCheckboxGroup from "./lightningCheckboxGroup.html";
+import arrayCell from "./arrayCell.html";
 import lightningCheckboxGroupEdit from "./lightningCheckboxGroupEdit.html";
 import lightningFormattedNumber from "./lightningFormattedNumber.html";
 import lightningInputEdit from "./lightningInputEdit.html";
@@ -16,19 +16,19 @@ export default class DataTablePlus extends LightningDatatable {
       template: lightningFormattedNumber,
       editTemplate: lightningInputEdit,
       standardCellLayout: true,
-      typeAttributes: [ "view", "edit" ]
+      typeAttributes: ["view", "edit"]
+    },
+    "c-lightning-checkbox-group": {
+      template: arrayCell,
+      editTemplate: lightningCheckboxGroupEdit,
+      standardCellLayout: true,
+      typeAttributes: ["view", "edit"]
     },
     time: {
       template: time,
       editTemplate: timeEdit,
       standardCellLayout: true,
       typeAttributes: ["placeholder"]
-    },
-    "c-lightning-checkbox-group": {
-      template: lightningCheckboxGroup,
-      editTemplate: lightningCheckboxGroupEdit,
-      standardCellLayout: true,
-      typeAttributes: ["typeAttributes"]
     },
     picklist: {
       template: picklist,

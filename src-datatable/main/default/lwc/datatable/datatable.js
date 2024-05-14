@@ -29,27 +29,27 @@ export default class Datatable extends LightningElement {
     sortDirection: "asc",
     sortedBy: "Level2__c",
     columns: [
-      { fieldName: "Level1__c", editable: true },
-      { fieldName: "test__c", editable: true },
-      { fieldName: "Level2__c", editable: true },
-      { fieldName: "Lvl2B__c", editable: true },
-      { fieldName: "Level3__c", editable: true },
+      // { fieldName: "Level1__c", editable: true },
+      // { fieldName: "test__c", editable: true },
+      // { fieldName: "Level2__c", editable: true },
+      // { fieldName: "Lvl2B__c", editable: true },
+      // { fieldName: "Level3__c", editable: true },
       { fieldName: "Level4__c", editable: true },
       // { fieldName: "RecordTypeId", editable: true },
       // { fieldName: "RecordType.Name", label: "Recordtype Name" },
-      { fieldName: "Currency__c", editable: true },
-      { fieldName: "Date__c", editable: true },
-      { fieldName: "DateTime__c", editable: true },
-      { fieldName: "Email__c", editable: true },
-      { fieldName: "Lookup__c", editable: true },
-      { fieldName: "Number__c", editable: true },
-      { label: "Owner", fieldName: "Owner.Name", editable: true },
-      { fieldName: "Percent__c", editable: true },
-      { fieldName: "Phone__c", editable: true },
-      { fieldName: "TextArea__c", editable: true },
-      { fieldName: "Name", editable: true, sortable: true },
-      { fieldName: "Time__c", editable: true },
-      { fieldName: "Url__c", editable: true }
+      // { fieldName: "Currency__c", editable: true },
+      // { fieldName: "Date__c", editable: true },
+      // { fieldName: "DateTime__c", editable: true },
+      // { fieldName: "Email__c", editable: true },
+      // { fieldName: "Lookup__c", editable: true },
+      // { fieldName: "Number__c", editable: true },
+      // { label: "Owner", fieldName: "Owner.Name", editable: true },
+      // { fieldName: "Percent__c", editable: true },
+      // { fieldName: "Phone__c", editable: true },
+      // { fieldName: "TextArea__c", editable: true },
+      // { fieldName: "Name", editable: true, sortable: true },
+      // { fieldName: "Time__c", editable: true },
+      // { fieldName: "Url__c", editable: true }
     ]
   };
 
@@ -273,8 +273,14 @@ export default class Datatable extends LightningElement {
         });
 
         const newData = clone(result.records);
+        for (const record of newData) {
+          record.Level4__c = record.Level4__c.split(';');
+          record.test__c = record.test__c.split(';');
+        }
         this._state.records = this._state.records.concat(newData);
         this._staticRecords = this._staticRecords.concat(newData);
+
+
         this._loadMoreStatus = "";
         this._totalNumberOfRecords = result.totalRecordCount;
       } catch (error) {
@@ -330,6 +336,10 @@ export default class Datatable extends LightningElement {
 
       this._totalNumberOfRecords = result.totalRecordCount;
       const records = clone(result.records);
+      for (const record of records) {
+        record.Level4__c = record.Level4__c?.split(';');
+        record.test__c = record.test__c?.split(';');
+      }
       this._staticRecords = [...records];
       this._state.records = records;
     } catch (error) {
