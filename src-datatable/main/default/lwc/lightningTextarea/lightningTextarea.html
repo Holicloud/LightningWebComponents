@@ -1,0 +1,11 @@
+<template>
+  <lightning-textarea
+    data-inputable="true"
+    onchange={_handleChange}
+    onfocus={_handleFocus}
+    onblur={_handleBlur}
+    value={_value}
+    variant="label-hidden"
+    lwc:spread={_typeAttributes}
+  ></lightning-textarea>
+</template>

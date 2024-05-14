@@ -4,8 +4,8 @@ import lightningCheckboxGroupEdit from "./lightningCheckboxGroupEdit.html";
 import lightningFormattedNumber from "./lightningFormattedNumber.html";
 import lightningInputEdit from "./lightningInputEdit.html";
 import lightningCombobox from "./lightningCombobox.html";
-import textareaEdit from "./textareaEdit.html";
-import textarea from "./textarea.html";
+import lightningTextArea from "./lightningTextArea.html";
+import lightningFormattedText from "./lightningFormattedText.html";
 import lightningFormattedTime from "./lightningFormattedTime.html";
 
 export default class DataTablePlus extends LightningDatatable {
@@ -34,11 +34,11 @@ export default class DataTablePlus extends LightningDatatable {
       standardCellLayout: true,
       typeAttributes: ["view", "edit"]
     },
-    textarea: {
-      template: textarea,
-      editTemplate: textareaEdit,
+    "c-textarea": {
+      template: lightningFormattedText,
+      editTemplate: lightningTextArea,
       standardCellLayout: true,
-      typeAttributes: ["maxLength", "linkify"]
+      typeAttributes: ["view", "edit"]
     }
   };
 }

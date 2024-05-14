@@ -29,27 +29,27 @@ export default class Datatable extends LightningElement {
     sortDirection: "asc",
     sortedBy: "Level2__c",
     columns: [
-      // { fieldName: "Level1__c", editable: true },
-      // { fieldName: "test__c", editable: true },
-      // { fieldName: "Level2__c", editable: true },
-      // { fieldName: "Lvl2B__c", editable: true },
-      // { fieldName: "Level3__c", editable: true },
-      // { fieldName: "Level4__c", editable: true },
-      // { fieldName: "RecordTypeId", editable: true },
-      // { fieldName: "RecordType.Name", label: "Recordtype Name" },
-      // { fieldName: "Currency__c", editable: true },
-      // { fieldName: "Date__c", editable: true },
-      // { fieldName: "DateTime__c", editable: true },
-      // { fieldName: "Email__c", editable: true },
-      // { fieldName: "Lookup__c", editable: true },
-      // { fieldName: "Number__c", editable: true },
-      // { label: "Owner", fieldName: "Owner.Name", editable: true },
-      // { fieldName: "Percent__c", editable: true },
-      // { fieldName: "Phone__c", editable: true },
-      // { fieldName: "TextArea__c", editable: true },
-      // { fieldName: "Name", editable: true, sortable: true },
+      { fieldName: "Level1__c", editable: true },
+      { fieldName: "test__c", editable: true },
+      { fieldName: "Level2__c", editable: true },
+      { fieldName: "Lvl2B__c", editable: true },
+      { fieldName: "Level3__c", editable: true },
+      { fieldName: "Level4__c", editable: true },
+      { fieldName: "RecordTypeId", editable: true },
+      { fieldName: "RecordType.Name", label: "Recordtype Name" },
+      { fieldName: "Currency__c", editable: true },
+      { fieldName: "Date__c", editable: true },
+      { fieldName: "DateTime__c", editable: true },
+      { fieldName: "Email__c", editable: true },
+      { fieldName: "Lookup__c", editable: true },
+      { fieldName: "Number__c", editable: true },
+      { label: "Owner", fieldName: "Owner.Name", editable: true },
+      { fieldName: "Percent__c", editable: true },
+      { fieldName: "Phone__c", editable: true },
+      { fieldName: "TextArea__c", editable: true },
+      { fieldName: "Name", editable: true, sortable: true },
       { fieldName: "Time__c", editable: true },
-      // { fieldName: "Url__c", editable: true }
+      { fieldName: "Url__c", editable: true }
     ]
   };
 
@@ -343,6 +343,9 @@ export default class Datatable extends LightningElement {
           const date = new Date(time);
           const validDate = date instanceof Date && !isNaN(date.getTime());
           record.Time__c = validDate ? date.toISOString()?.split("T")[1] : "";
+
+          // const [hours, minutes, seconds] = this._value.slice(0, -4).split(":");
+          // return hours * 3600000 + minutes * 60000 + seconds * 1000;
         }
       }
 

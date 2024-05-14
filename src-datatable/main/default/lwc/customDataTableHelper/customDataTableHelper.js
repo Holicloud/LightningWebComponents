@@ -11,6 +11,7 @@ const TYPES = {
   date: "date-local",
   reference: "lookup",
   picklist: "c-picklist",
+  textarea: "c-textarea",
   multipicklist: "c-lightning-checkbox-group"
 };
 
@@ -163,7 +164,12 @@ function setTypeAttributes(column, fieldDescribe) {
       break;
     case "textarea":
       column.typeAttributes = {
-        maxLength: length
+        view: {
+          linkify: true
+        },
+        edit: JSON.stringify({
+          maxLength: length
+        }),
       };
       break;
     case "time":
