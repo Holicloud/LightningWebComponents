@@ -34,7 +34,7 @@ export default class Datatable extends LightningElement {
       // { fieldName: "Level2__c", editable: true },
       // { fieldName: "Lvl2B__c", editable: true },
       // { fieldName: "Level3__c", editable: true },
-      { fieldName: "Level4__c", editable: true },
+      // { fieldName: "Level4__c", editable: true },
       // { fieldName: "RecordTypeId", editable: true },
       // { fieldName: "RecordType.Name", label: "Recordtype Name" },
       // { fieldName: "Currency__c", editable: true },
@@ -48,7 +48,7 @@ export default class Datatable extends LightningElement {
       // { fieldName: "Phone__c", editable: true },
       // { fieldName: "TextArea__c", editable: true },
       // { fieldName: "Name", editable: true, sortable: true },
-      // { fieldName: "Time__c", editable: true },
+      { fieldName: "Time__c", editable: true },
       // { fieldName: "Url__c", editable: true }
     ]
   };
@@ -273,10 +273,6 @@ export default class Datatable extends LightningElement {
         });
 
         const newData = clone(result.records);
-        for (const record of newData) {
-          record.Level4__c = record.Level4__c.split(';');
-          record.test__c = record.test__c.split(';');
-        }
         this._state.records = this._state.records.concat(newData);
         this._staticRecords = this._staticRecords.concat(newData);
 
@@ -336,10 +332,20 @@ export default class Datatable extends LightningElement {
 
       this._totalNumberOfRecords = result.totalRecordCount;
       const records = clone(result.records);
+
       for (const record of records) {
         record.Level4__c = record.Level4__c?.split(';');
         record.test__c = record.test__c?.split(';');
+
+        const time = record.Time__c;
+        
+        if (time != null) {
+          const date = new Date(time);
+          const validDate = date instanceof Date && !isNaN(date.getTime());
+          record.Time__c = validDate ? date.toISOString()?.split("T")[1] : "";
+        }
       }
+
       this._staticRecords = [...records];
       this._state.records = records;
     } catch (error) {

@@ -2,6 +2,7 @@ import getFieldInformation from "@salesforce/apex/CustomDataTableController.getF
 import TIME_ZONE from "@salesforce/i18n/timeZone";
 
 const TYPES = {
+  time: "c-time",
   integer: "number",
   double: "number",
   string: "text",
@@ -163,7 +164,12 @@ function setTypeAttributes(column, fieldDescribe) {
       break;
     case "time":
       column.typeAttributes = {
-        placeholder: "Choose a Time"
+        view: {},
+        edit: {
+          type: "time",
+          label: "Time field with placeholder",
+          placeholder: "Choose a time"
+        }
       };
       break;
     case "reference":

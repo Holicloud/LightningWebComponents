@@ -7,8 +7,7 @@ import picklist from "./picklist.html";
 import picklistEdit from "./picklistEdit.html";
 import textareaEdit from "./textareaEdit.html";
 import textarea from "./textarea.html";
-import time from "./time.html";
-import timeEdit from "./timeEdit.html";
+import lightningFormattedTime from "./lightningFormattedTime.html";
 
 export default class DataTablePlus extends LightningDatatable {
   static customTypes = {
@@ -24,11 +23,11 @@ export default class DataTablePlus extends LightningDatatable {
       standardCellLayout: true,
       typeAttributes: ["view", "edit"]
     },
-    time: {
-      template: time,
-      editTemplate: timeEdit,
+    "c-time": {
+      template: lightningFormattedTime,
+      editTemplate: lightningInputEdit,
       standardCellLayout: true,
-      typeAttributes: ["placeholder"]
+      typeAttributes: ["view", "edit"]
     },
     picklist: {
       template: picklist,
