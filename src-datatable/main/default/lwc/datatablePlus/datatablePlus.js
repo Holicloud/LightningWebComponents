@@ -3,8 +3,7 @@ import arrayCell from "./arrayCell.html";
 import lightningCheckboxGroupEdit from "./lightningCheckboxGroupEdit.html";
 import lightningFormattedNumber from "./lightningFormattedNumber.html";
 import lightningInputEdit from "./lightningInputEdit.html";
-import picklist from "./picklist.html";
-import picklistEdit from "./picklistEdit.html";
+import lightningCombobox from "./lightningCombobox.html";
 import textareaEdit from "./textareaEdit.html";
 import textarea from "./textarea.html";
 import lightningFormattedTime from "./lightningFormattedTime.html";
@@ -29,11 +28,11 @@ export default class DataTablePlus extends LightningDatatable {
       standardCellLayout: true,
       typeAttributes: ["view", "edit"]
     },
-    picklist: {
-      template: picklist,
-      editTemplate: picklistEdit,
+    "c-picklist": {
+      template: arrayCell,
+      editTemplate: lightningCombobox,
       standardCellLayout: true,
-      typeAttributes: ["typeAttributes"]
+      typeAttributes: ["view", "edit"]
     },
     textarea: {
       template: textarea,

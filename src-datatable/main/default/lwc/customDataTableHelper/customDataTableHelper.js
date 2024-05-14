@@ -10,6 +10,7 @@ const TYPES = {
   percent: "c-percent",
   date: "date-local",
   reference: "lookup",
+  picklist: "c-picklist",
   multipicklist: "c-lightning-checkbox-group"
 };
 
@@ -140,9 +141,12 @@ function setTypeAttributes(column, fieldDescribe) {
       break;
     case "picklist":
       column.typeAttributes = {
-        typeAttributes: JSON.stringify({
+        view: {
           options: picklistValues,
-          placeholder: "Test Placeholder"
+          separator: ','
+        },
+        edit: JSON.stringify({
+          options: picklistValues,
         }),
       };
       break;
