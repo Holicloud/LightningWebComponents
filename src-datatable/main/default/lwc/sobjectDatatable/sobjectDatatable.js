@@ -1,10 +1,8 @@
-import LightningDatatable from "lightning/datatable";
+// import LightningDatatable from "lightning/datatable";
 import { api } from "lwc";
-import { flatObjectsInArray } from "c/apexRecordsUtils";
 import getSObjectFieldConfig from "@salesforce/apex/CustomDataTableController.getSObjectFieldConfig";
 import TIME_ZONE from "@salesforce/i18n/timeZone";
-import { customTypes } from "c/datatablePlus";
-// import DatatablePlus from 'c/datatablePlus';
+import DatatablePlus from "c/datatablePlus";
 
 const TYPES = {
   time: "c-time",
@@ -14,45 +12,40 @@ const TYPES = {
   datetime: "date",
   percent: "c-percent",
   date: "date-local",
-  reference: "lookup",
   picklist: "c-picklist",
   textarea: "c-textarea",
   multipicklist: "c-lightning-checkbox-group"
 };
 
-export default class SobjectDatatable extends LightningDatatable {
-  static customTypes = {
-    ...customTypes
-    // "c-lightning-checkbox-group": {
-    //   template: arrayCell,
-    //   editTemplate: lightningCheckboxGroupEdit,
-    //   standardCellLayout: true,
-    //   typeAttributes: ["view", "edit"]
-    // },
-  };
+const customTypes = {
+  ...DatatablePlus.customTypes,
+  myCustomType: {
+    template: null,
+    editTemplate: null,
+    standardCellLayout: true,
+    typeAttributes: ["view", "edit"]
+  }
+};
 
-  @api
-  get records() {
-    return this.data;
-  }
-  set records(value) {
-    if (value.length) {
-      this.data = flatObjectsInArray(JSON.parse(JSON.stringify(value)));
-    }
-  }
+export default class SobjectDatatable extends DatatablePlus {
+  static customTypes = customTypes;
+  customTypes = customTypes;
 
   @api
   get config() {
-    return this.columns;
+    return super.config;
   }
-  set config(columns) {
-    this.setColumnDefaultValuesFromConfig(JSON.parse(JSON.stringify(columns)));
+  set config(value) {
+    if (Array.isArray(value)) {
+      const columns = JSON.parse(JSON.stringify(value));
+      this.setColumnDefaultValuesFromConfig(columns);
+    }
   }
 
   async setColumnDefaultValuesFromConfig(columns) {
     const configs = columns
       .filter((column) => column.config.source === "SObject")
-      .map(({ config }) => ({ field: config.field, objectName: config.object }));
+      .map((column) => ({ field: column.config.field, objectName: column.config.object }));
 
     const fieldDescribes = await getSObjectFieldConfig({ configs });
 
@@ -124,9 +117,9 @@ export default class SobjectDatatable extends LightningDatatable {
               options: fieldDescribe.picklistValues,
               separator: ","
             },
-            edit: JSON.stringify({
+            edit: {
               options: fieldDescribe.picklistValues
-            })
+            }
           };
           break;
         case "multipicklist":
@@ -135,9 +128,9 @@ export default class SobjectDatatable extends LightningDatatable {
               options: fieldDescribe.picklistValues,
               separator: ","
             },
-            edit: JSON.stringify({
+            edit: {
               options: fieldDescribe.picklistValues
-            })
+            }
           };
           break;
         case "textarea":
@@ -145,9 +138,9 @@ export default class SobjectDatatable extends LightningDatatable {
             view: {
               linkify: true
             },
-            edit: JSON.stringify({
+            edit: {
               maxLength: fieldDescribe.length
-            })
+            }
           };
           break;
         case "time":
@@ -165,6 +158,6 @@ export default class SobjectDatatable extends LightningDatatable {
       }
     }
 
-    this.columns = columns;
+    super.config = columns;
   }
 }

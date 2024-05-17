@@ -9,7 +9,7 @@ export default class LightningInput extends LightningElement {
     return this._typeAttributes;
   }
   set typeAttributes(value) {
-    this._typeAttributes = value;
+    this._typeAttributes = JSON.parse(value);
   }
 
   @api
