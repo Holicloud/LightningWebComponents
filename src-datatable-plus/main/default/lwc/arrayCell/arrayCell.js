@@ -15,20 +15,19 @@ export default class ArrayCell extends LightningElement {
   }
 
   get formattedValue() {
-    const { options, separator = ';' } = this._typeAttributes;
+    const { options, separator = ";" } = this._typeAttributes;
 
     const isArray = Array.isArray(this.value);
 
-    if ((!this.value || (isArray && !this.value.length)) || !options?.length) {
+    if (!this.value || (isArray && !this.value.length) || !options?.length) {
       return "";
     }
 
     let selectedValues = this.value;
 
     if (!isArray) {
-      selectedValues = [ selectedValues ];
+      selectedValues = [selectedValues];
     }
-    
 
     return options
       .filter(({ value }) => selectedValues.includes(value))

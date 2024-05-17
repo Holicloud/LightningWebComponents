@@ -1,6 +1,9 @@
 {
   "packageDirectories": [
     {
+      "path": "src-datatable-plus"
+    },
+    {
       "path": "src-datatable",
       "default": true
     }
