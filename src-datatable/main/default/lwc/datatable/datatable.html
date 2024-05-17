@@ -4,9 +4,9 @@
   </div>
   <template lwc:else>
     <div lwc:if={_state.records.length} style="height: 100%">
-      <c-datatable-plus
-        data={_state.records}
-        columns={_state.columns}
+      <c-sobject-datatable
+        records={_state.records}
+        config={_state.columns}
         default-sort-direction={defaultSortDirection}
         draft-values={_draftValues}
         enable-infinite-loading={_state.enableInfiniteLoading}
@@ -24,7 +24,7 @@
         show-row-number-column
         sorted-by={_state.sortedBy}
         sorted-direction={_state.sortDirection}
-      ></c-datatable-plus>
+      ></c-sobject-datatable>
       <!-- data-id="theDataTable"
                     oncellchange={handleCellChange}
                     draft-values={_draftValues}

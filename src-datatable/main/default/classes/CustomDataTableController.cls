@@ -1,47 +1,5 @@
 public with sharing class CustomDataTableController {
   @AuraEnabled(cacheable=true)
-  public static Map<String, Object> getFieldInformation(
-    String objectApiName,
-    List<String> fieldApiNames
-  ) {
-    objectApiName = Schema.getGlobalDescribe().get(objectApiName).getDescribe().getName();
-    Map<String, Object> result = new Map<String, Object>();
-
-    try {
-      Map<String, Schema.DescribeFieldResult> describeByField = FieldUtil.getDescribeByField(
-        objectApiName,
-        new Set<String>(fieldApiNames),
-        true
-      );
-
-      for (String fieldApiName : describeByField.keySet()) {
-        Schema.DescribeFieldResult describe = describeByField.get(fieldApiName);
-        Map<String, Object> singleResult = (Map<String, Object>) JSON.deserializeUntyped(
-          JSON.serialize(describe)
-        );
-
-        if (fieldApiName.contains('.')) {
-          singleResult.put('updateable', false);
-          singleResult.put('name', fieldApiName);
-        } else {
-          singleResult.put('name', describe.getName());
-          if (describe.getController() != null) {
-            singleResult.put('controllerLabel', describe.getController().getDescribe().getLabel());
-          }
-        }
-
-        singleResult.put('accesible', describe.isAccessible());
-
-        result.put(fieldApiName, singleResult);
-      }
-
-      return result;
-    } catch (Exception e) {
-      throw new AuraHandledException(e.getMessage());
-    }
-  }
-
-  @AuraEnabled(cacheable=true)
   public static FindRecordsWrapper getRecords(String queryParameters) {
     System.debug(queryParameters);
     QueryParameters parameters = ((QueryParameters) JSON.deserialize(
@@ -119,9 +77,11 @@ public with sharing class CustomDataTableController {
   }
 
   @AuraEnabled
-  public static List<Map<String, Object>> getSObjectFieldConfig(List<SObjectFieldConfig> configs) {
+  public static Map<String, Map<String, Object>> getSObjectFieldConfig(
+    List<SObjectFieldConfig> configs
+  ) {
     try {
-      List<Map<String, Object>> result = new List<Map<String, Object>>();
+      Map<String, Map<String, Object>> result = new Map<String, Map<String, Object>>();
 
       for (SObjectFieldConfig config : configs) {
         Schema.DescribeFieldResult describe = FieldUtility.getFieldDescribe(
@@ -129,9 +89,11 @@ public with sharing class CustomDataTableController {
           config.field
         );
 
-        Map<String, Object> singleResult = (Map<String, Object>) JSON.deserializeUntyped(JSON.serialize(describe));
+        Map<String, Object> singleResult = (Map<String, Object>) JSON.deserializeUntyped(
+          JSON.serialize(describe)
+        );
         singleResult.put('accesible', describe.isAccessible());
-        result.add(singleResult);
+        result.put(config.objectName + config.field, singleResult);
       }
 
       return result;
@@ -142,9 +104,9 @@ public with sharing class CustomDataTableController {
 
   public class SObjectFieldConfig {
     @AuraEnabled
-    public String objectName;
+    public String objectName { get; set; }
 
     @AuraEnabled
-    public String field;
+    public String field { get; set; }
   }
 }

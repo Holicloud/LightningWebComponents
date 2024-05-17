@@ -2,7 +2,6 @@ import { LightningElement, api, track } from "lwc";
 import getRecords from "@salesforce/apex/CustomDataTableController.getRecords";
 // import getRecordsNonCacheable from '@salesforce/apex/CustomDataTableController.getRecordsNonCacheable';
 import LightningConfirm from "lightning/confirm";
-import { formatColumns } from "c/customDataTableHelper";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import { clone } from "c/utils";
 const DELAY = 300;
@@ -11,7 +10,6 @@ export default class Datatable extends LightningElement {
   // public props
 
   @api defaultSortDirection = "asc";
-
 
   // private props
 
@@ -29,27 +27,81 @@ export default class Datatable extends LightningElement {
     sortDirection: "asc",
     sortedBy: "Level2__c",
     columns: [
-      { fieldName: "Level1__c", editable: true },
-      { fieldName: "test__c", editable: true },
-      { fieldName: "Level2__c", editable: true },
-      { fieldName: "Lvl2B__c", editable: true },
-      { fieldName: "Level3__c", editable: true },
-      { fieldName: "Level4__c", editable: true },
-      { fieldName: "RecordTypeId", editable: true },
-      { fieldName: "RecordType.Name", label: "Recordtype Name" },
-      { fieldName: "Currency__c", editable: true },
-      { fieldName: "Date__c", editable: true },
-      { fieldName: "DateTime__c", editable: true },
-      { fieldName: "Email__c", editable: true },
-      { fieldName: "Lookup__c", editable: true },
-      { fieldName: "Number__c", editable: true },
-      { label: "Owner", fieldName: "Owner.Name", editable: true },
-      { fieldName: "Percent__c", editable: true },
-      { fieldName: "Phone__c", editable: true },
-      { fieldName: "TextArea__c", editable: true },
-      { fieldName: "Name", editable: true, sortable: true },
-      { fieldName: "Time__c", editable: true },
-      { fieldName: "Url__c", editable: true }
+      {
+        fieldName: "Level1__c",
+        config: { source: "SObject", field: "Level1__c", object: "DataTest__c" }
+      },
+      {
+        fieldName: "test__c",
+        config: { source: "SObject", field: "test__c", object: "DataTest__c" }
+      },
+      {
+        fieldName: "Level2__c",
+        config: { source: "SObject", field: "Level2__c", object: "DataTest__c" }
+      },
+      {
+        fieldName: "Lvl2B__c",
+        config: { source: "SObject", field: "Lvl2B__c", object: "DataTest__c" }
+      },
+      {
+        fieldName: "Level3__c",
+        config: { source: "SObject", field: "Level3__c", object: "DataTest__c" }
+      },
+      {
+        fieldName: "Level4__c",
+        config: { source: "SObject", field: "Level4__c", object: "DataTest__c" }
+      },
+      {
+        fieldName: "RecordTypeId",
+        config: { source: "SObject", field: "RecordTypeId", object: "DataTest__c" }
+      },
+      {
+        fieldName: "RecordType.Name",
+        config: { source: "SObject", field: "Name", object: "RecordType" }
+      },
+      {
+        fieldName: "Currency__c",
+        config: { source: "SObject", field: "Currency__c", object: "DataTest__c" }
+      },
+      {
+        fieldName: "Date__c",
+        config: { source: "SObject", field: "Date__c", object: "DataTest__c" }
+      },
+      {
+        fieldName: "DateTime__c",
+        config: { source: "SObject", field: "DateTime__c", object: "DataTest__c" }
+      },
+      {
+        fieldName: "Email__c",
+        config: { source: "SObject", field: "Email__c", object: "DataTest__c" }
+      },
+      {
+        fieldName: "Lookup__c",
+        config: { source: "SObject", field: "Lookup__c", object: "DataTest__c" }
+      },
+      {
+        fieldName: "Number__c",
+        config: { source: "SObject", field: "Number__c", object: "DataTest__c" }
+      },
+      { fieldName: "Owner.Name", config: { source: "SObject", field: "Name", object: "User" } },
+      {
+        fieldName: "Percent__c",
+        config: { source: "SObject", field: "Percent__c", object: "DataTest__c" }
+      },
+      {
+        fieldName: "Phone__c",
+        config: { source: "SObject", field: "Phone__c", object: "DataTest__c" }
+      },
+      {
+        fieldName: "TextArea__c",
+        config: { source: "SObject", field: "TextArea__c", object: "DataTest__c" }
+      },
+      { fieldName: "Name", config: { source: "SObject", field: "Name", object: "DataTest__c" } },
+      {
+        fieldName: "Time__c",
+        config: { source: "SObject", field: "Time__c", object: "DataTest__c" }
+      },
+      { fieldName: "Url__c", config: { source: "SObject", field: "Url__c", object: "DataTest__c" } }
     ]
   };
 
@@ -173,10 +225,8 @@ export default class Datatable extends LightningElement {
   get _fields() {
     let result = new Set();
 
-    for (const { apexFieldsReferenced } of this._state.columns) {
-      for (const field of apexFieldsReferenced) {
-        result.add(field);
-      }
+    for (const column of this._state.columns) {
+      result.add(column.config.field);
     }
 
     return [...result];
@@ -193,8 +243,7 @@ export default class Datatable extends LightningElement {
   async _handleSort(event) {
     if (this.tableElement.draftValues?.length) {
       const result = await LightningConfirm.open({
-        message:
-          "You have unsaved changes. Are you sure you want to DISCARD these changes?",
+        message: "You have unsaved changes. Are you sure you want to DISCARD these changes?",
         label: "Discard Changes",
         theme: "warning"
       });
@@ -246,13 +295,7 @@ export default class Datatable extends LightningElement {
         return;
       }
 
-      const {
-        limitOfRecords,
-        objectApiName,
-        sortedBy,
-        sortDirection,
-        records
-      } = this._state;
+      const { limitOfRecords, objectApiName, sortedBy, sortDirection, records } = this._state;
 
       const previousOffSet = this._queryOffSet;
       const previousRecords = [...records];
@@ -276,7 +319,6 @@ export default class Datatable extends LightningElement {
         this._state.records = this._state.records.concat(newData);
         this._staticRecords = this._staticRecords.concat(newData);
 
-
         this._loadMoreStatus = "";
         this._totalNumberOfRecords = result.totalRecordCount;
       } catch (error) {
@@ -298,25 +340,9 @@ export default class Datatable extends LightningElement {
   }
   // private methods
 
-  async _formatColumns() {
-    const { columns, objectApiName } = this._state;
-    if (columns && objectApiName && !this.formatColumnsHasRun) {
-      const { data, error } = await formatColumns({ objectApiName, columns });
-      if (data) {
-        this._state.columns = data;
-      } else {
-        this.showToastApexError(error);
-      }
-      this.formatColumnsHasRun = true;
-    } else {
-      this.formatColumnsHasRun = false;
-    }
-  }
-
   async _showRecords() {
     // this.resetDraftedValues();
-    const { limitOfRecords, objectApiName, sortedBy, sortDirection } =
-      this._state;
+    const { limitOfRecords, objectApiName, sortedBy, sortDirection } = this._state;
     this._showSpinner = true;
     try {
       const result = await getRecords({
@@ -334,11 +360,11 @@ export default class Datatable extends LightningElement {
       const records = clone(result.records);
 
       for (const record of records) {
-        record.Level4__c = record.Level4__c?.split(';');
-        record.test__c = record.test__c?.split(';');
+        record.Level4__c = record.Level4__c?.split(";");
+        record.test__c = record.test__c?.split(";");
 
         const time = record.Time__c;
-        
+
         if (time != null) {
           const date = new Date(time);
           const validDate = date instanceof Date && !isNaN(date.getTime());
@@ -360,13 +386,6 @@ export default class Datatable extends LightningElement {
     this._showSpinner = false;
   }
 
-  getRow({ rowId }) {
-    return {
-      ...this._state.records.find((e) => e.Id === rowId),
-      ...this.tableElement.draftValues.find((e) => e.Id === rowId)
-    };
-  }
-
   showToastApexError({ title, message, variant }) {
     this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
   }
@@ -374,7 +393,7 @@ export default class Datatable extends LightningElement {
   // hooks
 
   async connectedCallback() {
-    await this._formatColumns();
+    // await this._formatColumns();
     await this._showRecords();
   }
 }
