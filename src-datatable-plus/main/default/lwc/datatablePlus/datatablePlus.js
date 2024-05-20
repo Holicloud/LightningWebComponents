@@ -1,5 +1,6 @@
 import LightningDatatable from "lightning/datatable";
 import arrayCell from "./arrayCell.html";
+import recordCell from "./recordCell.html";
 import lightningCheckboxGroupEdit from "./lightningCheckboxGroupEdit.html";
 import lightningFormattedNumber from "./lightningFormattedNumber.html";
 import lightningInputEdit from "./lightningInputEdit.html";
@@ -7,6 +8,7 @@ import lightningComboboxEdit from "./lightningComboboxEdit.html";
 import lightningTextAreaEdit from "./lightningTextAreaEdit.html";
 import lightningFormattedText from "./lightningFormattedText.html";
 import lightningFormattedTime from "./lightningFormattedTime.html";
+import lightningRecordPickerEdit from "./lightningRecordPickerEdit.html";
 import { flatObjectsInArray } from "c/apexRecordsUtils";
 import { api } from "lwc";
 
@@ -38,6 +40,12 @@ const customTypes = {
   "c-textarea": {
     template: lightningFormattedText,
     editTemplate: lightningTextAreaEdit,
+    standardCellLayout: true,
+    typeAttributes: ["view", "edit", "editString", "viewString"]
+  },
+  "c-lightning-record-picker": {
+    template: recordCell,
+    editTemplate: lightningRecordPickerEdit,
     standardCellLayout: true,
     typeAttributes: ["view", "edit", "editString", "viewString"]
   }

@@ -1,0 +1,15 @@
+<template>
+  <lightning-record-picker
+    onblur={_handleBlur}
+    onchange={_handleChange}
+    onfocus={_handleFocus}
+    value={_value}
+    onready={_handleReady}
+    variant="label-hidden"
+    placeholder="Search..."
+    lwc:spread={_typeAttributes}
+  ></lightning-record-picker>
+  <span if:true={inputHasFocus} class="slds-text-body_small">
+    To remove the selected record, press Backspace or Del.
+  </span>
+</template>

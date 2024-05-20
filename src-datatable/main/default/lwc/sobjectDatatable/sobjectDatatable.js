@@ -14,7 +14,8 @@ const TYPES = {
   date: "date-local",
   picklist: "c-picklist",
   textarea: "c-textarea",
-  multipicklist: "c-lightning-checkbox-group"
+  multipicklist: "c-lightning-checkbox-group",
+  reference: "c-lightning-record-picker"
 };
 
 const customTypes = {
@@ -150,6 +151,17 @@ export default class SobjectDatatable extends DatatablePlus {
               type: "time",
               label: "Time field with placeholder",
               placeholder: "Choose a time"
+            }
+          };
+          break;
+        case "reference":
+          column.typeAttributes = {
+            view: {
+              displayField: { fieldApiName: "Name", objectApiName: "Account" }
+            },
+            edit: {
+              label: fieldDescribe.referenceTo[0],
+              objectApiName: fieldDescribe.referenceTo[0]
             }
           };
           break;
