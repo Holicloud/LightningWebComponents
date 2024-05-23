@@ -9,6 +9,7 @@ import lightningTextAreaEdit from "./lightningTextAreaEdit.html";
 import lightningFormattedText from "./lightningFormattedText.html";
 import lightningFormattedTime from "./lightningFormattedTime.html";
 import lightningRecordPickerEdit from "./lightningRecordPickerEdit.html";
+import lookupEdit from "./lookupEdit.html";
 import { flatObjectsInArray } from "c/apexRecordsUtils";
 import { api } from "lwc";
 
@@ -46,6 +47,12 @@ const customTypes = {
   "c-lightning-record-picker": {
     template: recordCell,
     editTemplate: lightningRecordPickerEdit,
+    standardCellLayout: true,
+    typeAttributes: ["view", "edit", "editString", "viewString"]
+  },
+  "c-lookup": {
+    template: recordCell,
+    editTemplate: lookupEdit,
     standardCellLayout: true,
     typeAttributes: ["view", "edit", "editString", "viewString"]
   }

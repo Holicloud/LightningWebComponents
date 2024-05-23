@@ -1,12 +1,9 @@
-import { LightningElement, api } from "lwc";
+import { LightningElement, api, track } from "lwc";
 const KEY_ARROW_BACKSPACE = 8;
 const KEY_ARROW_DELETE = 46;
 const REMOVE_INPUT_KEYS = [KEY_ARROW_BACKSPACE, KEY_ARROW_DELETE];
 
-export default class LightningRecordPicker extends LightningElement {
-  _typeAttributes = {};
-  inputHasFocus;
-
+export default class LookupEdit extends LightningElement {
   @api
   get typeAttributes() {
     return this._typeAttributes;
@@ -17,32 +14,37 @@ export default class LightningRecordPicker extends LightningElement {
 
   @api
   get value() {
-    return this._value;
+    return this.state.value;
   }
   set value(value) {
+    this.state.value = value;
     this._value = value;
   }
+
+  @track state = {};
+
+  _value;
+  inputHasFocus;
+  isMultiEntry = false;
+  _typeAttributes = {};
 
   // public methods
 
   @api
   get validity() {
-    // there is no valid object on the input so we use checkValidity() instead
-    return { valid: this.inputElement.checkValidity() };
+    return this.refs.input.validity;
   }
 
   @api
   showHelpMessageIfInvalid() {
-    // there is no showHelpMessageifInvalid so we use reportValidity instead
-    this.inputElement.reportValidity();
+    this.refs.input.showHelpMessageIfInvalid();
   }
 
   @api
   focus() {
-    // this.template.querySelector('div').focus();
     // eslint-disable-next-line @lwc/lwc/no-async-operation
     setTimeout(() => {
-      this.inputElement.focus();
+      this.refs.input.focus();
     }, 500);
   }
 
@@ -50,8 +52,10 @@ export default class LightningRecordPicker extends LightningElement {
 
   _handleChange(e) {
     e.stopPropagation();
-    this._value = e.detail.recordId || "";
 
+    const value = e.detail.value;
+    this._value = value?.length ? value[0] : "";
+    this.state.value = this._value;
     this.dispatchEvent(
       new CustomEvent("change", {
         bubbles: true,
@@ -85,18 +89,9 @@ export default class LightningRecordPicker extends LightningElement {
     );
   }
 
-  _handleReady() {
-    this.focus();
-  }
-
   handleKeyDown(event) {
     if (REMOVE_INPUT_KEYS.includes(event.keyCode) && this.inputHasFocus) {
-      this.inputElement.clearSelection();
       this._value = "";
     }
-  }
-
-  get inputElement() {
-    return this.template.querySelector("lightning-record-picker");
   }
 }

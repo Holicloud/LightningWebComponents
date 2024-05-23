@@ -28,6 +28,10 @@ export default class Datatable extends LightningElement {
     sortedBy: "Level2__c",
     columns: [
       {
+        fieldName: "Id",
+        config: { source: "SObject", field: "Id", object: "DataTest__c" }
+      },
+      {
         fieldName: "Level1__c",
         config: { source: "SObject", field: "Level1__c", object: "DataTest__c" }
       },
@@ -76,8 +80,18 @@ export default class Datatable extends LightningElement {
         config: { source: "SObject", field: "Email__c", object: "DataTest__c" }
       },
       {
+        label: "test",
         fieldName: "Lookup__c",
-        config: { source: "SObject", field: "Lookup__c", object: "DataTest__c" }
+        config: { source: "SObject", field: "Lookup__c", object: "DataTest__c" },
+        type: "c-lookup",
+        typeAttributes: {
+          view: {
+            displayField: { fieldApiName: "Name", objectApiName: "Account" }
+          },
+          edit: {
+            uniqueId: "AccountLookup"
+          }
+        }
       },
       {
         fieldName: "Number__c",
@@ -101,8 +115,12 @@ export default class Datatable extends LightningElement {
         fieldName: "Time__c",
         config: { source: "SObject", field: "Time__c", object: "DataTest__c" }
       },
-      { fieldName: "Url__c", config: { source: "SObject", field: "Url__c", object: "DataTest__c" } }
-    ]
+      {
+        fieldName: "Url__c",
+        config: { source: "SObject", field: "Url__c", object: "DataTest__c" }
+      },
+      { fieldName: "OwnerId", config: { source: "SObject", field: "Id", object: "User" } }
+    ].filter((column) => column.fieldName === "Lookup__c" || column.fieldName === "Id")
   };
 
   @track _draftValues = [];

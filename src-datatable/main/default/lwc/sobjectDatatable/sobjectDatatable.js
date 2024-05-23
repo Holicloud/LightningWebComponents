@@ -15,7 +15,7 @@ const TYPES = {
   picklist: "c-picklist",
   textarea: "c-textarea",
   multipicklist: "c-lightning-checkbox-group",
-  reference: "c-lightning-record-picker"
+  reference: "c-lookup"
 };
 
 const customTypes = {
@@ -155,15 +155,15 @@ export default class SobjectDatatable extends DatatablePlus {
           };
           break;
         case "reference":
-          column.typeAttributes = {
-            view: {
-              displayField: { fieldApiName: "Name", objectApiName: "Account" }
-            },
-            edit: {
-              label: fieldDescribe.referenceTo[0],
-              objectApiName: fieldDescribe.referenceTo[0]
-            }
-          };
+          // column.typeAttributes = {
+          //   view: {
+          //     displayField: { fieldApiName: "Name", objectApiName: "Account" }
+          //   },
+          //   edit: {
+          //     label: fieldDescribe.referenceTo[0],
+          //     objectApiName: fieldDescribe.referenceTo[0]
+          //   }
+          // };
           break;
         default:
           break;
