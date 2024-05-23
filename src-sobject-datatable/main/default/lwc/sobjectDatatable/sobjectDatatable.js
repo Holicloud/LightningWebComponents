@@ -1,6 +1,6 @@
 // import LightningDatatable from "lightning/datatable";
 import { api } from "lwc";
-import getSObjectFieldConfig from "@salesforce/apex/CustomDataTableController.getSObjectFieldConfig";
+import getSObjectFieldConfig from "@salesforce/apex/SObjectDatatableController.getSObjectFieldConfig";
 import TIME_ZONE from "@salesforce/i18n/timeZone";
 import DatatablePlus from "c/datatablePlus";
 

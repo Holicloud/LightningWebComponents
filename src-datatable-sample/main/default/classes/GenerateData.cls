@@ -29,13 +29,7 @@ public with sharing class GenerateData {
 
   private static final String chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz, .;';
 
-  private static List<String> picklistValues = new List<String>{
-    'a',
-    'b',
-    'c',
-    'd',
-    'e'
-  };
+  private static List<String> picklistValues = new List<String>{ 'a', 'b', 'c', 'd', 'e' };
 
   public static void doWork(Integer numberOfRecords) {
     List<DataTest__c> result = new List<DataTest__c>();
@@ -48,10 +42,7 @@ public with sharing class GenerateData {
 
       // singleResult.Checkbox__c = Math.mod(Integer.valueof((math.random() * 10)), 2) == 0;
       singleResult.Currency__c = Integer.valueOf(Math.random() * 999);
-      singleResult.Date__c = randomDate(
-        Date.newInstance(2000, 1, 1),
-        Date.newInstance(2025, 1, 1)
-      );
+      singleResult.Date__c = randomDate(Date.newInstance(2000, 1, 1), Date.newInstance(2025, 1, 1));
       singleResult.Time__c = randomTime(
         Integer.valueOf(Math.random() * 100000),
         Integer.valueOf(Math.random() * 100000)
@@ -67,20 +58,14 @@ public with sharing class GenerateData {
 
       singleResult.Email__c = getRandomElementFromList(emails);
       singleResult.Lookup__c = getRandomElementFromList(accIds);
-      singleResult.Name = generateRandomString(
-        12 + Integer.valueOf(Math.random() * 5)
-      );
+      singleResult.Name = generateRandomString(12 + Integer.valueOf(Math.random() * 5));
       // singleResult.MultiSelectPicklist__c = 'a;b;c;d;e';
       singleResult.Number__c = Integer.valueOf(Math.random() * 1000);
       singleResult.Percent__c = Integer.valueOf(Math.random() * 100);
-      singleResult.Phone__c = String.valueOf(
-        Integer.valueOf(Math.random() * 100000)
-      );
+      singleResult.Phone__c = String.valueOf(Integer.valueOf(Math.random() * 100000));
       // singleResult.Picklist__c = getRandomElementFromList(picklistValues);
       // singleResult.Text__c = generateRandomString(12 + Integer.valueOf(Math.random() * 5));
-      singleResult.TextArea__c = generateRandomString(
-        50 + Integer.valueOf(Math.random() * 10)
-      );
+      singleResult.TextArea__c = generateRandomString(50 + Integer.valueOf(Math.random() * 10));
       singleResult.Url__c = getRandomElementFromList(urls);
 
       result.add(singleResult);
@@ -96,10 +81,7 @@ public with sharing class GenerateData {
     return result;
   }
 
-  public static Time randomTime(
-    Integer randomNumber,
-    Integer anotherRandomNumber
-  ) {
+  public static Time randomTime(Integer randomNumber, Integer anotherRandomNumber) {
     return Time.newInstance(randomNumber, anotherRandomNumber, 0, 0);
   }
 
@@ -122,10 +104,7 @@ public with sharing class GenerateData {
   public static String generateRandomString(Integer lengthOfString) {
     String randStr = '';
     while (randStr.length() < lengthOfString) {
-      Integer idx = Math.mod(
-        Math.abs(Crypto.getRandomInteger()),
-        chars.length()
-      );
+      Integer idx = Math.mod(Math.abs(Crypto.getRandomInteger()), chars.length());
       randStr += chars.substring(idx, idx + 1);
     }
     return randStr;
