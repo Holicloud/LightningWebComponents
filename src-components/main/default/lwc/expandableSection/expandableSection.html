@@ -1,0 +1,32 @@
+<template>
+  <div data-id="section" class={sectionClasses}>
+    <h3 class="slds-section__title slds-theme_shade">
+      <span
+        lwc:if={nonCollapsible}
+        class="slds-truncate slds-p-horizontal_small"
+        title={title}
+        data-id="title"
+        >{title}</span
+      >
+      <button
+        lwc:else
+        aria-controls="expando-unique-id"
+        aria-expanded={isExpanded}
+        onclick={handleToggle}
+        class="slds-button slds-section__title-action"
+        data-id="toggle"
+      >
+        <lightning-icon
+          size="x-small"
+          class="slds-section__title-action-icon slds-button__icon slds-button__icon_left"
+          icon-name="utility:switch"
+          alternative-text="Switch"
+        ></lightning-icon>
+        <span class="slds-truncate" title={title}>{title}</span>
+      </button>
+    </h3>
+    <div class="slds-section__content" id="expando-unique-id">
+      <slot></slot>
+    </div>
+  </div>
+</template>

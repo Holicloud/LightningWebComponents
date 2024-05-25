@@ -4,7 +4,16 @@
       "path": "src-datatable-plus"
     },
     {
-      "path": "src-datatable",
+      "path": "src-datatable-sample"
+    },
+    {
+      "path": "src-sobject-datatable"
+    },
+    {
+      "path": "src-components"
+    },
+    {
+      "path": "force-app",
       "default": true
     }
   ],

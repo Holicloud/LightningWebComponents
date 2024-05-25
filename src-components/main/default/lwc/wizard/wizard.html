@@ -1,0 +1,41 @@
+<template>
+  <div class="slds-card">
+    <div id="header" class="slds-card_header">
+      <div
+        data-id="header"
+        class="slds-text-align_center slds-p-around_small slds-text-heading_medium"
+      >
+        {header}
+      </div>
+      <lightning-progress-indicator
+        data-id="progress-indicator"
+        type={variantProps.type}
+        has-error={hasError}
+        variant={variantProps.variant}
+        current-step={_currentStep}
+      >
+        <template for:each={flow} for:item="step">
+          <lightning-progress-step
+            key={step.name}
+            label={step.label}
+            value={step.name}
+          ></lightning-progress-step>
+        </template>
+      </lightning-progress-indicator>
+
+      <template lwc:if={hasError}>
+        <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+            <span class="slds-assistive-text">{labels.error}</span>
+            <h3 data-id="error-message">{errorMessage}</h3>
+        </div>
+      </template>
+    </div>
+    <slot
+      onslotchange={handleSlotChange}
+      onregister={handleRegister}
+      onnext={handleNext}
+      onprevious={handlePrevious}
+      onunregister={handleUnregister}
+    ></slot>
+  </div>
+</template>

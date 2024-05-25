@@ -1,0 +1,40 @@
+<template>
+  <section class="slds-card slds-grid slds-grid_vertical sidebar-content">
+    <lightning-input
+      class="slds-form-element slds-p-horizontal_large slds-col slds-grow-none slds-m-around_medium"
+      type="text"
+      variant="label-hidden"
+      label="Quick Find"
+      placeholder="Quick Find"
+      maxlength="10"
+    ></lightning-input>
+    <div class="slds-scrollable_y">
+      <div class="lwc-section slds-m-bottom_medium slds-p-left_medium slds-p-bottom_small">
+        <h3 class="slds-text-heading_small">Lightning Web Components</h3>
+        <lightning-vertical-navigation selected-item={initiallySelected} onselect={handleSelect}>
+          <template for:each={navigationData} for:item="section">
+            <lightning-vertical-navigation-section key={section.label} label={section.label}>
+              <template for:each={section.items} for:item="item">
+                <template lwc:if={item.icon}>
+                  <lightning-vertical-navigation-item-icon
+                    key={item.name}
+                    label={item.label}
+                    name={item.name}
+                    icon-name={item.icon}
+                  ></lightning-vertical-navigation-item-icon>
+                </template>
+                <template lwc:else>
+                  <lightning-vertical-navigation-item
+                    key={item.name}
+                    label={item.label}
+                    name={item.name}
+                  ></lightning-vertical-navigation-item>
+                </template>
+              </template>
+            </lightning-vertical-navigation-section>
+          </template>
+        </lightning-vertical-navigation>
+      </div>
+    </div>
+  </section>
+</template>

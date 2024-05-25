@@ -1,0 +1,57 @@
+<template>
+  <div class="slds-card">
+    <div class="slds-p-horizontal_small">
+      <lightning-tabset active-tab-value={activeTab}>
+        <lightning-tab label="Example" value="Example" lwc:if={hasExamples}>
+          <div
+          class="slds-border_bottom slds-grid slds-wrap slds-grid_vertical-align-end slds-gutters slds-gutters_x-small slds-grid_pull-padded-x-small slds-p-bottom_medium"
+          >
+            <div class="slds-col slds-grow">
+              <lightning-combobox
+                label="Example"
+                value={selectedExample.title}
+                options={exampleOptions}
+                onchange={handleChangeExample}
+              ></lightning-combobox>
+            </div>
+            <div
+              class="slds-col slds-grow-none"
+            >
+              <lightning-button-stateful
+                label-when-off="View Code"
+                label-when-on="View Example"
+                selected={viewCode}
+                variant="brand"
+                onclick={handleViewCode}
+              >
+              </lightning-button-stateful>
+            </div>
+            <div
+              class="slds-col slds-grow slds-col_bump-left slds-p-top_x-small"
+            >
+              <div class="slds-form-element">
+                <label class="slds-form-element__label" for="form-element-01-356"
+                  >Description</label
+                >
+                <div class="slds-form-element__control">
+                  <div id="form-element-01-356">{selectedExample.description}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="slds-p-around_small slds-scrollable_y" style="max-height:17rem;">
+            <div lwc:if={viewCode}>
+              <c-lightndown url={selectedExample.codeBase}></c-lightndown>
+            </div>
+            <lwc:component lwc:else lwc:is={componentConstructor}></lwc:component>
+          </div>
+        </lightning-tab>
+        <lightning-tab label="Documentation" value="Documentation">
+          <div class="slds-p-around_small slds-scrollable_y" style="max-height:17rem;">
+            <c-lightndown url={documentation}></c-lightndown>
+          </div>
+        </lightning-tab>
+      </lightning-tabset>
+    </div>
+  </div>
+</template>

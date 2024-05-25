@@ -1,66 +1,18 @@
 import LightningDatatable from "lightning/datatable";
-import arrayCell from "./arrayCell.html";
-import recordCell from "./recordCell.html";
-import lightningCheckboxGroupEdit from "./lightningCheckboxGroupEdit.html";
-import lightningFormattedNumber from "./lightningFormattedNumber.html";
-import lightningInputEdit from "./lightningInputEdit.html";
-import lightningComboboxEdit from "./lightningComboboxEdit.html";
-import lightningTextAreaEdit from "./lightningTextAreaEdit.html";
-import lightningFormattedText from "./lightningFormattedText.html";
-import lightningFormattedTime from "./lightningFormattedTime.html";
-import lightningRecordPickerEdit from "./lightningRecordPickerEdit.html";
-import lookupEdit from "./lookupEdit.html";
+import dynamicCellProvider from "./dynamicCellProvider.html";
+import dynamicEditCellProvider from "./dynamicEditCellProvider.html";
 import { flatObjectsInArray } from "c/apexRecordsUtils";
 import { api } from "lwc";
 
-const customTypes = {
-  "c-percent": {
-    template: lightningFormattedNumber,
-    editTemplate: lightningInputEdit,
-    standardCellLayout: true,
-    typeAttributes: ["view", "edit", "editString", "viewString"]
-  },
-  "c-lightning-checkbox-group": {
-    template: arrayCell,
-    editTemplate: lightningCheckboxGroupEdit,
-    standardCellLayout: true,
-    typeAttributes: ["view", "edit", "editString", "viewString"]
-  },
-  "c-time": {
-    template: lightningFormattedTime,
-    editTemplate: lightningInputEdit,
-    standardCellLayout: true,
-    typeAttributes: ["view", "edit", "editString", "viewString"]
-  },
-  "c-picklist": {
-    template: arrayCell,
-    editTemplate: lightningComboboxEdit,
-    standardCellLayout: true,
-    typeAttributes: ["view", "edit", "editString", "viewString"]
-  },
-  "c-textarea": {
-    template: lightningFormattedText,
-    editTemplate: lightningTextAreaEdit,
-    standardCellLayout: true,
-    typeAttributes: ["view", "edit", "editString", "viewString"]
-  },
-  "c-lightning-record-picker": {
-    template: recordCell,
-    editTemplate: lightningRecordPickerEdit,
-    standardCellLayout: true,
-    typeAttributes: ["view", "edit", "editString", "viewString"]
-  },
-  "c-lookup": {
-    template: recordCell,
-    editTemplate: lookupEdit,
-    standardCellLayout: true,
-    typeAttributes: ["view", "edit", "editString", "viewString"]
-  }
-};
-
 export default class DatatablePlus extends LightningDatatable {
-  static customTypes = customTypes;
-  customTypes = customTypes;
+  static customTypes = {
+    "c-dynamic-cell": {
+      template: dynamicCellProvider,
+      editTemplate: dynamicEditCellProvider,
+      standardCellLayout: true,
+      typeAttributes: ["view", "edit", "viewProps", "editProps"]
+    }
+  };
 
   @api
   get records() {
@@ -86,14 +38,12 @@ export default class DatatablePlus extends LightningDatatable {
 
   formatCustomColumns(columns) {
     for (const column of columns) {
-      // some data types in the column type attributes gets transformed when passeed to the cell
-      // so optionally we give json string
-      if (this.customTypes[column.type]) {
-        if (column.typeAttributes.edit) {
-          column.typeAttributes.editString = JSON.stringify(column.typeAttributes.edit);
-        }
-        if (column.typeAttributes.view) {
-          column.typeAttributes.viewString = JSON.stringify(column.typeAttributes.view);
+      if (column.type === "c-dynamic-cell") {
+        const typeAttributes = column.typeAttributes;
+        // when editing for some reason the data can get transformed without intention
+        // for example [1,2,3] becomes {0:1,1:2,2:3} so:
+        if (typeAttributes.editProps) {
+          column.typeAttributes.editProps = JSON.stringify(typeAttributes.editProps);
         }
       }
     }

@@ -1,0 +1,82 @@
+<template>
+  <lightning-checkbox-group
+    lwc:if={lightningCheckboxGroup}
+    lwc:ref="checkboxGroup"
+    onblur={handleBlur}
+    onchange={handleChange}
+    onfocus={handleFocus}
+    value={_value}
+    variant="label-hidden"
+    lwc:spread={_props}
+  ></lightning-checkbox-group>
+  <lightning-combobox
+    lwc:elseif={lightningCombobox}
+    lwc:ref="combobox"
+    onblur={handleBlur}
+    onchange={handleChange}
+    onfocus={handleFocus}
+    value={_value}
+    variant="label-hidden"
+    lwc:spread={_props}
+  ></lightning-combobox>
+  <lightning-input
+    lwc:elseif={lightningInput}
+    lwc:ref="input"
+    onblur={handleBlur}
+    onchange={handleChange}
+    onfocus={handleFocus}
+    value={_value}
+    variant="label-hidden"
+    lwc:spread={_props}
+  ></lightning-input>
+  <lightning-textarea
+    lwc:elseif={lightningTextarea}
+    lwc:ref="textarea"
+    onblur={handleBlur}
+    onchange={handleChange}
+    onfocus={handleFocus}
+    value={_value}
+    variant="label-hidden"
+    lwc:spread={props}
+  ></lightning-textarea>
+  <div lwc:elseif={lightningRecordPicker} onkeydown={handleKeyDown}>
+    <lightning-record-picker
+      lwc:ref="recordPicker"
+      onblur={handleBlur}
+      onchange={handleRecordPickerChange}
+      onfocus={handleFocus}
+      value={_value}
+      variant="label-hidden"
+      lwc:spread={props}
+    ></lightning-record-picker>
+    <span class="slds-text-body_small">
+      To remove the selected record, press Backspace or Del.
+    </span>
+  </div>
+  <!-- custom components -->
+  <div lwc:elseif={cLookup} onkeydown={handleKeyDown}>
+    <c-lookup
+      unique-id="UserLookup"
+      is-multi-entry={isMultiEntry}
+      lwc:ref="lookup"
+      onblur={handleBlur}
+      onchange={handleLookupChange}
+      onfocus={handleFocus}
+      value={_value}
+      variant="label-hidden"
+      lwc:spread={props}
+    ></c-lookup>
+    <span class="slds-text-body_small">
+      To remove the selected record, press Backspace or Del.
+    </span>
+  </div>
+  <lightning-input
+    lwc:else
+    lwc:ref="input"
+    onblur={handleBlur}
+    onchange={handleChange}
+    onfocus={handleFocus}
+    value={_value}
+    lwc:spread={_props}
+  ></lightning-input>
+</template>

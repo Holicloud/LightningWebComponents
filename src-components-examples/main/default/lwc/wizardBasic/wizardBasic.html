@@ -1,0 +1,22 @@
+<template>
+  <c-wizard
+    header="My Account Wizard"
+    variant="base"
+    current-step="step-1"
+    previous-label="Go Back"
+    next-label="Continue"
+    finish-label="End"
+  >
+    <c-wizard-step label="Enter Account" name="step-1">
+      <lightning-input label="Account Name"></lightning-input>
+      <lightning-input label="Account Type"></lightning-input>
+    </c-wizard-step>
+    <c-wizard-step label="Enter Case" name="step-2">
+      <lightning-input label="Case Name"></lightning-input>
+      <lightning-input label="Case Type"></lightning-input>
+    </c-wizard-step>
+    <c-wizard-step label="Step 3" name="step-3">
+      Good Bye
+    </c-wizard-step>
+  </c-wizard>
+</template>
