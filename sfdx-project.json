@@ -13,6 +13,9 @@
       "path": "src-components"
     },
     {
+      "path": "src-components-examples"
+    },
+    {
       "path": "force-app",
       "default": true
     }
