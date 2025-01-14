@@ -29,6 +29,11 @@ export const COMPONENTS = {
     type: COMPONENT_TYPES.MIXIN,
     descriptor: "MessageChannelMixin",
     label: "Message Channel"
+  },
+  C_ALERT: {
+    type: COMPONENT_TYPES.COMPONENT,
+    descriptor: "Alert",
+    label: "Alert"
   }
 };
 
@@ -52,8 +57,20 @@ export const EXAMPLES = {
       {
         title: "Basic",
         description: "this is some sample",
-        codeBase: EXAMPLES_GIT_HUB_SOURCE.replace('{0}', 'wizard'),
+        codeBase: EXAMPLES_GIT_HUB_SOURCE.replace('{0}', 'wizardBasic'),
         constructor: () => import("c/wizardBasic")
+      }
+    ]
+  },
+  [COMPONENTS.C_ALERT.descriptor]: {
+    documentation:
+    GIT_HUB_SOURCE_COMPONENTS.replace('{0}', 'alert'),
+    examples: [
+      {
+        title: "Basic",
+        description: "this is some sample",
+        codeBase: EXAMPLES_GIT_HUB_SOURCE.replace('{0}', 'alertBasic'),
+        constructor: () => import("c/alertBasic")
       }
     ]
   },
@@ -79,6 +96,16 @@ export const HEADER_INFO = {
     title: COMPONENTS.C_WIZARD.label,
     description: "Its a wizard",
     descriptor: COMPONENTS.C_WIZARD.descriptor,
+    targets: [
+      TARGETS.LIGHTNING_EXPERIENCE,
+      TARGETS.EXPERIENCE_BUILDER_SITES,
+      TARGETS.SALESFORCE_MOBILE_APP
+    ]
+  },
+  [COMPONENTS.C_ALERT.descriptor]: {
+    title: COMPONENTS.C_ALERT.label,
+    description: "Its a C_ALERT",
+    descriptor: COMPONENTS.C_ALERT.descriptor,
     targets: [
       TARGETS.LIGHTNING_EXPERIENCE,
       TARGETS.EXPERIENCE_BUILDER_SITES,

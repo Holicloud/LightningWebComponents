@@ -10,14 +10,14 @@
       "path": "src-sobject-datatable"
     },
     {
-      "path": "src-components"
+      "path": "src-components",
+      "default": true
     },
     {
       "path": "src-components-examples"
     },
     {
-      "path": "force-app",
-      "default": true
+      "path": "force-app"
     }
   ],
   "name": "LWCRecipes2",
