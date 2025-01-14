@@ -18,6 +18,7 @@ export default class ComponentReferenceOverview extends MessageChannelMixin(Ligh
   handleChangeComponent = async (message) => {
     this.examples = EXAMPLES[message.descriptor].examples;
     this.documentation = EXAMPLES[message.descriptor].documentation;
+    this.viewCode = false;
 
     if (!this.examples?.length) {
       this.activeTab = 'Documentation';
