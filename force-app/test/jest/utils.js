@@ -19,6 +19,10 @@ export function addToDOM(element) {
   document.body.appendChild(element);
 }
 
+export function removeFromDOM(element) {
+  document.body.removeChild(element);
+}
+
 export class ElementBuilder {
   constructor(descriptor, componentReference) {
     this.descriptor = descriptor;
