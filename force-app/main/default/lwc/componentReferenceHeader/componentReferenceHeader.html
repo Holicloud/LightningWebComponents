@@ -12,6 +12,7 @@
               Lightning Web Component
               <h2 class="slds-card__header-title" title="accordion">
                 <span
+                  data-id="title"
                   class="slds-page-header__title slds-m-right_small slds-align-middle slds-truncate"
                 >
                   {title}
@@ -25,18 +26,17 @@
         <li class="slds-col">
           <div class="card-body slds-grid">
             <div
-              data-id="description"
               class="slds-col slds-size_2-of-5 slds-p-right_small"
             >
               <p>
-                <b>{description}</b>
+                <b data-id="description">{description}</b>
               </p>
             </div>
             <div
               class="descriptor slds-col slds-grow-none slds-size_1-of-5 slds-p-horizontal_small word-wrap"
             >
               <h3 class="slds-text-heading_small">Descriptor</h3>
-              {descriptor}
+              <span data-id="descriptor">{descriptor}</span>
             </div>
             <div
               class="experience slds-col slds-grow-none slds-size_2-of-5 slds-p-left_small"
@@ -44,7 +44,7 @@
               <h3 class="slds-text-heading_small">Targets</h3>
               <ul class="slds-list_horizontal slds-has-dividers_left">
                 <template for:each={targets} for:item="target">
-                  <li class="slds-item" key={target}>{target}</li>
+                  <li class="slds-item" key={target} data-id="target">{target}</li>
                 </template>
               </ul>
             </div>

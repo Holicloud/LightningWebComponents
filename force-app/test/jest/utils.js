@@ -1,29 +1,29 @@
 import { setImmediate } from "timers";
 import { createElement } from "lwc";
 
-export function getByDataId(element, dataId) {
+function getByDataId(element, dataId) {
   return element.shadowRoot.querySelector(`[data-id="${dataId}"]`);
 }
 
-export async function flushPromises() {
+async function flushPromises() {
   return new Promise((resolve) => setImmediate(resolve));
 }
 
-export function resetDOM() {
+function resetDOM() {
   while (document.body.firstChild) {
     document.body.removeChild(document.body.firstChild);
   }
 }
 
-export function addToDOM(element) {
+function addToDOM(element) {
   document.body.appendChild(element);
 }
 
-export function removeFromDOM(element) {
+function removeFromDOM(element) {
   document.body.removeChild(element);
 }
 
-export class ElementBuilder {
+class ElementBuilder {
   constructor(descriptor, componentReference) {
     this.descriptor = descriptor;
     this.componentReference = componentReference;
@@ -36,4 +36,14 @@ export class ElementBuilder {
     Object.assign(element, { ...apiProps });
     return element;
   }
+}
+
+
+export {
+  getByDataId,
+  flushPromises,
+  resetDOM,
+  addToDOM,
+  removeFromDOM,
+  ElementBuilder
 }

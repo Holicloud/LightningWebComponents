@@ -3,6 +3,8 @@ import { HEADER_INFO, COMPONENTS } from "c/componentReference";
 import componentReference from "@salesforce/messageChannel/ComponentReference__c";
 import { MessageChannelMixin } from 'c/messageChannelMixin';
 
+export const BASE_INFO = HEADER_INFO[Object.values(COMPONENTS)[0].descriptor];
+
 export default class ComponentReferenceHeader extends MessageChannelMixin(LightningElement) {
   title;
   description;
@@ -33,6 +35,6 @@ export default class ComponentReferenceHeader extends MessageChannelMixin(Lightn
       listener: this.handleMessage,
       channel: componentReference
     });
-    this.setHeaderInformation(HEADER_INFO[Object.values(COMPONENTS)[0].descriptor]);
+    this.setHeaderInformation(BASE_INFO);
   }
 }

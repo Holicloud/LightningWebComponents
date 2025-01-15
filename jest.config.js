@@ -3,7 +3,7 @@ const { jestConfig } = require("@salesforce/sfdx-lwc-jest/config");
 module.exports = {
   ...jestConfig,
   moduleNameMapper: {
-    // "^lightning/navigation$": "<rootDir>/testUtils/mocks/lightning/navigation",
+    "^lightning/navigation$": "<rootDir>/testUtils/mocks/lightning/navigation",
     "^test/utils$": "<rootDir>/force-app/test/jest/utils"
   },
   coverageThreshold: {
@@ -16,4 +16,5 @@ module.exports = {
       lines: 75
     }
   },
+  // automock: true,
 };
