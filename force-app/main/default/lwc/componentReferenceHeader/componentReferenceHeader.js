@@ -29,14 +29,10 @@ export default class ComponentReferenceHeader extends MessageChannelMixin(Lightn
   }
 
   connectedCallback() {
-    this[MessageChannelMixin.Subscribe](
-      this.handleMessage,
-      componentReference
-    );
+    this[MessageChannelMixin.Subscribe]({
+      listener: this.handleMessage,
+      channel: componentReference
+    });
     this.setHeaderInformation(HEADER_INFO[Object.values(COMPONENTS)[0].descriptor]);
-  }
-
-  disconnectedCallback() {
-    this[MessageChannelMixin.Unsubscribe]();
   }
 }

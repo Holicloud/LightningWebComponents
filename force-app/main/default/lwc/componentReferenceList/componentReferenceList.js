@@ -1,7 +1,7 @@
 import { COMPONENTS, COMPONENT_TYPES } from "c/componentReference";
 import { LightningElement, track } from "lwc";
 import { MessageChannelMixin } from "c/messageChannelMixin";
-import componentReference from "@salesforce/messageChannel/ComponentReference__c";
+import componentReferenceChannel from "@salesforce/messageChannel/ComponentReference__c";
 const sections = Object.freeze([
   {
     label: "Based On SLDS",
@@ -28,8 +28,11 @@ export default class ComponentReferenceList extends MessageChannelMixin(Lightnin
   initiallySelected = sections[0].items[0].name;
 
   handleSelect(event) {
-    this[MessageChannelMixin.Publish](componentReference, {
-      descriptor: event.detail.name
+    this[MessageChannelMixin.Publish]({
+      channel: componentReferenceChannel,
+      payload: {
+        descriptor: event.detail.name
+      }
     });
   }
 

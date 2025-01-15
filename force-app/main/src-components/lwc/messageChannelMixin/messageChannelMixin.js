@@ -20,6 +20,7 @@ const Publish = Symbol("Publish");
 const Unsubscribe = Symbol("Unsubscribe");
 const Subscriptions = Symbol("Subscriptions");
 const Context = Symbol("UniqueMessageContext");
+const MISSING_CHANNEL = "Missing parameter: channel is required";
 
 const MessageChannelMixin = (Base) => {
   isLightningElementSubclass(Base);
@@ -31,33 +32,58 @@ const MessageChannelMixin = (Base) => {
       this[Context] = data;
     }
 
-    [Subscribe](handler, componentReference) {
+    [Subscribe]({
+      channel,
+      listener,
+      subscriberOptions = { scope: APPLICATION_SCOPE }
+    }) {
       const subscriptions = this[Subscriptions];
-      if (!subscriptions.has(componentReference)) {
+
+      if (!channel) {
+        throw new Error(MISSING_CHANNEL);
+      }
+
+      if (!listener) {
+        throw new Error("Missing parameter: listener is required");
+      }
+
+      if (!subscriptions.has(channel)) {
         const subscription = subscribe(
           this[Context],
-          componentReference,
-          (message) => handler(message),
-          { scope: APPLICATION_SCOPE }
+          channel,
+          listener,
+          subscriberOptions
         );
-        subscriptions.set(componentReference, subscription);
+        subscriptions.set(channel, subscription);
       }
     }
 
-    [Unsubscribe](componentReference) {
-      if (componentReference) {
-        const currenSubscription = this[Subscriptions].get(componentReference);
-        unsubscribe(currenSubscription);
-        this[Subscriptions].delete(componentReference);
+    [Unsubscribe](channel) {
+      if (channel) {
+        const currenSubscription = this[Subscriptions].get(channel);
+
+        if (currenSubscription) {
+          unsubscribe(currenSubscription);
+          this[Subscriptions].delete(channel);
+        }
       } else {
-        [...this[Subscriptions].keys()].forEach((componentReference) => {
-          this[Unsubscribe](componentReference);
-        });
+        [...this[Subscriptions].keys()].forEach((subscription) =>
+          this[Unsubscribe](subscription)
+        );
       }
     }
 
-    [Publish](componentReference, payload) {
-      publish(this[Context], componentReference, payload);
+    [Publish]({ channel, payload }) {
+      if (!channel) {
+        throw new Error(MISSING_CHANNEL);
+      }
+
+      publish(this[Context], channel, payload);
+    }
+
+    disconnectedCallback() {
+      this[Unsubscribe]();
+      super.disconnectedCallback && super.disconnectedCallback();
     }
   };
 };
@@ -65,5 +91,7 @@ const MessageChannelMixin = (Base) => {
 MessageChannelMixin.Subscribe = Subscribe;
 MessageChannelMixin.Unsubscribe = Unsubscribe;
 MessageChannelMixin.Publish = Publish;
+MessageChannelMixin.Context = Context;
+MessageChannelMixin.Subscriptions = Subscriptions;
 
 export { MessageChannelMixin };

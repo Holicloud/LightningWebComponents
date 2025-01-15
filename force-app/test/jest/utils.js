@@ -29,7 +29,7 @@ export class ElementBuilder {
     const element = createElement(this.descriptor, {
       is: this.componentReference
     });
-    Object.assign(element, { apiProps });
+    Object.assign(element, { ...apiProps });
     return element;
   }
 }

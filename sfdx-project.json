@@ -1,23 +1,8 @@
 {
   "packageDirectories": [
     {
-      "path": "src-datatable-plus"
-    },
-    {
-      "path": "src-datatable-sample"
-    },
-    {
-      "path": "src-sobject-datatable"
-    },
-    {
-      "path": "src-components",
+      "path": "force-app",
       "default": true
-    },
-    {
-      "path": "src-components-examples"
-    },
-    {
-      "path": "force-app"
     }
   ],
   "name": "LWCRecipes",

@@ -29,10 +29,10 @@ export default class ComponentReferenceOverview extends MessageChannelMixin(Ligh
   }
 
   connectedCallback() {
-    this[MessageChannelMixin.Subscribe](
-      this.handleChangeComponent,
-      componentReference
-    );
+    this[MessageChannelMixin.Subscribe]({
+      listener: this.handleChangeComponent,
+      channel: componentReference
+    });
 
     const descriptor = Object.values(COMPONENTS)[0].descriptor;
     this.examples = EXAMPLES[descriptor].examples;
@@ -58,10 +58,6 @@ export default class ComponentReferenceOverview extends MessageChannelMixin(Ligh
       label: example.title,
       value: example.title
     }));
-  }
-
-  disconnectedCallback() {
-    this[MessageChannelMixin.Unsubscribe]();
   }
 
   handleChangeExample(event) {
