@@ -8,9 +8,9 @@ const publish = jest.fn(({ channel, payload }) => {
   subscriptions.get(channel)?.(payload);
 });
 
-const subscribe = jest.fn(({ channel, handler }) => {
+const subscribe = jest.fn(({ channel, listener }) => {
   if (!subscriptions.has(channel)) {
-    subscriptions.set(channel, handler);
+    subscriptions.set(channel, listener);
   }
 });
 
@@ -34,6 +34,11 @@ const MessageChannelMixin = (Base) => {
 
     [Unsubscribe](channel) {
       unsubscribe(channel);
+    }
+
+    disconnectedCallback() {
+      this[Unsubscribe]();
+      super.disconnectedCallback && super.disconnectedCallback();
     }
   };
 };

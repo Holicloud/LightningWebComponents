@@ -12,7 +12,7 @@ import { MessageChannelMixin } from "c/messageChannelMixin";
 import messageChannelA from "@salesforce/messageChannel/MessageChannelA__c";
 import messageChannelB from "@salesforce/messageChannel/MessageChannelB__c";
 
-const disconnectedCallBackMock = jest.fn();
+const disconect = jest.fn();
 
 class Component extends MessageChannelMixin(LightningElement) {
   @api sub(params) {
@@ -28,7 +28,7 @@ class Component extends MessageChannelMixin(LightningElement) {
   }
 
   disconnectedCallback() {
-    disconnectedCallBackMock();
+    disconect();
   }
 }
 
@@ -134,7 +134,7 @@ describe("c-message-channel-mixing", () => {
 
     removeFromDOM(element);
 
-    expect(disconnectedCallBackMock).toHaveBeenCalled();
+    expect(disconect).toHaveBeenCalled();
     assertUnsub();
   });
 });
