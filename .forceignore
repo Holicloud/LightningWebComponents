@@ -10,7 +10,3 @@ package.xml
 
 # LWC Jest
 **/__tests__/**
-
-src-datatable/main/default/lwc/c-lookup/lwc
-
-src-datatable/main/default/lwc/customDataTable

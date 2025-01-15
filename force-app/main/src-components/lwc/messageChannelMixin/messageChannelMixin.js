@@ -50,7 +50,7 @@ const MessageChannelMixin = (Base) => {
         unsubscribe(currenSubscription);
         this[Subscriptions].delete(componentReference);
       } else {
-        this[Subscriptions].keys().foreach((componentReference) => {
+        [...this[Subscriptions].keys()].forEach((componentReference) => {
           this[Unsubscribe](componentReference);
         });
       }

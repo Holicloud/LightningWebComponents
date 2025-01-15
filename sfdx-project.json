@@ -20,8 +20,8 @@
       "path": "force-app"
     }
   ],
-  "name": "LWCRecipes2",
+  "name": "LWCRecipes",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "57.0"
+  "sourceApiVersion": "62.0"
 }

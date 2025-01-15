@@ -1,4 +1,4 @@
-import { LightningElement, wire } from "lwc";
+import { LightningElement } from "lwc";
 import { HEADER_INFO, COMPONENTS } from "c/componentReference";
 import componentReference from "@salesforce/messageChannel/ComponentReference__c";
 import { MessageChannelMixin } from 'c/messageChannelMixin';

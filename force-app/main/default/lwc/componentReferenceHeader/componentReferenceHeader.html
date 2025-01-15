@@ -3,11 +3,17 @@
     <div class="slds-page-header">
       <div class="slds-grid">
         <div class="slds-col slds-has-flexi-truncate">
-          <header class="slds-media slds-wrap slds-media_center slds-has-flexi-truncate bundle-heading">
-            <div class="slds-col slds-size_4-of-10 slds-col_bump-right slds-media__body">
+          <header
+            class="slds-media slds-wrap slds-media_center slds-has-flexi-truncate bundle-heading"
+          >
+            <div
+              class="slds-col slds-size_4-of-10 slds-col_bump-right slds-media__body"
+            >
               Lightning Web Component
               <h2 class="slds-card__header-title" title="accordion">
-                <span class="slds-page-header__title slds-m-right_small slds-align-middle slds-truncate">
+                <span
+                  class="slds-page-header__title slds-m-right_small slds-align-middle slds-truncate"
+                >
                   {title}
                 </span>
               </h2>
@@ -18,20 +24,27 @@
       <ul class="slds-grid slds-page-header__detail-row">
         <li class="slds-col">
           <div class="card-body slds-grid">
-            <div class="description slds-col slds-size_2-of-5 slds-p-right_small">
+            <div
+              data-id="description"
+              class="slds-col slds-size_2-of-5 slds-p-right_small"
+            >
               <p>
                 <b>{description}</b>
               </p>
             </div>
-            <div class="descriptor slds-col slds-grow-none slds-size_1-of-5 slds-p-horizontal_small word-wrap">
+            <div
+              class="descriptor slds-col slds-grow-none slds-size_1-of-5 slds-p-horizontal_small word-wrap"
+            >
               <h3 class="slds-text-heading_small">Descriptor</h3>
               {descriptor}
             </div>
-            <div class="experience slds-col slds-grow-none slds-size_2-of-5 slds-p-left_small">
+            <div
+              class="experience slds-col slds-grow-none slds-size_2-of-5 slds-p-left_small"
+            >
               <h3 class="slds-text-heading_small">Targets</h3>
               <ul class="slds-list_horizontal slds-has-dividers_left">
                 <template for:each={targets} for:item="target">
-                    <li class="slds-item" key={target}>{target}</li>
+                  <li class="slds-item" key={target}>{target}</li>
                 </template>
               </ul>
             </div>

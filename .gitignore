@@ -39,5 +39,7 @@ $RECYCLE.BIN/
 # Local environment variables
 .env
 
-src-datatable/main/default/lwc/c-lookup/lwc
-src-datatable/main/default/lwc/customDataTable
+# Python Salesforce Functions
+**/__pycache__/
+**/.venv/
+**/venv/

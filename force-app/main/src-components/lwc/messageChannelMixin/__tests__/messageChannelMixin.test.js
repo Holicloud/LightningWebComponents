@@ -1,6 +1,8 @@
 import { createElement } from 'lwc';
 import MessageChannelMixing from 'c/messageChannelMixing';
 
+jest.mock('c/messageChannelMixing');
+
 describe('c-message-channel-mixing', () => {
     afterEach(() => {
         // The jsdom instance is shared across test cases in a single file so reset the DOM
