@@ -23,6 +23,12 @@ function removeFromDOM(element) {
   document.body.removeChild(element);
 }
 
+async function assertElementIsAccesible(element) {
+  jest.useRealTimers();
+  await expect(element).toBeAccessible();
+  jest.useFakeTimers();
+}
+
 class ElementBuilder {
   defaultApiProps = {};
 
@@ -51,12 +57,12 @@ class ElementBuilder {
   }
 }
 
-
 export {
   getByDataId,
   flushPromises,
   resetDOM,
   addToDOM,
   removeFromDOM,
+  assertElementIsAccesible,
   ElementBuilder
-}
+};

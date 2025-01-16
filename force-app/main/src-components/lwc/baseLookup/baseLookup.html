@@ -1,0 +1,269 @@
+<template>
+  <label
+    id="combobox-label-id"
+    data-id="label"
+    lwc:if={label}
+    class={computedLabelClass}
+    for="combobox"
+  >
+    <abbr lwc:if={required} title="required" class="slds-required">*</abbr>
+    {label}
+    <lightning-helptext
+      data-id="help-text"
+      lwc:if={fieldLevelText}
+      content={fieldLevelText}
+    ></lightning-helptext>
+  </label>
+  <div class="slds-form-element__control">
+    <div class={getContainerClass}>
+      <div
+        data-id="dropdown"
+        class={getDropdownClass}
+        aria-expanded={isListboxOpen}
+        aria-haspopup="listbox"
+        aria-owns="listbox"
+        aria-labelledby="combobox-label-id"
+        role="none"
+        aria-label="List Items"
+      >
+        <!-- Search input start -->
+        <div class={getComboboxClass} role="none">
+          <lightning-icon
+            lwc:if={isSingleEntry}
+            icon-name={getSelectIconName}
+            size="small"
+            class={getSelectIconClass}
+          >
+          </lightning-icon>
+
+          <!-- Text input -->
+          <input
+            lwc:ref="input"
+            type="text"
+            class={getInputClass}
+            aria-controls="listbox-id-12"
+            aria-activedescendant={focusedResultIndex}
+            aria-autocomplete="list"
+            aria-expanded="true"
+            aria-haspopup="listbox"
+            data-id="input"
+            autocomplete="off"
+            role="combobox"
+            id="combobox"
+            placeholder={placeholder}
+            value={getInputValue}
+            title={getInputTitle}
+            readonly={isInputReadonly}
+            disabled={disabled}
+            onfocus={handleFocus}
+            onblur={handleBlur}
+            oninput={handleInput}
+            onkeydown={handleKeyDown}
+          />
+
+          <!-- Search icon -->
+          <lightning-icon
+            data-id="search-icon"
+            icon-name="utility:search"
+            size="x-small"
+            alternative-text="Search icon"
+            class={getSearchIconClass}
+          ></lightning-icon>
+
+          <!-- Clear selection button icon for single entry lookups -->
+          <template lwc:if={isSingleEntry}>
+            <button
+              title="Remove selected option"
+              type="button"
+              onclick={handleClearSelection}
+              class={getClearSelectionButtonClass}
+              disabled={disabled}
+            >
+              <lightning-icon
+                icon-name="utility:close"
+                size="x-small"
+                alternative-text="Remove selected option"
+                class="slds-button__icon"
+              ></lightning-icon>
+            </button>
+          </template>
+        </div>
+        <!-- Search input end -->
+
+        <!-- Result list box start -->
+        <div
+          id="listbox-id-12"
+          role="listbox"
+          aria-label={label}
+          onmousedown={handleComboboxMouseDown}
+          onmouseup={handleComboboxMouseUp}
+          class={getListboxClass}
+        >
+          <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+            <!-- Spinner to display when waiting for results of search -->
+
+            <!-- Result list start -->
+            <template
+              for:each={searchResultsLocalState}
+              for:item="item"
+              for:index="index"
+              lwc:if={hasResults}
+            >
+              <li
+                data-id="listItem"
+                key={item.result.id}
+                role="presentation"
+                class="slds-listbox__item"
+              >
+                <div
+                  class={item.classes}
+                  role="option"
+                  id={index}
+                  aria-label={item.result.title}
+                  onclick={handleResultClick}
+                  data-recordid={item.result.id}
+                >
+                  <span class="slds-media__figure slds-listbox__option-icon">
+                    <lightning-icon
+                      size="small"
+                      icon-name="standard:default"
+                      lwc:spread={item.result.icon}
+                    ></lightning-icon>
+                  </span>
+                  <span class="slds-media__body">
+                    <span
+                      class="slds-listbox__option-text slds-listbox__option-text_entity"
+                    >
+                      <lightning-formatted-rich-text
+                        value={item.result.titleFormatted}
+                        disable-linkify
+                      ></lightning-formatted-rich-text>
+                    </span>
+                    <template
+                      for:each={item.result.subtitlesFormatted}
+                      for:item="subtitle"
+                      lwc:if={item.result.hasSubtitles}
+                    >
+                      <p
+                        key={subtitle.index}
+                        class="slds-listbox__option-meta slds-listbox__option-meta_entity"
+                      >
+                        <lightning-formatted-rich-text
+                          data-id="subtitle"
+                          value={subtitle.label}
+                          disable-linkify
+                        ></lightning-formatted-rich-text>
+                        <span>: </span>
+                        <lightning-icon
+                          lwc:if={subtitle.isLightningIcon}
+                          icon-name="utility:check"
+                          size="xx-small"
+                          lwc:spread={props}
+                        ></lightning-icon>
+                        <c-lightning-formatted-dynamic-output
+                          lwc:else
+                          type={subtitle.type}
+                          value={subtitle.value}
+                          props={subtitle.props}
+                        ></c-lightning-formatted-dynamic-output>
+                      </p>
+                    </template>
+                  </span>
+                </div>
+              </li>
+            </template>
+            <!-- Result list end -->
+
+            <!-- No results start -->
+            <template lwc:else>
+              <li role="presentation" class="slds-listbox__item">
+                <span
+                  class="slds-media slds-listbox__option_entity"
+                  role="option"
+                  aria-label={emptyItemLabel}
+                >
+                  <span class="slds-media__body">{emptyItemLabel}</span>
+                </span>
+              </li>
+            </template>
+            <!-- No results end -->
+
+            <!-- Create new records -->
+            <template for:each={actions} for:item="action">
+              <li
+                key={action.name}
+                role="presentation"
+                class="slds-listbox__item"
+              >
+                <div
+                  class="slds-media slds-media_center slds-listbox__option slds-listbox__option_entity"
+                  onclick={handleActionClick}
+                  data-name={action.name}
+                  role="option"
+                >
+                  <span class="slds-media__figure slds-listbox__option-icon">
+                    <lightning-icon
+                      size="small"
+                      icon-name="utility:add"
+                      lwc:spread={action.icon}
+                    ></lightning-icon>
+                  </span>
+                  <span class="slds-media__body">
+                    <span class="slds-listbox__option-text"
+                      >{action.label}</span
+                    >
+                  </span>
+                </div>
+              </li>
+            </template>
+            <!-- Create new records end -->
+          </ul>
+        </div>
+        <!-- Result list box end -->
+      </div>
+    </div>
+
+    <!-- Multi-selection start -->
+    <template lwc:if={isMultiEntry}>
+      <div
+        id="selection"
+        role="listbox"
+        aria-label={label}
+        aria-orientation="horizontal"
+      >
+        <ul
+          class="slds-listbox slds-listbox_inline slds-var-p-top_xxx-small"
+          role="group"
+          aria-label="Selected options"
+        >
+          <template for:each={value} for:item="item">
+            <li key={item.id} role="presentation">
+              <lightning-pill
+                data-id="pill"
+                label={item.title}
+                title={item.title}
+                onremove={handleRemoveSelectedItem}
+                name={item.id}
+              >
+                <lightning-icon lwc:spread={item.icon}></lightning-icon>
+              </lightning-pill>
+            </li>
+          </template>
+        </ul>
+      </div>
+    </template>
+    <!-- Multi-selection end -->
+  </div>
+  <!-- Help Message start -->
+  <template if:true={displayHelpMessage}>
+    <div
+      id="field-level-text"
+      data-field-level-text
+      class="slds-form-element__help"
+      aria-live="assertive"
+    >
+      {helpMessage}
+    </div>
+  </template>
+  <!-- Help Message end -->
+</template>
