@@ -24,16 +24,29 @@ function removeFromDOM(element) {
 }
 
 class ElementBuilder {
+  defaultApiProps = {};
+
   constructor(descriptor, componentReference) {
     this.descriptor = descriptor;
     this.componentReference = componentReference;
   }
 
-  build(apiProps = {}) {
+  setDefaultApiProperties(defaultApiProps) {
+    this.defaultApiProps = defaultApiProps;
+    return this;
+  }
+
+  build(props = {}, options = {}) {
+    const { addToDOM = true } = options;
     const element = createElement(this.descriptor, {
       is: this.componentReference
     });
-    Object.assign(element, { ...apiProps });
+    Object.assign(element, this.defaultApiProps, props);
+
+    if (addToDOM) {
+      document.body.appendChild(element);
+    }
+
     return element;
   }
 }
