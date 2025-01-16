@@ -1,6 +1,6 @@
-const GIT_HUB = 'https://raw.githubusercontent.com/santiagoparradev/LWC-RECIPES-SANTIAGO/refs/heads/main';
-const GIT_HUB_SOURCE_COMPONENTS = `${GIT_HUB}/src-components/main/default/lwc/{0}/README.md`;
-const EXAMPLES_GIT_HUB_SOURCE = `${GIT_HUB}/src-components-examples/main/default/lwc/{0}/README.md`;
+const GIT_HUB = 'https://raw.githubusercontent.com/santiagoparradev/LWC-RECIPES-SANTIAGO/refs/heads/main/force-app/main';
+const GIT_HUB_SOURCE_COMPONENTS = `${GIT_HUB}/src-components/lwc/{0}/README.md`;
+const EXAMPLES_GIT_HUB_SOURCE = `${GIT_HUB}/src-components-examples/lwc/{0}/README.md`;
 const TARGETS = Object.freeze({
   LIGHTNING_EXPERIENCE: "Lightning Experience",
   EXPERIENCE_BUILDER_SITES: "Experience Builder Sites",
