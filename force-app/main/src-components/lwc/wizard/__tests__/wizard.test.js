@@ -26,7 +26,18 @@ describe("c-wizard", () => {
       is: WizardStep
     });
     Object.assign(element, props);
+
+    const consoleWarnSpy = jest
+      .spyOn(console, "warn")
+      .mockImplementation((message) => {
+        if (!message.includes('`lwc:dom="manual"` directive.')) {
+          console.warn(message);
+        }
+      });
+
     getStepSlot(wizard).appendChild(element);
+
+    consoleWarnSpy.mockRestore();
     return element;
   }
 
@@ -74,7 +85,7 @@ describe("c-wizard", () => {
     const wizard = createWizard();
 
     for await (const variant of Object.keys(VARIANTS)) {
-        await testVariant(wizard, variant);
+      await testVariant(wizard, variant);
     }
 
     await expect(wizard).toBeAccessible();
