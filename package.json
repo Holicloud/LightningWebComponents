@@ -4,14 +4,14 @@
   "version": "1.0.0",
   "description": "Salesforce App",
   "scripts": {
-    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint **/{aura,lwc}/**/*.js",
+    "lint": "eslint **/{aura,lwc}/**/*.js",
     "test": "npm run test:unit",
     "test:unit": "sfdx-lwc-jest",
     "test:unit:watch": "sfdx-lwc-jest --watch",
     "test:unit:debug": "sfdx-lwc-jest --debug",
     "test:unit:coverage": "sfdx-lwc-jest --coverage",
-    "prettier": "prettier --check \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
-    "prettier:verify": "prettier --check \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}\"",
+    "prettier": "prettier --write \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger}\"",
+    "prettier:verify": "prettier --check \"**/*.{cls,cmp,component,css,html,js,json,md,page,trigger}\"",
     "postinstall": "husky install",
     "precommit": "lint-staged"
   },
@@ -19,24 +19,32 @@
     "@locker/eslint-config-locker": "^0.24.2",
     "@lwc/eslint-plugin-lwc": "^1.1.2",
     "@prettier/plugin-xml": "^3.2.2",
+    "@sa11y/jest": "^5.0.1",
     "@salesforce/eslint-config-lwc": "^3.2.3",
     "@salesforce/eslint-plugin-aura": "^2.0.0",
     "@salesforce/eslint-plugin-lightning": "^1.0.0",
-    "@salesforce/sfdx-lwc-jest": "^5.1.0",
-    "eslint": "^9.18.0",
+    "@salesforce/sfdx-lwc-jest": "^3.1.2",
+    "eslint": "^8.11.0",
     "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-jest": "^28.8.1",
+    "eslint-plugin-jest": "^27.6.0",
     "husky": "^9.1.5",
+    "jest-canvas-mock": "^2.5.2",
     "lint-staged": "^15.1.0",
-    "prettier": "^3.4.2",
-    "prettier-plugin-apex": "^2.0.1"
+    "prettier": "^3.2.5",
+    "prettier-plugin-apex": "^2.1.0"
   },
   "lint-staged": {
-    "**/*.{cls,cmp,component,css,html,js,json,md,page,trigger,xml,yaml,yml}": [
-      "prettier --check"
+    "**/*.{cls,css,html,js,json,md,trigger,xml,yaml,yml}": [
+      "prettier --write"
     ],
-    "**/{aura,lwc}/**/*.js": [
-      "eslint"
+    "**/lwc/**/*.js": [
+      "eslint",
+      "sfdx-lwc-jest --skipApiVersionCheck -- --bail --findRelatedTests"
     ]
+  },
+  "author": "Santiago Parra Guerrero",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/santiagoparradev/LWC-RECIPES-SANTIAGO"
   }
 }
