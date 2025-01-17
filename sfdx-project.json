@@ -1,6 +1,9 @@
 {
   "packageDirectories": [
     {
+      "path": "force-app-examples"
+    },
+    {
       "path": "force-app",
       "default": true
     }

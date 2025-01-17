@@ -24,7 +24,3 @@ export default class ExpandableSectionBasic extends LightningElement {}
 
 You can find these files in the repository at:  
 [Expandable Section Basic](https://github.com/santiagoparradev/LWC-RECIPES-SANTIAGO/tree/main/src-components-examples/main/default/lwc/expandableSectionBasic)
-
-```
-
-```
