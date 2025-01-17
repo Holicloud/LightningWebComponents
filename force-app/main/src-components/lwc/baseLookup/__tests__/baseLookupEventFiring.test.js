@@ -1,4 +1,4 @@
-import { ElementBuilder, resetDOM, assertElementIsAccesible } from "test/utils";
+import { ElementBuilder, resetDOM, assertElementIsAccesible, getByDataId } from "test/utils";
 import BaseLookup from "c/baseLookup";
 import SAMPLE_SEARCH_ITEMS from "./data/searchItems.json";
 import { inputSearchTerm } from "./baseLookup.utils.js";
@@ -173,18 +173,17 @@ describe("c-base-lookup event fires", () => {
     jest.useFakeTimers();
 
     // Create lookup with search handler and new record options
-    const actions = [{ name: "NewAccount", label: "New Account" }];
-    const element = elementBuilder.build({ actions });
-    const mockSearchFn = jest.fn();
+    const element = elementBuilder.build({ 
+      actions: [{ name: "NewAccount", label: "New Account" }]
+    });
     const actionFn = jest.fn();
-    element.addEventListener("search", mockSearchFn);
     element.addEventListener("action", actionFn);
 
     // Simulate search term input
     await inputSearchTerm(element, SAMPLE_SEARCH_RAW);
 
     // Simulate mouse selection
-    const newRecordEl = element.shadowRoot.querySelector("div[data-name]");
+    const newRecordEl = getByDataId(element, 'action-button');
     newRecordEl.click();
 
     // Check fired search event

@@ -45,17 +45,18 @@ describe("c-base-lookup exposed functions", () => {
 
   it("setSearchResults renders correct results", async () => {
     // Create lookup
-    const element = elementBuilder.build();
-    element.defaultSearchResults = SAMPLE_SEARCH_ITEMS;
+    const element = elementBuilder.build({
+      defaultSearchResults: SAMPLE_SEARCH_ITEMS
+    });
     await flushPromises();
 
     // Query for rendered list items
     const listItemEls = element.shadowRoot.querySelectorAll(
-      "li[data-id='list-item']"
+      "[data-id='list-item']"
     );
     expect(listItemEls.length).toBe(SAMPLE_SEARCH_ITEMS.length);
     const resultItemEls = listItemEls[0].querySelectorAll(
-      "lightning-formatted-rich-text[data-id='subtitle']"
+      "[data-id='subtitle']"
     );
     expect(resultItemEls.length).toBe(SAMPLE_SEARCH_ITEMS[0].subtitles.length);
     await assertElementIsAccesible(element);
@@ -65,24 +66,22 @@ describe("c-base-lookup exposed functions", () => {
     jest.useFakeTimers();
 
     // Create lookup with search handler
-    const element = elementBuilder.build();
-    const searchFn = (event) => {
-      event.target.defaultSearchResults = SAMPLE_SEARCH_ITEMS;
-    };
-    element.addEventListener("search", searchFn);
+    const element = elementBuilder.build({
+      defaultSearchResults: SAMPLE_SEARCH_ITEMS
+    });
 
     // Simulate search term input with regex characters
     await inputSearchTerm(element, "[ab");
 
     // Query for rendered list items
     const listItemEls = element.shadowRoot.querySelectorAll(
-      "li[data-id='list-item']"
+      "[data-id='list-item']"
     );
     expect(listItemEls.length).toBe(SAMPLE_SEARCH_ITEMS.length);
     await assertElementIsAccesible(element);
   });
 
-  it("focuses", async () => {
+  it("focus the element", async () => {
     // Create lookup
     const element = elementBuilder.build();
     element.focus();
@@ -96,11 +95,9 @@ describe("c-base-lookup exposed functions", () => {
     jest.useFakeTimers();
 
     // Create lookup with search handler
-    const element = elementBuilder.build();
-    const searchFn = (event) => {
-      event.target.defaultSearchResults = SAMPLE_SEARCH_ITEMS;
-    };
-    element.addEventListener("search", searchFn);
+    const element = elementBuilder.build({
+      defaultSearchResults: SAMPLE_SEARCH_ITEMS
+    });
 
     // Simulate search term input (forces focus on lookup and opens drowdown)
     await inputSearchTerm(element, "sample");

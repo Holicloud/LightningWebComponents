@@ -2,7 +2,9 @@ import {
   ElementBuilder,
   resetDOM,
   flushPromises,
-  getByDataId
+  getByDataId,
+  assertElementIsAccesible,
+  assertElementIsNotAccesible
 } from "test/utils";
 import BaseLookup, { VARIANTS, LABELS } from "c/baseLookup";
 import SAMPLE_SEARCH_ITEMS from "./data/searchItems.json";
@@ -24,23 +26,24 @@ describe("c-base-lookup rendering", () => {
     const element = elementBuilder.build();
 
     // Query for rendered list items
-    const noResultsElement = element.shadowRoot.querySelector('[data-id="no-result-or-loading"]');
+    const noResultsElement = getByDataId(element, 'no-result-or-loading');
     expect(noResultsElement?.textContent).toBe(LABELS.noResults);
 
-    await expect(element).toBeAccessible();
+    await assertElementIsAccesible(element);;
   });
 
   it("shows default search results by default", async () => {
-    const element = elementBuilder.build();
-    element.defaultSearchResults = SAMPLE_SEARCH_ITEMS;
+    const element = elementBuilder.build({
+      defaultSearchResults : SAMPLE_SEARCH_ITEMS
+    });
     await flushPromises();
 
     // Query for rendered list items
-    const listItemEls = element.shadowRoot.querySelectorAll("div[role=option]");
+    const listItemEls = element.shadowRoot.querySelectorAll("[data-item-id]");
     expect(listItemEls.length).toBe(SAMPLE_SEARCH_ITEMS.length);
     expect(listItemEls[0].dataset.itemId).toBe(SAMPLE_SEARCH_ITEMS[0].id);
 
-    await expect(element).toBeAccessible();
+    await assertElementIsAccesible(element);;
   });
 
   it("renders label by default", async () => {
@@ -51,7 +54,7 @@ describe("c-base-lookup rendering", () => {
     expect(labelEl.textContent).toBe(BASE_LABEL);
     expect(labelEl.className).toBe("slds-form-element__label");
 
-    await expect(element).toBeAccessible();
+    await assertElementIsAccesible(element);;
   });
 
   it("does not render label if omitted", async () => {
@@ -62,7 +65,7 @@ describe("c-base-lookup rendering", () => {
     expect(labelEl).toBe(null);
 
     // Failure to provide a label break accessibility
-    await expect(element).not.toBeAccessible();
+    await assertElementIsNotAccesible(element);
   });
 
   it("renders but hides label when variant set to label-hidden", async () => {
@@ -76,7 +79,7 @@ describe("c-base-lookup rendering", () => {
     expect(labelEl).not.toBeNull();
     expect(labelEl.classList).toContain("slds-assistive-text");
 
-    await expect(element).toBeAccessible();
+    await assertElementIsAccesible(element);;
   });
 
   it("renders horizontal label when variant set to label-inline", async () => {
@@ -88,45 +91,43 @@ describe("c-base-lookup rendering", () => {
     // Verify form element
     expect(element.classList).toContain("slds-form-element_horizontal");
 
-    await expect(element).toBeAccessible();
+    await assertElementIsAccesible(element);;
   });
 
   it("renders single entry (no selection)", async () => {
     const element = elementBuilder.build({ isMultiEntry: false });
 
     // Verify selected icon
-    const selIcon = element.shadowRoot.querySelector(
-      "lightning-icon[data-id='search-icon']"
-    );
+    const selIcon = getByDataId(element, 'search-icon');
     expect(selIcon.alternativeText).toBe("Search icon");
     // Verify clear selection button
-    const clearSelButton = element.shadowRoot.querySelector("button");
+    const clearSelButton = getByDataId(element, 'remove');
     expect(clearSelButton.title).toBe("Remove selected option");
     // Verify result list is NOT rendered
     const selList = element.shadowRoot.querySelectorAll(
-      "ul.slds-listbox_inline"
+      '[data-id="selected-options"]'
     );
     expect(selList.length).toBe(0);
 
-    await expect(element).toBeAccessible();
+    await assertElementIsAccesible(element);;
   });
 
   it("renders multi entry (no selection)", async () => {
     const element = elementBuilder.build({ isMultiEntry: true });
 
     // Verify selected icon is NOT rendered
-    const selIcon = element.shadowRoot.querySelectorAll("lightning-icon");
+    const selIcon = element.shadowRoot.querySelectorAll('[data-id="search-icon"]');
     expect(selIcon.length).toBe(1);
     // Verify clear selection button is NOT rendered
-    const clearSelButton = element.shadowRoot.querySelectorAll("button");
-    expect(clearSelButton.length).toBe(0);
+    const clearSelButton = getByDataId(element, 'remove');
+    expect(clearSelButton).toBeFalsy();
     // Verify result list is rendered
     const selList = element.shadowRoot.querySelectorAll(
-      "ul.slds-listbox_inline"
+      '[data-id="selected-options"]'
     );
     expect(selList.length).toBe(1);
 
-    await expect(element).toBeAccessible();
+    await assertElementIsAccesible(element);;
   });
 
   it("renders title on selection in single-select", async () => {
@@ -135,10 +136,10 @@ describe("c-base-lookup rendering", () => {
       value: SAMPLE_SEARCH_ITEMS[0]
     });
 
-    const inputBox = element.shadowRoot.querySelector("input");
+    const inputBox = getByDataId(element, 'input');
     expect(inputBox.title).toBe(SAMPLE_SEARCH_ITEMS[0].title);
 
-    await expect(element).toBeAccessible();
+    await assertElementIsAccesible(element);;
   });
 
   it("renders title on selection in multi-select", async () => {
@@ -147,16 +148,16 @@ describe("c-base-lookup rendering", () => {
       value: SAMPLE_SEARCH_ITEMS
     });
 
-    const inputBox = element.shadowRoot.querySelector("input");
+    const inputBox = getByDataId(element, 'input');
     expect(inputBox.title).toBe("");
 
     // Verify that default selection is showing up
-    const selPills = element.shadowRoot.querySelectorAll("lightning-pill");
+    const selPills = element.shadowRoot.querySelectorAll('[data-id="pill"]');
     expect(selPills.length).toBe(2);
     expect(selPills[0].title).toBe(SAMPLE_SEARCH_ITEMS[0].title);
     expect(selPills[1].title).toBe(SAMPLE_SEARCH_ITEMS[1].title);
 
-    await expect(element).toBeAccessible();
+    await assertElementIsAccesible(element);;
   });
 
   it("does not shows default search results when they are already selected", async () => {
@@ -168,13 +169,10 @@ describe("c-base-lookup rendering", () => {
     await flushPromises();
 
     // Query for rendered list items
-    const listItemEls = element.shadowRoot.querySelectorAll(
-      "li span.slds-media__body"
-    );
-    expect(listItemEls.length).toBe(1);
-    expect(listItemEls[0].textContent).toBe(LABELS.noResults);
+    const noResultElement = getByDataId(element, 'no-result-or-loading');
+    expect(noResultElement?.textContent).toBe(LABELS.noResults);
 
-    await expect(element).toBeAccessible();
+    await assertElementIsAccesible(element);;
   });
 
   it("renders new record creation option when no selection", async () => {
@@ -183,14 +181,13 @@ describe("c-base-lookup rendering", () => {
     });
 
     // Query for rendered list items
-    const listItemEls = element.shadowRoot.querySelectorAll(
-      "li span.slds-media__body"
-    );
-    expect(listItemEls.length).toBe(2);
-    expect(listItemEls[0].textContent).toBe("No results.");
-    expect(listItemEls[1].textContent).toBe("New Account");
+    const noResultElement = getByDataId(element, 'no-result-or-loading');
+    const action = getByDataId(element, 'action');
 
-    await expect(element).toBeAccessible();
+    expect(noResultElement?.textContent).toBe(LABELS.noResults);
+    expect(action?.textContent).toBe('New Account');
+
+    await assertElementIsAccesible(element);;
   });
 
   it("can be disabled", async () => {
@@ -199,10 +196,10 @@ describe("c-base-lookup rendering", () => {
     });
 
     // Verify that input is disabled
-    const input = element.shadowRoot.querySelector("input");
+    const input = getByDataId(element, 'input');
     expect(input.disabled).toBe(true);
 
-    await expect(element).toBeAccessible();
+    await assertElementIsAccesible(element);;
   });
 
   it("disables clear selection button when single entry and disabled", async () => {
@@ -213,10 +210,10 @@ describe("c-base-lookup rendering", () => {
     });
 
     // Clear selection
-    const clearSelButton = element.shadowRoot.querySelector("button");
+    const clearSelButton = getByDataId(element, 'remove');
     expect(clearSelButton.disabled).toBeTruthy();
 
-    await expect(element).toBeAccessible();
+    await assertElementIsAccesible(element);;
   });
 
   it("renders error", async () => {
@@ -229,10 +226,10 @@ describe("c-base-lookup rendering", () => {
     // Verify error
     await flushPromises();
 
-    const error = element.shadowRoot.querySelector("[data-field-level-text]");
+    const error = getByDataId(element, 'data-field-level-text');
     expect(error.textContent).toBe(message);
 
-    await expect(element).toBeAccessible();
+    await assertElementIsAccesible(element);;
   });
 
   it("renders helptext by default", async () => {
@@ -243,7 +240,7 @@ describe("c-base-lookup rendering", () => {
     const helpTextElement = getByDataId(element, "help-text");
     expect(helpTextElement.content).toBe(props.fieldLevelText);
 
-    await expect(element).toBeAccessible();
+    await assertElementIsAccesible(element);;
   });
 
   it("blurs on error and closes dropdown", async () => {
@@ -267,6 +264,6 @@ describe("c-base-lookup rendering", () => {
     expect(dropdownEl.classList).not.toContain("slds-is-open");
 
     jest.useRealTimers();
-    await expect(element).toBeAccessible();
+    await assertElementIsAccesible(element);;
   });
 });

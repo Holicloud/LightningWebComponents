@@ -1,4 +1,9 @@
-import { ElementBuilder, resetDOM, assertElementIsAccesible } from "test/utils";
+import {
+  ElementBuilder,
+  resetDOM,
+  assertElementIsAccesible,
+  getByDataId
+} from "test/utils";
 import BaseLookup, { KEY_INPUTS } from "c/baseLookup";
 import SAMPLE_SEARCH_ITEMS from "./data/searchItems.json";
 import { inputSearchTerm } from "./baseLookup.utils.js";
@@ -23,15 +28,14 @@ describe("c-base-lookup event handling", () => {
     });
 
     // Clear selection
-    const clearSelButton = element.shadowRoot.querySelector("button");
-    clearSelButton.click();
+    getByDataId(element, "remove").click();
     // Check selection
     expect(element.value.length).toBe(0);
 
     await assertElementIsAccesible(element);
   });
 
-  it("can clear selection when multi entry", () => {
+  it("can clear selection when multi entry", async () => {
     // Create lookup
     const element = elementBuilder.build({
       isMultiEntry: true,
@@ -39,10 +43,11 @@ describe("c-base-lookup event handling", () => {
     });
 
     // Remove a selected item
-    const selPills = element.shadowRoot.querySelectorAll("lightning-pill");
-    selPills[0].dispatchEvent(new CustomEvent("remove"));
+    getByDataId(element, "pill")
+      .dispatchEvent(new CustomEvent("remove"));
     // Check selection
     expect(element.value.length).toBe(SAMPLE_SEARCH_ITEMS.length - 1);
+    await assertElementIsAccesible(element);
   });
 
   it("doesn't remove pill when multi entry and disabled", async () => {
@@ -54,8 +59,8 @@ describe("c-base-lookup event handling", () => {
     });
 
     // Remove a selected item
-    const selPills = element.shadowRoot.querySelectorAll("lightning-pill");
-    selPills[0].dispatchEvent(new CustomEvent("remove"));
+    getByDataId(element, "pill")
+      .dispatchEvent(new CustomEvent("remove"));
     // Check selection
     expect(element.value.length).toBe(SAMPLE_SEARCH_ITEMS.length);
     await assertElementIsAccesible(element);
@@ -65,19 +70,16 @@ describe("c-base-lookup event handling", () => {
     jest.useFakeTimers();
 
     // Create lookup with search handler
-    const element = elementBuilder.build();
-    const searchFn = (event) => {
-      event.target.defaultSearchResults = SAMPLE_SEARCH_ITEMS;
-    };
-    element.addEventListener("search", searchFn);
+    const element = elementBuilder.build({
+      defaultSearchResults: SAMPLE_SEARCH_ITEMS
+    });
 
     // Simulate search term input
     await inputSearchTerm(element, SAMPLE_SEARCH);
 
     // Simulate mouse selection
-    const searchResultItem =
-      element.shadowRoot.querySelector("div[data-item-id]");
-    searchResultItem.click();
+    element.shadowRoot.querySelector("div[data-item-id]")
+      .click();
 
     // Check selection
     expect(element.value.length).toBe(1);
@@ -90,7 +92,7 @@ describe("c-base-lookup event handling", () => {
 
     // Create lookup with search handler
     const element = elementBuilder.build({
-      defaultSearchResults : SAMPLE_SEARCH_ITEMS
+      defaultSearchResults: SAMPLE_SEARCH_ITEMS
     });
 
     const scrollIntoView = jest.fn();
@@ -100,7 +102,7 @@ describe("c-base-lookup event handling", () => {
     await inputSearchTerm(element, SAMPLE_SEARCH);
 
     // Simulate keyboard navigation
-    const searchInput = element.shadowRoot.querySelector("input");
+    const searchInput = getByDataId(element, "input");
     searchInput.dispatchEvent(
       new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.ARROW_DOWN })
     );
@@ -119,13 +121,10 @@ describe("c-base-lookup event handling", () => {
     jest.useFakeTimers();
 
     // Create lookup with search handler and new record options
-    const actions = [{ name: "NewAccount", label: "New Account" }];
-    const element = elementBuilder.build({ actions });
-    const searchFn = (event) => {
-      event.target.defaultSearchResults = [];
-    };
+    const element = elementBuilder.build({
+      actions: [{ name: "NewAccount", label: "New Account" }]
+    });
     const actionFn = jest.fn();
-    element.addEventListener("search", searchFn);
     element.addEventListener("action", actionFn);
 
     // Simulate search term inp ut

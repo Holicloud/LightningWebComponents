@@ -29,6 +29,12 @@ async function assertElementIsAccesible(element) {
   jest.useFakeTimers();
 }
 
+async function assertElementIsNotAccesible(element) {
+  jest.useRealTimers();
+  await expect(element).not.toBeAccessible();
+  jest.useFakeTimers();
+}
+
 class ElementBuilder {
   defaultApiProps = {};
 
@@ -64,5 +70,6 @@ export {
   addToDOM,
   removeFromDOM,
   assertElementIsAccesible,
+  assertElementIsNotAccesible,
   ElementBuilder
 };

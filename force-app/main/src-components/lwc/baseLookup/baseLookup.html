@@ -78,6 +78,7 @@
               onclick={handleClearSelection}
               class={getClearSelectionButtonClass}
               disabled={disabled}
+              data-id="remove"
             >
               <lightning-icon
                 icon-name="utility:close"
@@ -199,6 +200,7 @@
                   class="slds-media slds-media_center slds-listbox__option slds-listbox__option_entity"
                   onclick={handleActionClick}
                   data-name={action.name}
+                  data-id="action-button"
                   role="option"
                 >
                   <span class="slds-media__figure slds-listbox__option-icon">
@@ -209,7 +211,7 @@
                     ></lightning-icon>
                   </span>
                   <span class="slds-media__body">
-                    <span class="slds-listbox__option-text"
+                    <span class="slds-listbox__option-text" data-id="action"
                       >{action.label}</span
                     >
                   </span>
@@ -232,6 +234,7 @@
         aria-orientation="horizontal"
       >
         <ul
+          data-id="selected-options"
           class="slds-listbox slds-listbox_inline slds-var-p-top_xxx-small"
           role="group"
           aria-label="Selected options"
@@ -245,7 +248,7 @@
                 onremove={handleRemoveSelectedItem}
                 name={item.id}
               >
-                <lightning-icon lwc:spread={item.icon}></lightning-icon>
+                <lightning-icon data-id="pill-icon" lwc:spread={item.icon}></lightning-icon>
               </lightning-pill>
             </li>
           </template>
@@ -258,7 +261,7 @@
   <template if:true={displayHelpMessage}>
     <div
       id="field-level-text"
-      data-field-level-text
+      data-id="data-field-level-text"
       class="slds-form-element__help"
       aria-live="assertive"
     >
