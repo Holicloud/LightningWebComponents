@@ -10,11 +10,19 @@
       maxlength="10"
     ></lightning-input>
     <div class="slds-scrollable_y">
-      <div class="lwc-section slds-m-bottom_medium slds-p-left_medium slds-p-bottom_small">
+      <div
+        class="lwc-section slds-m-bottom_medium slds-p-left_medium slds-p-bottom_small"
+      >
         <h3 class="slds-text-heading_small">Lightning Web Components</h3>
-        <lightning-vertical-navigation selected-item={initiallySelected} onselect={handleSelect}>
+        <lightning-vertical-navigation
+          selected-item={initiallySelected}
+          onselect={handleSelect}
+        >
           <template for:each={navigationData} for:item="section">
-            <lightning-vertical-navigation-section key={section.label} label={section.label}>
+            <lightning-vertical-navigation-section
+              key={section.label}
+              label={section.label}
+            >
               <template for:each={section.items} for:item="item">
                 <template lwc:if={item.icon}>
                   <lightning-vertical-navigation-item-icon

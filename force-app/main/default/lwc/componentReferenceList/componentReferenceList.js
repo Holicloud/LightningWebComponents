@@ -23,7 +23,9 @@ const sections = Object.freeze([
   }
 ]);
 
-export default class ComponentReferenceList extends MessageChannelMixin(LightningElement) {
+export default class ComponentReferenceList extends MessageChannelMixin(
+  LightningElement
+) {
   @track navigationData = sections;
   initiallySelected = sections[0].items[0].name;
 
@@ -41,7 +43,9 @@ export default class ComponentReferenceList extends MessageChannelMixin(Lightnin
 
     if (value?.length > 2) {
       this.navigationData = structuredClone(sections).filter((section) => {
-        const filteredComponents = section.items.filter((component) => component.label.includes(event.detail.value));
+        const filteredComponents = section.items.filter((component) =>
+          component.label.includes(event.detail.value)
+        );
 
         if (filteredComponents.length) {
           section.items = filteredComponents;

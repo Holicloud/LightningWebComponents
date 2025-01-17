@@ -25,9 +25,7 @@
       <ul class="slds-grid slds-page-header__detail-row">
         <li class="slds-col">
           <div class="card-body slds-grid">
-            <div
-              class="slds-col slds-size_2-of-5 slds-p-right_small"
-            >
+            <div class="slds-col slds-size_2-of-5 slds-p-right_small">
               <p>
                 <b data-id="description">{description}</b>
               </p>
@@ -44,7 +42,9 @@
               <h3 class="slds-text-heading_small">Targets</h3>
               <ul class="slds-list_horizontal slds-has-dividers_left">
                 <template for:each={targets} for:item="target">
-                  <li class="slds-item" key={target} data-id="target">{target}</li>
+                  <li class="slds-item" key={target} data-id="target">
+                    {target}
+                  </li>
                 </template>
               </ul>
             </div>

@@ -1,4 +1,5 @@
-const GIT_HUB = 'https://raw.githubusercontent.com/santiagoparradev/LWC-RECIPES-SANTIAGO/refs/heads/main/force-app/main';
+const GIT_HUB =
+  "https://raw.githubusercontent.com/santiagoparradev/LWC-RECIPES-SANTIAGO/refs/heads/main/force-app/main";
 const GIT_HUB_SOURCE_COMPONENTS = `${GIT_HUB}/src-components/lwc/{0}/README.md`;
 const EXAMPLES_GIT_HUB_SOURCE = `${GIT_HUB}/src-components-examples/lwc/{0}/README.md`;
 const TARGETS = Object.freeze({
@@ -39,50 +40,57 @@ export const COMPONENTS = {
 
 export const EXAMPLES = {
   [COMPONENTS.C_EXPANDABLE_SECTION.descriptor]: {
-    documentation:
-      GIT_HUB_SOURCE_COMPONENTS.replace('{0}', 'expandableSection'),
+    documentation: GIT_HUB_SOURCE_COMPONENTS.replace(
+      "{0}",
+      "expandableSection"
+    ),
     examples: [
       {
         title: "Basic",
         description: "this is some sample",
-        codeBase: EXAMPLES_GIT_HUB_SOURCE.replace('{0}', 'expandableSectionBasic'),
+        codeBase: EXAMPLES_GIT_HUB_SOURCE.replace(
+          "{0}",
+          "expandableSectionBasic"
+        ),
         constructor: () => import("c/expandableSectionBasic")
       }
     ]
   },
   [COMPONENTS.C_WIZARD.descriptor]: {
-    documentation:
-    GIT_HUB_SOURCE_COMPONENTS.replace('{0}', 'wizard'),
+    documentation: GIT_HUB_SOURCE_COMPONENTS.replace("{0}", "wizard"),
     examples: [
       {
         title: "Basic",
         description: "this is some sample",
-        codeBase: EXAMPLES_GIT_HUB_SOURCE.replace('{0}', 'wizardBasic'),
+        codeBase: EXAMPLES_GIT_HUB_SOURCE.replace("{0}", "wizardBasic"),
         constructor: () => import("c/wizardBasic")
       }
     ]
   },
   [COMPONENTS.C_ALERT.descriptor]: {
-    documentation:
-    GIT_HUB_SOURCE_COMPONENTS.replace('{0}', 'alert'),
+    documentation: GIT_HUB_SOURCE_COMPONENTS.replace("{0}", "alert"),
     examples: [
       {
         title: "Basic",
         description: "this is some sample",
-        codeBase: EXAMPLES_GIT_HUB_SOURCE.replace('{0}', 'alertBasic'),
+        codeBase: EXAMPLES_GIT_HUB_SOURCE.replace("{0}", "alertBasic"),
         constructor: () => import("c/alertBasic")
       }
     ]
   },
   [COMPONENTS.C_MESSAGE_CHANNEL_MIXIN.descriptor]: {
-    documentation: GIT_HUB_SOURCE_COMPONENTS.replace('{0}', 'messageChannelMixin'),
+    documentation: GIT_HUB_SOURCE_COMPONENTS.replace(
+      "{0}",
+      "messageChannelMixin"
+    )
   }
 };
 
 export const HEADER_INFO = {
   [COMPONENTS.C_EXPANDABLE_SECTION.descriptor]: {
     title: COMPONENTS.C_EXPANDABLE_SECTION.label,
-    description: "Component that mimics behaviour of Expandable Section from slds",
+    description:
+      "Component that mimics behaviour of Expandable Section from slds",
     descriptor: COMPONENTS.C_EXPANDABLE_SECTION.descriptor,
     targets: [
       TARGETS.LIGHTNING_EXPERIENCE,

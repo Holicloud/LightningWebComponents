@@ -24,9 +24,12 @@
       </lightning-progress-indicator>
 
       <template lwc:if={hasError}>
-        <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
-            <span class="slds-assistive-text">{labels.error}</span>
-            <h3 data-id="error-message">{errorMessage}</h3>
+        <div
+          class="slds-notify slds-notify_alert slds-alert_error"
+          role="alert"
+        >
+          <span class="slds-assistive-text">{labels.error}</span>
+          <h3 data-id="error-message">{errorMessage}</h3>
         </div>
       </template>
     </div>

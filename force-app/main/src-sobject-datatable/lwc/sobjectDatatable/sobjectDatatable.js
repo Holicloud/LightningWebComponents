@@ -64,7 +64,9 @@ export default class SobjectDatatable extends DatatablePlus {
         return;
       }
       const fieldDescribe =
-        fieldDescribes[column.sobjectConfig.object + column.sobjectConfig.field];
+        fieldDescribes[
+          column.sobjectConfig.object + column.sobjectConfig.field
+        ];
 
       column.editable = fieldDescribe.updateable;
       column.sortable = fieldDescribe.sortable;

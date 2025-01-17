@@ -43,7 +43,9 @@ export default class DatatablePlus extends LightningDatatable {
         // when editing for some reason the data can get transformed without intention
         // for example [1,2,3] becomes {0:1,1:2,2:3} so:
         if (typeAttributes.editProps) {
-          column.typeAttributes.editProps = JSON.stringify(typeAttributes.editProps);
+          column.typeAttributes.editProps = JSON.stringify(
+            typeAttributes.editProps
+          );
         }
       }
     }

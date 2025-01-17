@@ -30,7 +30,9 @@ The `ExpandableSection` is a reusable Lightning Web Component (LWC) that provide
 ```html
 <template>
   <!-- Default Expandable Section -->
-  <c-expandable-section title="Default Section"> Content goes here. </c-expandable-section>
+  <c-expandable-section title="Default Section">
+    Content goes here.
+  </c-expandable-section>
 
   <!-- Collapsed by Default Section -->
   <c-expandable-section title="Collapsed Section" is-collapsed>

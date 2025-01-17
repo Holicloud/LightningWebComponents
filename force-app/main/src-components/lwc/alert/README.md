@@ -1,66 +1,68 @@
 # Specification
 
-  * ## Public Properties
+- ## Public Properties
 
-    | Property Name       | Type      | Default Value | Description                                       |
-    |---------------------|-----------|---------------|---------------------------------------------------|
-    | `variant`           | `String`  | `"info"`     | The type of alert. Available values: `info`, `warning`, `error`, `offline`.
-    | `iconName`          | `String`  | Derived       | Overwrites the default icon for the alert variant.
-    | `actionMessage`     | `String`  | `null`        | The text displayed for the action link.           |
-    | `nonCollapsible`    | `Boolean` | `false`       | Determines if the alert can be closed or not.     |
-    | `visible` (getter/setter) | `Boolean` | `true`   | Determines if the alert is visible.               |
+  | Property Name             | Type      | Default Value | Description                                                                 |
+  | ------------------------- | --------- | ------------- | --------------------------------------------------------------------------- |
+  | `variant`                 | `String`  | `"info"`      | The type of alert. Available values: `info`, `warning`, `error`, `offline`. |
+  | `iconName`                | `String`  | Derived       | Overwrites the default icon for the alert variant.                          |
+  | `actionMessage`           | `String`  | `null`        | The text displayed for the action link.                                     |
+  | `nonCollapsible`          | `Boolean` | `false`       | Determines if the alert can be closed or not.                               |
+  | `visible` (getter/setter) | `Boolean` | `true`        | Determines if the alert is visible.                                         |
 
-  * ## Events
+- ## Events
 
-    | Event Name  | Description                                 |
-    |-------------|---------------------------------------------|
-    | `action`    | Triggered when the action link is clicked. |
+  | Event Name | Description                                |
+  | ---------- | ------------------------------------------ |
+  | `action`   | Triggered when the action link is clicked. |
 
-    ---
+  ***
 
 ## Documentation
 
-* ### Variants
+- ### Variants
 
-  * #### Default Variant
+  - #### Default Variant
 
     ```html
     <c-alert>variant info</c-alert>
     ```
 
-  * #### Warning Variant
+  - #### Warning Variant
 
     ```html
     <c-alert variant="warning">variant warning</c-alert>
     ```
 
-  * #### Error Variant
+  - #### Error Variant
 
     ```html
     <c-alert variant="error">variant error</c-alert>
     ```
 
-  * #### Offline Variant
+  - #### Offline Variant
 
     ```html
     <c-alert variant="offline">variant offline</c-alert>
     ```
 
-* ### More
+- ### More
 
-  * #### Action
+  - #### Action
 
     ```html
-    <c-alert action-message="More Information" onaction={handleAction}>with action</c-alert>
+    <c-alert action-message="More Information" onaction="{handleAction}"
+      >with action</c-alert
+    >
     ```
 
-  * #### Non-Collapsible
+  - #### Non-Collapsible
 
     ```html
     <c-alert non-collapsible>non collapsible</c-alert>
     ```
 
-  * #### Overwriting the Icon
+  - #### Overwriting the Icon
 
     ```html
     <c-alert icon-name="utility:activity">overwrite icon</c-alert>

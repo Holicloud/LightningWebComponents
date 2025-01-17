@@ -3,7 +3,10 @@ public with sharing class UserLookup implements LookupResult.ILookupResult {
     'iconName' => 'standard:user'
   };
 
-  public List<LookupResult> getSelection(List<String> selectedIds, Map<String, Object> payload) {
+  public List<LookupResult> getSelection(
+    List<String> selectedIds,
+    Map<String, Object> payload
+  ) {
     List<LookupResult> result = new List<LookupResult>();
 
     List<User> users = [
@@ -16,7 +19,9 @@ public with sharing class UserLookup implements LookupResult.ILookupResult {
     return buildResults(users);
   }
 
-  public List<LookupResult> getDefaultSearchResults(Map<String, Object> payload) {
+  public List<LookupResult> getDefaultSearchResults(
+    Map<String, Object> payload
+  ) {
     List<LookupResult> result = new List<LookupResult>();
 
     List<User> users = [
@@ -40,7 +45,10 @@ public with sharing class UserLookup implements LookupResult.ILookupResult {
     List<User> users = [
       SELECT Name, Profile.Name
       FROM User
-      WHERE Id NOT IN :selectedIds AND (Name LIKE :searchTerm OR Profile.Name LIKE :searchTerm)
+      WHERE
+        Id NOT IN :selectedIds
+        AND (Name LIKE :searchTerm
+        OR Profile.Name LIKE :searchTerm)
       LIMIT 10
     ];
 

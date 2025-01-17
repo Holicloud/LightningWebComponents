@@ -43,8 +43,7 @@ describe("c-base-lookup event handling", () => {
     });
 
     // Remove a selected item
-    getByDataId(element, "pill")
-      .dispatchEvent(new CustomEvent("remove"));
+    getByDataId(element, "pill").dispatchEvent(new CustomEvent("remove"));
     // Check selection
     expect(element.value.length).toBe(SAMPLE_SEARCH_ITEMS.length - 1);
     await assertElementIsAccesible(element);
@@ -59,8 +58,7 @@ describe("c-base-lookup event handling", () => {
     });
 
     // Remove a selected item
-    getByDataId(element, "pill")
-      .dispatchEvent(new CustomEvent("remove"));
+    getByDataId(element, "pill").dispatchEvent(new CustomEvent("remove"));
     // Check selection
     expect(element.value.length).toBe(SAMPLE_SEARCH_ITEMS.length);
     await assertElementIsAccesible(element);
@@ -78,8 +76,7 @@ describe("c-base-lookup event handling", () => {
     await inputSearchTerm(element, SAMPLE_SEARCH);
 
     // Simulate mouse selection
-    element.shadowRoot.querySelector("div[data-item-id]")
-      .click();
+    element.shadowRoot.querySelector("div[data-item-id]").click();
 
     // Check selection
     expect(element.value.length).toBe(1);

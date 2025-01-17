@@ -242,7 +242,8 @@ const columns = [
       viewProps: {},
       editProps: {
         type: "url",
-        pattern: "^(https?:\\/\\/)?([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?$"
+        pattern:
+          "^(https?:\\/\\/)?([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?$"
       }
     },
     editable: true

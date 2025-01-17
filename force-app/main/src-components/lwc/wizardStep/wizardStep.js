@@ -1,8 +1,8 @@
 import { LightningElement, api, track } from "lwc";
 
-export const IS_ACTIVE_ATTRIBUTE = 'is-active';
-export const SLDS_SHOW = 'slds-show';
-export const SLDS_HIDE = 'slds-hide';
+export const IS_ACTIVE_ATTRIBUTE = "is-active";
+export const SLDS_SHOW = "slds-show";
+export const SLDS_HIDE = "slds-hide";
 export default class WizardStep extends LightningElement {
   @api name;
   @api label;
@@ -51,7 +51,9 @@ export default class WizardStep extends LightningElement {
   }
 
   disconnectedCallback() {
-    this.dispatchEvent(new CustomEvent("unregister", { bubbles: true, detail: this.name }));
+    this.dispatchEvent(
+      new CustomEvent("unregister", { bubbles: true, detail: this.name })
+    );
   }
 
   setActive = (value) => {
@@ -68,7 +70,7 @@ export default class WizardStep extends LightningElement {
       this.classList.remove(SLDS_SHOW);
       this.classList.add(SLDS_HIDE);
     }
-  }
+  };
 
   config = (props) => {
     this.isFirst = props.isFirst;
@@ -78,7 +80,7 @@ export default class WizardStep extends LightningElement {
       this.labels = props.labels;
       this.isInit = true;
     }
-  }
+  };
 
   nextStep() {
     this.dispatchEvent(new CustomEvent("next", { bubbles: true }));

@@ -15,7 +15,9 @@
     </span>
     <h2>
       <slot></slot>
-      <a lwc:if={actionMessage} href="#" onclick={handleAction}>{actionMessage}</a>
+      <a lwc:if={actionMessage} href="#" onclick={handleAction}
+        >{actionMessage}</a
+      >
     </h2>
     <div class="slds-notify__close" lwc:if={isCollapsible}>
       <span class="slds-assistive-text">Close</span>

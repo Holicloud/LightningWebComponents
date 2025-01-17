@@ -37,11 +37,19 @@
   ></lightning-formatted-url>
   <!-- custom components -->
 
-  <c-picklist-text lwc:elseif={cPicklistText} value={_value} props={props}></c-picklist-text>
+  <c-picklist-text
+    lwc:elseif={cPicklistText}
+    value={_value}
+    props={props}
+  ></c-picklist-text>
   <c-multipicklist-text
     lwc:elseif={cMultipicklistText}
     value={_value}
     props={props}
   ></c-multipicklist-text>
-  <c-record-cell lwc:elseif={cRecord} value={_value} props={props}></c-record-cell>
+  <c-record-cell
+    lwc:elseif={cRecord}
+    value={_value}
+    props={props}
+  ></c-record-cell>
 </template>

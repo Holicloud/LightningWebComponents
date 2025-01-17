@@ -41,11 +41,15 @@ export default class Alert extends LightningElement {
   _visible = true;
 
   get alertClasses() {
-    return "slds-notify slds-notify_alert " + this.variantProps.alertClass || "";
+    return (
+      "slds-notify slds-notify_alert " + this.variantProps.alertClass || ""
+    );
   }
 
   get closeButtonClasses() {
-    return "slds-button slds-button_icon slds-button_icon-small" + this.variant === "warning"
+    return "slds-button slds-button_icon slds-button_icon-small" +
+      this.variant ===
+      "warning"
       ? " slds-button_icon-inverse"
       : "";
   }
