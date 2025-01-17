@@ -1,5 +1,9 @@
-import WizardStep, { IS_ACTIVE_ATTRIBUTE, SLDS_SHOW, SLDS_HIDE } from "c/wizardStep";
-import { createElement } from "lwc";
+import WizardStep, {
+  IS_ACTIVE_ATTRIBUTE,
+  SLDS_SHOW,
+  SLDS_HIDE
+} from "c/wizardStep";
+import { createElement } from "@lwc/engine-dom";
 import { setImmediate } from "timers";
 
 describe("c-wizard-step", () => {
@@ -135,7 +139,7 @@ describe("c-wizard-step", () => {
     event.detail.methods.config(configMock);
 
     await flushPromises();
-    
+
     document.body.removeChild(element);
 
     expect(getByDataId(element, "next")).toBeFalsy();
@@ -158,9 +162,9 @@ describe("c-wizard-step", () => {
 
     expect(element.getAttribute(IS_ACTIVE_ATTRIBUTE)).toBeFalsy();
     expect(element.classList[0]).toBe(SLDS_HIDE);
-    
+
     element.isActive = true;
-    
+
     expect(element.getAttribute(IS_ACTIVE_ATTRIBUTE)).toBeTruthy();
     expect(element.classList[0]).toBe(SLDS_SHOW);
   });

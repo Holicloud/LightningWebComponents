@@ -1,4 +1,3 @@
-import { createElement } from "lwc";
 import { LightningElement, api } from "lwc";
 import { ElementBuilder, resetDOM, addToDOM, removeFromDOM } from "test/utils";
 import {
@@ -32,7 +31,12 @@ class Component extends MessageChannelMixin(LightningElement) {
   }
 }
 
-const MessageContextData = Symbol('MessageContextData');
+const MessageContextData = Symbol("MessageContextData");
+
+function assertUnsub() {
+  expect(unsubscribe).toHaveBeenNthCalledWith(1, Symbol.for("firstSub"));
+  expect(unsubscribe).toHaveBeenNthCalledWith(2, Symbol.for("secondSub"));
+}
 
 describe("c-message-channel-mixing", () => {
   const elementBuilder = new ElementBuilder("c-component", Component);
@@ -55,11 +59,6 @@ describe("c-message-channel-mixing", () => {
       listener: jest.fn(),
       subscriberOptions: {}
     });
-  }
-
-  function assertUnsub() {
-    expect(unsubscribe).toHaveBeenNthCalledWith(1, Symbol.for("firstSub"));
-    expect(unsubscribe).toHaveBeenNthCalledWith(2, Symbol.for("secondSub"));
   }
 
   it("Should publish to channels", () => {
@@ -94,7 +93,7 @@ describe("c-message-channel-mixing", () => {
     MessageContext.emit(MessageContextData);
     addToDOM(element);
     subscribeToChannels(element);
-    
+
     expect(subscribe).toHaveBeenNthCalledWith(
       1,
       MessageContextData,
@@ -123,9 +122,10 @@ describe("c-message-channel-mixing", () => {
     element.unsub(messageChannelB);
 
     assertUnsub(element);
+    expect(element).not.toBe(null);
   });
 
-  it("Should unsubscribe on disconnectedCallback", () => {
+  it("Should unsubscribe on disconnectedCallback", async () => {
     const element = elementBuilder.build();
     MessageContext.emit(MessageContextData);
 

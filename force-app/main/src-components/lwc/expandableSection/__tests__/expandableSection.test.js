@@ -1,4 +1,4 @@
-import { createElement } from "lwc";
+import { createElement } from "@lwc/engine-dom";
 import ExpandableSection from "c/expandableSection";
 import { setImmediate } from "timers";
 
@@ -16,8 +16,8 @@ describe("c-expandable-section", () => {
     return new Promise((resolve) => setImmediate(resolve));
   }
 
-  function getByDataId(element, dataId) { 
-    return element.shadowRoot.querySelector(`[data-id="${dataId}"]`); 
+  function getByDataId(element, dataId) {
+    return element.shadowRoot.querySelector(`[data-id="${dataId}"]`);
   }
 
   afterEach(() => {
@@ -32,9 +32,10 @@ describe("c-expandable-section", () => {
       title: "Test title"
     });
 
-    const sectionClasses = getByDataId(element, 'section')
-      .getAttribute("class");
-    const titleElement = getByDataId(element, 'title');
+    const sectionClasses = getByDataId(element, "section").getAttribute(
+      "class"
+    );
+    const titleElement = getByDataId(element, "title");
     expect(sectionClasses).toContain("slds-is-open");
     expect(titleElement.title).toBe(element.title);
     expect(titleElement.textContent).toBe(element.title);
@@ -43,14 +44,15 @@ describe("c-expandable-section", () => {
   it("should collapsed/expand content when button is clicked", async () => {
     const element = createExpandableSection();
 
-    const button = getByDataId(element, 'toggle');
+    const button = getByDataId(element, "toggle");
     button.click();
 
     expect(button.ariaExpanded).toBe("true");
     await flushPromises();
 
-    const sectionClasses = getByDataId(element, 'section')
-      .getAttribute("class");
+    const sectionClasses = getByDataId(element, "section").getAttribute(
+      "class"
+    );
     expect(button.ariaExpanded).toBe("false");
     expect(sectionClasses).not.toContain("slds-is-open");
   });
@@ -58,8 +60,9 @@ describe("c-expandable-section", () => {
   it("should be collapsed", async () => {
     const element = createExpandableSection({ isCollapsed: true });
 
-    const sectionClasses = getByDataId(element, 'section')
-      .getAttribute("class");
+    const sectionClasses = getByDataId(element, "section").getAttribute(
+      "class"
+    );
     expect(sectionClasses).not.toContain("slds-is-open");
   });
 });

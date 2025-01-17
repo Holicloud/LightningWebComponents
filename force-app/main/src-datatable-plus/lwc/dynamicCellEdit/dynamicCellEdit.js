@@ -43,7 +43,11 @@ export default class DynamicCellEdit extends LightningElement {
 
   @api
   showHelpMessageIfInvalid() {
-    this.inputElement?.showHelpMessageIfInvalid() || this.inputElement.reportValidity();
+    if (this.inputElement?.showHelpMessageIfInvalid) {
+      this.inputElement?.showHelpMessageIfInvalid();
+    } else {
+      this.inputElement.reportValidity();
+    }
   }
 
   @api

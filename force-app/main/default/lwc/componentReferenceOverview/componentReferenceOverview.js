@@ -1,14 +1,16 @@
-import { LightningElement, wire } from "lwc";
+import { LightningElement } from "lwc";
 import { COMPONENTS, EXAMPLES } from "c/componentReference";
 import componentReference from "@salesforce/messageChannel/ComponentReference__c";
-import { MessageChannelMixin } from 'c/messageChannelMixin';
+import { MessageChannelMixin } from "c/messageChannelMixin";
 
-export default class ComponentReferenceOverview extends MessageChannelMixin(LightningElement) {
+export default class ComponentReferenceOverview extends MessageChannelMixin(
+  LightningElement
+) {
   viewCode = false;
   selectedExample;
   componentConstructor;
   examples = [];
-  activeTab = 'Example';
+  activeTab = "Example";
   documentation;
 
   get hasExamples() {
@@ -21,12 +23,12 @@ export default class ComponentReferenceOverview extends MessageChannelMixin(Ligh
     this.viewCode = false;
 
     if (!this.examples?.length) {
-      this.activeTab = 'Documentation';
+      this.activeTab = "Documentation";
       return;
     }
 
     this.setSelectedExample();
-  }
+  };
 
   connectedCallback() {
     this[MessageChannelMixin.Subscribe]({
@@ -39,7 +41,7 @@ export default class ComponentReferenceOverview extends MessageChannelMixin(Ligh
     this.documentation = EXAMPLES[descriptor].documentation;
 
     if (!this.examples?.length) {
-      this.activeTab = 'Documentation';
+      this.activeTab = "Documentation";
       return;
     }
 
@@ -47,21 +49,25 @@ export default class ComponentReferenceOverview extends MessageChannelMixin(Ligh
   }
 
   async setSelectedExample(selectedIndex) {
-    this.selectedExample = selectedIndex ? this.examples[selectedIndex] : this.examples[0];
+    this.selectedExample = selectedIndex
+      ? this.examples[selectedIndex]
+      : this.examples[0];
     const { default: ctor } = await this.selectedExample.constructor();
     this.componentConstructor = ctor;
-    this.activeTab = 'Example';
+    this.activeTab = "Example";
   }
 
   get exampleOptions() {
-    return this.examples.map(example => ({
+    return this.examples.map((example) => ({
       label: example.title,
       value: example.title
     }));
   }
 
   handleChangeExample(event) {
-    this.setSelectedExample(this.examples.findIndex(example => example.title === event.detail.value));
+    this.setSelectedExample(
+      this.examples.findIndex((example) => example.title === event.detail.value)
+    );
   }
 
   handleViewCode() {

@@ -1,5 +1,5 @@
 import { setImmediate } from "timers";
-import { createElement } from "lwc";
+import { createElement } from "@lwc/engine-dom";
 
 function getByDataId(element, dataId) {
   return element.shadowRoot.querySelector(`[data-id="${dataId}"]`);
@@ -33,6 +33,11 @@ async function assertElementIsNotAccesible(element) {
   jest.useRealTimers();
   await expect(element).not.toBeAccessible();
   jest.useFakeTimers();
+}
+
+function excuteAfterRender(callback) {
+  // eslint-disable-next-line @lwc/lwc/no-async-operation
+  setTimeout(callback, 0);
 }
 
 class ElementBuilder {
@@ -71,5 +76,6 @@ export {
   removeFromDOM,
   assertElementIsAccesible,
   assertElementIsNotAccesible,
+  excuteAfterRender,
   ElementBuilder
 };

@@ -1,4 +1,4 @@
-import { createElement } from "lwc";
+import { createElement } from "@lwc/engine-dom";
 import Wizard, { CURRENT_STEP_ATTRIBUTE, VARIANTS } from "c/wizard";
 import WizardStep from "c/wizardStep";
 import { setImmediate } from "timers";

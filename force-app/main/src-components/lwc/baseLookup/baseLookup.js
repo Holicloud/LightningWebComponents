@@ -4,7 +4,8 @@ import {
   classListMutation,
   clone,
   Assert,
-  isNotBlank
+  isNotBlank,
+  excuteAfterRender
 } from "c/utils";
 
 // Delay for search execution after user input (in milliseconds)
@@ -138,10 +139,9 @@ export default class BaseLookup extends LightningElement {
     if (this.inputElement?.focus) {
       this.inputElement.focus();
     } else {
-      // eslint-disable-next-line @lwc/lwc/no-async-operation
-      setTimeout(() => {
+      excuteAfterRender(() => {
         this.inputElement?.focus();
-      }, 0);
+      });
     }
   }
 
@@ -150,10 +150,9 @@ export default class BaseLookup extends LightningElement {
     if (this.inputElement?.blur) {
       this.inputElement.blur();
     } else {
-      // eslint-disable-next-line @lwc/lwc/no-async-operation
-      setTimeout(() => {
-        this.inputElement?.blur();
-      }, 0);
+      excuteAfterRender(() => {
+        this.inputElement?.focus();
+      });
     }
   }
 

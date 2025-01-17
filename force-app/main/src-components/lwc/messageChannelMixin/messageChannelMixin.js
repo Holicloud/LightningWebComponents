@@ -83,7 +83,9 @@ const MessageChannelMixin = (Base) => {
 
     disconnectedCallback() {
       this[Unsubscribe]();
-      super.disconnectedCallback && super.disconnectedCallback();
+      if (super.disconnectedCallback) {
+        super.disconnectedCallback();
+      }
     }
   };
 };

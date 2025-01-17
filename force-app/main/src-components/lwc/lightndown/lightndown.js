@@ -1,5 +1,7 @@
+/* eslint-disable @lwc/lwc/no-inner-html */
 import { LightningElement, api } from "lwc";
 import { marked } from "./markdown";
+import { excuteAfterRender } from "c/utils";
 
 export default class lightndown extends LightningElement {
   _string;
@@ -40,11 +42,11 @@ export default class lightndown extends LightningElement {
     let markdownString = this.string;
 
     if (this.url) {
-        const response = await fetch(this.url);
-        const markdown = await response.text();        
-        markdownString = markdown;
+      const response = await fetch(this.url);
+      const markdown = await response.text();
+      markdownString = markdown;
     }
 
-    setTimeout(() => this.setMarkdown(markdownString), 0);
+    excuteAfterRender(() => this.setMarkdown(markdownString));
   }
 }

@@ -26,15 +26,15 @@ describe("c-base-lookup rendering", () => {
     const element = elementBuilder.build();
 
     // Query for rendered list items
-    const noResultsElement = getByDataId(element, 'no-result-or-loading');
+    const noResultsElement = getByDataId(element, "no-result-or-loading");
     expect(noResultsElement?.textContent).toBe(LABELS.noResults);
 
-    await assertElementIsAccesible(element);;
+    await assertElementIsAccesible(element);
   });
 
   it("shows default search results by default", async () => {
     const element = elementBuilder.build({
-      defaultSearchResults : SAMPLE_SEARCH_ITEMS
+      defaultSearchResults: SAMPLE_SEARCH_ITEMS
     });
     await flushPromises();
 
@@ -43,7 +43,7 @@ describe("c-base-lookup rendering", () => {
     expect(listItemEls.length).toBe(SAMPLE_SEARCH_ITEMS.length);
     expect(listItemEls[0].dataset.itemId).toBe(SAMPLE_SEARCH_ITEMS[0].id);
 
-    await assertElementIsAccesible(element);;
+    await assertElementIsAccesible(element);
   });
 
   it("renders label by default", async () => {
@@ -54,7 +54,7 @@ describe("c-base-lookup rendering", () => {
     expect(labelEl.textContent).toBe(BASE_LABEL);
     expect(labelEl.className).toBe("slds-form-element__label");
 
-    await assertElementIsAccesible(element);;
+    await assertElementIsAccesible(element);
   });
 
   it("does not render label if omitted", async () => {
@@ -79,7 +79,7 @@ describe("c-base-lookup rendering", () => {
     expect(labelEl).not.toBeNull();
     expect(labelEl.classList).toContain("slds-assistive-text");
 
-    await assertElementIsAccesible(element);;
+    await assertElementIsAccesible(element);
   });
 
   it("renders horizontal label when variant set to label-inline", async () => {
@@ -91,17 +91,17 @@ describe("c-base-lookup rendering", () => {
     // Verify form element
     expect(element.classList).toContain("slds-form-element_horizontal");
 
-    await assertElementIsAccesible(element);;
+    await assertElementIsAccesible(element);
   });
 
   it("renders single entry (no selection)", async () => {
     const element = elementBuilder.build({ isMultiEntry: false });
 
     // Verify selected icon
-    const selIcon = getByDataId(element, 'search-icon');
+    const selIcon = getByDataId(element, "search-icon");
     expect(selIcon.alternativeText).toBe("Search icon");
     // Verify clear selection button
-    const clearSelButton = getByDataId(element, 'remove');
+    const clearSelButton = getByDataId(element, "remove");
     expect(clearSelButton.title).toBe("Remove selected option");
     // Verify result list is NOT rendered
     const selList = element.shadowRoot.querySelectorAll(
@@ -109,17 +109,19 @@ describe("c-base-lookup rendering", () => {
     );
     expect(selList.length).toBe(0);
 
-    await assertElementIsAccesible(element);;
+    await assertElementIsAccesible(element);
   });
 
   it("renders multi entry (no selection)", async () => {
     const element = elementBuilder.build({ isMultiEntry: true });
 
     // Verify selected icon is NOT rendered
-    const selIcon = element.shadowRoot.querySelectorAll('[data-id="search-icon"]');
+    const selIcon = element.shadowRoot.querySelectorAll(
+      '[data-id="search-icon"]'
+    );
     expect(selIcon.length).toBe(1);
     // Verify clear selection button is NOT rendered
-    const clearSelButton = getByDataId(element, 'remove');
+    const clearSelButton = getByDataId(element, "remove");
     expect(clearSelButton).toBeFalsy();
     // Verify result list is rendered
     const selList = element.shadowRoot.querySelectorAll(
@@ -127,7 +129,7 @@ describe("c-base-lookup rendering", () => {
     );
     expect(selList.length).toBe(1);
 
-    await assertElementIsAccesible(element);;
+    await assertElementIsAccesible(element);
   });
 
   it("renders title on selection in single-select", async () => {
@@ -136,10 +138,10 @@ describe("c-base-lookup rendering", () => {
       value: SAMPLE_SEARCH_ITEMS[0]
     });
 
-    const inputBox = getByDataId(element, 'input');
+    const inputBox = getByDataId(element, "input");
     expect(inputBox.title).toBe(SAMPLE_SEARCH_ITEMS[0].title);
 
-    await assertElementIsAccesible(element);;
+    await assertElementIsAccesible(element);
   });
 
   it("renders title on selection in multi-select", async () => {
@@ -148,7 +150,7 @@ describe("c-base-lookup rendering", () => {
       value: SAMPLE_SEARCH_ITEMS
     });
 
-    const inputBox = getByDataId(element, 'input');
+    const inputBox = getByDataId(element, "input");
     expect(inputBox.title).toBe("");
 
     // Verify that default selection is showing up
@@ -157,7 +159,7 @@ describe("c-base-lookup rendering", () => {
     expect(selPills[0].title).toBe(SAMPLE_SEARCH_ITEMS[0].title);
     expect(selPills[1].title).toBe(SAMPLE_SEARCH_ITEMS[1].title);
 
-    await assertElementIsAccesible(element);;
+    await assertElementIsAccesible(element);
   });
 
   it("does not shows default search results when they are already selected", async () => {
@@ -169,10 +171,10 @@ describe("c-base-lookup rendering", () => {
     await flushPromises();
 
     // Query for rendered list items
-    const noResultElement = getByDataId(element, 'no-result-or-loading');
+    const noResultElement = getByDataId(element, "no-result-or-loading");
     expect(noResultElement?.textContent).toBe(LABELS.noResults);
 
-    await assertElementIsAccesible(element);;
+    await assertElementIsAccesible(element);
   });
 
   it("renders new record creation option when no selection", async () => {
@@ -181,13 +183,13 @@ describe("c-base-lookup rendering", () => {
     });
 
     // Query for rendered list items
-    const noResultElement = getByDataId(element, 'no-result-or-loading');
-    const action = getByDataId(element, 'action');
+    const noResultElement = getByDataId(element, "no-result-or-loading");
+    const action = getByDataId(element, "action");
 
     expect(noResultElement?.textContent).toBe(LABELS.noResults);
-    expect(action?.textContent).toBe('New Account');
+    expect(action?.textContent).toBe("New Account");
 
-    await assertElementIsAccesible(element);;
+    await assertElementIsAccesible(element);
   });
 
   it("can be disabled", async () => {
@@ -196,10 +198,10 @@ describe("c-base-lookup rendering", () => {
     });
 
     // Verify that input is disabled
-    const input = getByDataId(element, 'input');
+    const input = getByDataId(element, "input");
     expect(input.disabled).toBe(true);
 
-    await assertElementIsAccesible(element);;
+    await assertElementIsAccesible(element);
   });
 
   it("disables clear selection button when single entry and disabled", async () => {
@@ -210,10 +212,10 @@ describe("c-base-lookup rendering", () => {
     });
 
     // Clear selection
-    const clearSelButton = getByDataId(element, 'remove');
+    const clearSelButton = getByDataId(element, "remove");
     expect(clearSelButton.disabled).toBeTruthy();
 
-    await assertElementIsAccesible(element);;
+    await assertElementIsAccesible(element);
   });
 
   it("renders error", async () => {
@@ -226,10 +228,10 @@ describe("c-base-lookup rendering", () => {
     // Verify error
     await flushPromises();
 
-    const error = getByDataId(element, 'data-field-level-text');
+    const error = getByDataId(element, "data-field-level-text");
     expect(error.textContent).toBe(message);
 
-    await assertElementIsAccesible(element);;
+    await assertElementIsAccesible(element);
   });
 
   it("renders helptext by default", async () => {
@@ -240,7 +242,7 @@ describe("c-base-lookup rendering", () => {
     const helpTextElement = getByDataId(element, "help-text");
     expect(helpTextElement.content).toBe(props.fieldLevelText);
 
-    await assertElementIsAccesible(element);;
+    await assertElementIsAccesible(element);
   });
 
   it("blurs on error and closes dropdown", async () => {
@@ -255,15 +257,15 @@ describe("c-base-lookup rendering", () => {
     await inputSearchTerm(element, "sample");
 
     // Simulate error
-    element.setCustomValidity('Some Error');
+    element.setCustomValidity("Some Error");
     await flushPromises();
 
     // Check that lookup no longer has focus and that dropdown is closed
     expect(document.activeElement).not.toBe(element);
-    const dropdownEl = getByDataId(element, 'input');
+    const dropdownEl = getByDataId(element, "input");
     expect(dropdownEl.classList).not.toContain("slds-is-open");
 
     jest.useRealTimers();
-    await assertElementIsAccesible(element);;
+    await assertElementIsAccesible(element);
   });
 });

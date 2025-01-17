@@ -1,7 +1,3 @@
-export { isBlank, clone, Assert, isNotBlank };
-export { classSet } from "./classSet";
-export { classListMutation } from "./classListMutation";
-
 function clone(any) {
   return JSON.parse(JSON.stringify(any));
 }
@@ -21,16 +17,19 @@ function assert(condition, message) {
 }
 
 class Assert {
-
   static isNumber(value) {
-    assert(Number.isInteger(value), 'Has to Be a Number');
+    assert(Number.isInteger(value), "Has to Be a Number");
   }
 
   static isArray(value) {
-    assert(Array.isArray(value), 'Has to Be a Array');
+    assert(Array.isArray(value), "Has to Be a Array");
   }
 
   static assert(condition, message) {
     assert(condition, message);
   }
 }
+
+export { isBlank, clone, Assert, isNotBlank };
+export { classSet } from "./classSet";
+export { classListMutation } from "./classListMutation";
