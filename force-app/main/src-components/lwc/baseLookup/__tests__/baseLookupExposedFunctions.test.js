@@ -51,7 +51,7 @@ describe("c-base-lookup exposed functions", () => {
 
     // Query for rendered list items
     const listItemEls = element.shadowRoot.querySelectorAll(
-      "li[data-id='listItem']"
+      "li[data-id='list-item']"
     );
     expect(listItemEls.length).toBe(SAMPLE_SEARCH_ITEMS.length);
     const resultItemEls = listItemEls[0].querySelectorAll(
@@ -76,7 +76,7 @@ describe("c-base-lookup exposed functions", () => {
 
     // Query for rendered list items
     const listItemEls = element.shadowRoot.querySelectorAll(
-      "li[data-id='listItem']"
+      "li[data-id='list-item']"
     );
     expect(listItemEls.length).toBe(SAMPLE_SEARCH_ITEMS.length);
     await assertElementIsAccesible(element);

@@ -6,6 +6,7 @@ import {
 } from "test/utils";
 import BaseLookup, { VARIANTS, LABELS } from "c/baseLookup";
 import SAMPLE_SEARCH_ITEMS from "./data/searchItems.json";
+import { inputSearchTerm } from "./baseLookup.utils.js";
 
 const BASE_LABEL = "Lookup";
 
@@ -23,9 +24,8 @@ describe("c-base-lookup rendering", () => {
     const element = elementBuilder.build();
 
     // Query for rendered list items
-    const listItemEls = element.shadowRoot.querySelectorAll("li");
-    expect(listItemEls.length).toBe(1);
-    expect(listItemEls[0].textContent).toBe(LABELS.noResults);
+    const noResultsElement = element.shadowRoot.querySelector('[data-id="no-result-or-loading"]');
+    expect(noResultsElement?.textContent).toBe(LABELS.noResults);
 
     await expect(element).toBeAccessible();
   });
@@ -38,7 +38,7 @@ describe("c-base-lookup rendering", () => {
     // Query for rendered list items
     const listItemEls = element.shadowRoot.querySelectorAll("div[role=option]");
     expect(listItemEls.length).toBe(SAMPLE_SEARCH_ITEMS.length);
-    expect(listItemEls[0].dataset.recordid).toBe(SAMPLE_SEARCH_ITEMS[0].id);
+    expect(listItemEls[0].dataset.itemId).toBe(SAMPLE_SEARCH_ITEMS[0].id);
 
     await expect(element).toBeAccessible();
   });
@@ -243,6 +243,30 @@ describe("c-base-lookup rendering", () => {
     const helpTextElement = getByDataId(element, "help-text");
     expect(helpTextElement.content).toBe(props.fieldLevelText);
 
+    await expect(element).toBeAccessible();
+  });
+
+  it("blurs on error and closes dropdown", async () => {
+    jest.useFakeTimers();
+
+    // Create lookup with search handler
+    const element = elementBuilder.build({
+      defaultSearchResults: SAMPLE_SEARCH_ITEMS
+    });
+
+    // Simulate search term input (forces focus on lookup and opens drowdown)
+    await inputSearchTerm(element, "sample");
+
+    // Simulate error
+    element.setCustomValidity('Some Error');
+    await flushPromises();
+
+    // Check that lookup no longer has focus and that dropdown is closed
+    expect(document.activeElement).not.toBe(element);
+    const dropdownEl = getByDataId(element, 'input');
+    expect(dropdownEl.classList).not.toContain("slds-is-open");
+
+    jest.useRealTimers();
     await expect(element).toBeAccessible();
   });
 });

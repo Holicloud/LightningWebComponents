@@ -191,7 +191,15 @@ describe("c-wizard", () => {
 
     await flushPromises();
 
+    const consoleWarnSpy = jest
+      .spyOn(console, "warn")
+      .mockImplementation((message) => {
+        if (!message.includes('`lwc:dom="manual"` directive.')) {
+          console.warn(message);
+        }
+      });
     getStepSlot(wizard).removeChild(firstStepElement);
+    consoleWarnSpy.mockRestore();
     getStepSlot(wizard).dispatchEvent(
       new CustomEvent("unregister", { detail: firstStep.name })
     );

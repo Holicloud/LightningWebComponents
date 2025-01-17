@@ -76,7 +76,7 @@ describe("c-base-lookup event handling", () => {
 
     // Simulate mouse selection
     const searchResultItem =
-      element.shadowRoot.querySelector("div[data-recordid]");
+      element.shadowRoot.querySelector("div[data-item-id]");
     searchResultItem.click();
 
     // Check selection
@@ -89,11 +89,12 @@ describe("c-base-lookup event handling", () => {
     jest.useFakeTimers();
 
     // Create lookup with search handler
-    const element = elementBuilder.build();
-    const searchFn = (event) => {
-      event.target.defaultSearchResults = SAMPLE_SEARCH_ITEMS;
-    };
-    element.addEventListener("search", searchFn);
+    const element = elementBuilder.build({
+      defaultSearchResults : SAMPLE_SEARCH_ITEMS
+    });
+
+    const scrollIntoView = jest.fn();
+    window.HTMLElement.prototype.scrollIntoView = scrollIntoView;
 
     // Set search term and force input change
     await inputSearchTerm(element, SAMPLE_SEARCH);
@@ -110,6 +111,7 @@ describe("c-base-lookup event handling", () => {
     // Check selection
     expect(element.value.length).toBe(1);
     expect(element.value[0].id).toBe(SAMPLE_SEARCH_ITEMS[0].id);
+    expect(scrollIntoView).toHaveBeenCalled();
     await assertElementIsAccesible(element);
   });
 

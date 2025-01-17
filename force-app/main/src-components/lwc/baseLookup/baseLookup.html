@@ -104,14 +104,14 @@
 
             <!-- Result list start -->
             <template
-              for:each={searchResultsLocalState}
+              for:each={_searchResults}
               for:item="item"
               for:index="index"
               lwc:if={hasResults}
             >
               <li
-                data-id="listItem"
-                key={item.result.id}
+                data-id="list-item"
+                key={item.id}
                 role="presentation"
                 class="slds-listbox__item"
               >
@@ -119,15 +119,15 @@
                   class={item.classes}
                   role="option"
                   id={index}
-                  aria-label={item.result.title}
+                  aria-label={item.title}
                   onclick={handleResultClick}
-                  data-recordid={item.result.id}
+                  data-item-id={item.id}
                 >
                   <span class="slds-media__figure slds-listbox__option-icon">
                     <lightning-icon
                       size="small"
                       icon-name="standard:default"
-                      lwc:spread={item.result.icon}
+                      lwc:spread={item.icon}
                     ></lightning-icon>
                   </span>
                   <span class="slds-media__body">
@@ -135,14 +135,14 @@
                       class="slds-listbox__option-text slds-listbox__option-text_entity"
                     >
                       <lightning-formatted-rich-text
-                        value={item.result.titleFormatted}
+                        value={item.titleFormatted}
                         disable-linkify
                       ></lightning-formatted-rich-text>
                     </span>
                     <template
-                      for:each={item.result.subtitlesFormatted}
+                      for:each={item.subtitlesFormatted}
                       for:item="subtitle"
-                      lwc:if={item.result.hasSubtitles}
+                      lwc:if={item.hasSubtitles}
                     >
                       <p
                         key={subtitle.index}
@@ -155,7 +155,7 @@
                         ></lightning-formatted-rich-text>
                         <span>: </span>
                         <lightning-icon
-                          lwc:if={subtitle.isLightningIcon}
+                          lwc:if={subtitle.isLightningIconType}
                           icon-name="utility:check"
                           size="xx-small"
                           lwc:spread={props}
@@ -182,7 +182,7 @@
                   role="option"
                   aria-label={emptyItemLabel}
                 >
-                  <span class="slds-media__body">{emptyItemLabel}</span>
+                  <span class="slds-media__body" data-id="no-result-or-loading">{emptyItemLabel}</span>
                 </span>
               </li>
             </template>
