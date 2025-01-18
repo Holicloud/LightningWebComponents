@@ -1,8 +1,11 @@
 import { LightningElement, api } from "lwc";
+import { classSet } from "c/utils";
 
 export default class ExpandableSection extends LightningElement {
   @api nonCollapsible = false;
   @api title;
+
+  _isCollapsed = false;
 
   @api
   get isCollapsed() {
@@ -12,17 +15,17 @@ export default class ExpandableSection extends LightningElement {
     this._isCollapsed = value;
   }
 
-  _isCollapsed = false;
-
   get sectionClasses() {
-    return `slds-section ${this.isExpanded ? "slds-is-open" : ""}`;
+    return classSet("slds-section")
+      .add({ "slds-is-open": this.isExpanded })
+      .toString();
   }
 
   get isExpanded() {
-    return this.nonCollapsible || !this._isCollapsed;
+    return this.nonCollapsible || !this.isCollapsed;
   }
 
   handleToggle() {
-    this._isCollapsed = !this._isCollapsed;
+    this._isCollapsed = !this.isCollapsed;
   }
 }

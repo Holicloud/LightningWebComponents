@@ -46,32 +46,32 @@ const FORMATTED_TEXT_TYPE = "lightning-formatted-rich-text";
 const MIN_SEARCH_TERM_LENGTH = 2;
 
 export default class BaseLookup extends LightningElement {
+  @api actions = [];
   @api disabled = false;
   @api fieldLevelText = "";
   @api isMultiEntry = false;
   @api label = "";
+  @api messageWhenValueMissing = "Complete this field.";
   @api placeholder = "";
   @api required = false;
   @api scrollAfterNItems = "*";
-  @api messageWhenValueMissing = "Complete this field.";
-  @api actions = [];
 
-  loading = false;
-  searchTerm = "";
-  searchThrottlingTimeout;
-  searchResultsLocalState = [];
-  helpMessage;
   cancelBlur = false;
   cleanSearchTerm;
   focusedResultIndex = null;
-  showHelpMessage = false;
   hasFocus = false;
+  helpMessage;
+  loading = false;
+  searchResultsLocalState = [];
+  searchTerm = "";
+  searchThrottlingTimeout;
+  showHelpMessage = false;
 
-  _variant = VARIANTS.LABEL_STACKED;
-  _value = [];
   _defaultSearchResults = [];
   _minSearchTermLength = MIN_SEARCH_TERM_LENGTH;
   _searchResults = [];
+  _value = [];
+  _variant = VARIANTS.LABEL_STACKED;
 
   @api
   get minSearchTermLength() {
