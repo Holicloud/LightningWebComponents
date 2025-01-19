@@ -29,13 +29,13 @@ describe("c-base-lookup event handling", () => {
     const element = elementBuilder.build({
       isMultiEntry: false,
       options: OPTIONS,
-      value: [OPTIONS[0].id]
+      value: OPTIONS[0].id
     });
 
     // Clear selection
     getByDataId(element, "remove").click();
     // Check selection
-    expect(element.value.length).toBe(0);
+    expect(element.value).toBeUndefined();
 
     await assertElementIsAccesible(element);
   });
@@ -85,7 +85,7 @@ describe("c-base-lookup event handling", () => {
     element.shadowRoot.querySelector("div[data-item-id]").click();
 
     // Check selection
-    expect(element.value).toEqual([DEFAULT_OPTIONS[0].id]);
+    expect(element.value).toEqual(DEFAULT_OPTIONS[0].id);
     await assertElementIsAccesible(element);
   });
 
@@ -113,7 +113,7 @@ describe("c-base-lookup event handling", () => {
     );
 
     // Check selection
-    expect(element.value).toEqual([OPTIONS[0].id]);
+    expect(element.value).toEqual(OPTIONS[0].id);
     expect(scrollIntoView).toHaveBeenCalled();
     await assertElementIsAccesible(element);
   });

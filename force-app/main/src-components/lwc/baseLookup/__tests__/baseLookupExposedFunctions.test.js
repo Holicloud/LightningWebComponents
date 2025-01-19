@@ -26,6 +26,7 @@ describe("c-base-lookup exposed functions", () => {
   it("sets all valid options from selected", async () => {
     // Create lookup
     const element = elementBuilder.build({
+      isMultiEntry: true,
       value: OPTIONS.map((result) => result.id)
     });
 
@@ -38,10 +39,10 @@ describe("c-base-lookup exposed functions", () => {
     const element = elementBuilder.build({
       options: [],
       defaultOptions: [],
-      value: ["any"]
+      value: "any"
     });
 
-    expect(element.value.length).toBe(0);
+    expect(element.value).toBeUndefined();
     await assertElementIsAccesible(element);
   });
 

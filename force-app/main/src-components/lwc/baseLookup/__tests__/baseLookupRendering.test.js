@@ -141,7 +141,7 @@ describe("c-base-lookup rendering", () => {
   it("renders title on selection in single-select", async () => {
     const element = elementBuilder.build({
       isMultiEntry: false,
-      value: OPTIONS.map((result) => result.id)
+      value: OPTIONS[0].id
     });
 
     const inputBox = getByDataId(element, "input");
@@ -215,7 +215,7 @@ describe("c-base-lookup rendering", () => {
     // Create lookup
     const element = elementBuilder.build({
       disabled: true,
-      value: OPTIONS.map((result) => result.id)
+      value: OPTIONS[0].id
     });
 
     // Clear selection

@@ -98,11 +98,14 @@ export default class BaseLookup extends LightningElement {
 
   @api
   get value() {
-    return this._value;
+    return this.isMultiEntry ? this._value : this._value[0];
   }
 
   set value(value) {
-    this.setSelected(value);
+    if (!this.isMultiEntry) {
+      assert(!Array.isArray(value), "value should not be an array");
+    }
+    this.setSelected(this.getAsArray(value));
     this.processSelectionUpdate(false);
   }
 
@@ -129,10 +132,6 @@ export default class BaseLookup extends LightningElement {
   set defaultOptions(value) {
     this.setDisplayableOptions(value);
     this._defaultOptions = value;
-  }
-
-  get inputElement() {
-    return this.template.querySelector('[data-id="input"');
   }
 
   @api
@@ -196,8 +195,22 @@ export default class BaseLookup extends LightningElement {
     this.reportValidity();
   }
 
+  getAsArray(value) {
+    if (Array.isArray(value)) {
+      return value;
+    } else if (isNotBlank(value)) {
+      return [value];
+    }
+
+    return [];
+  }
+
+  get inputElement() {
+    return this.template.querySelector('[data-id="input"');
+  }
+
   get hasSelection() {
-    return this.value.length;
+    return this._value.length;
   }
 
   get isSingleEntry() {
@@ -357,7 +370,7 @@ export default class BaseLookup extends LightningElement {
     // Remove selected items from search results
 
     this.displayableOptions = clone(results)
-      .filter((result) => !this.value.includes(result.id))
+      .filter((result) => !this._value.includes(result.id))
       .map((result, index) => {
         this.updateTitle(result, regex);
         result.hasSubtitles = !!result.subtitles?.length;
@@ -419,7 +432,7 @@ export default class BaseLookup extends LightningElement {
             detail: {
               searchTerm: this.cleanSearchTerm,
               rawSearchTerm: newSearchTerm,
-              selectedIds: this.value
+              value: this.value
             }
           })
         );
@@ -543,7 +556,7 @@ export default class BaseLookup extends LightningElement {
   handleResultClick(event) {
     const recordId = event.currentTarget.dataset.itemId;
 
-    this.setSelected([...this.value, recordId]);
+    this.setSelected([...this._value, recordId]);
 
     this.processSelectionUpdate(true);
   }
@@ -581,7 +594,7 @@ export default class BaseLookup extends LightningElement {
       return;
     }
     const recordId = event.currentTarget.name;
-    this.setSelected(this.value.filter((id) => id !== recordId));
+    this.setSelected(this._value.filter((id) => id !== recordId));
     this.processSelectionUpdate(true);
 
     if (!this.hasSelection) {

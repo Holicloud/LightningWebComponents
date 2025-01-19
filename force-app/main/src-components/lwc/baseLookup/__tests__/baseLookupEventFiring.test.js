@@ -46,7 +46,7 @@ describe("c-base-lookup event fires", () => {
     expect(searchEvent.detail).toEqual({
       searchTerm: SAMPLE_SEARCH_CLEAN,
       rawSearchTerm: SAMPLE_SEARCH_RAW,
-      selectedIds: OPTIONS.map((result) => result.id)
+      value: OPTIONS.map((result) => result.id)
     });
 
     await assertElementIsAccesible(element);
@@ -171,7 +171,7 @@ describe("c-base-lookup event fires", () => {
     expect(searchEvent.detail).toEqual({
       searchTerm: SAMPLE_SEARCH_CLEAN,
       rawSearchTerm: SAMPLE_SEARCH_RAW,
-      selectedIds: []
+      value: undefined
     });
 
     await assertElementIsAccesible(element);
