@@ -380,6 +380,18 @@ export default class BaseLookup extends LightningElement {
       });
   }
 
+  async executeSearch(input) {
+    try {
+      return await Promise.resolve(this.searchHandler(input));
+    } catch (error) {
+      console.error(error);
+      this.setCustomValidity("Error fetching Data");
+      this.reportValidity();
+    }
+
+    return [];
+  }
+
   updateSearchTerm(newSearchTerm) {
     this.searchTerm = newSearchTerm;
 
@@ -415,21 +427,12 @@ export default class BaseLookup extends LightningElement {
         // Display spinner until results are returned
         this.loading = true;
 
-        try {
-          this.options = await Promise.resolve(
-            this.searchHandler({
-              searchTerm: this.cleanSearchTerm,
-              rawSearchTerm: newSearchTerm,
-              value: this.value
-            })
-          );
-          this.setDisplayableOptions(this.options);
-        } catch (error) {
-          console.error(error);
-          this.setCustomValidity("error seaching for data");
-          this.reportValidity();
-          this.options = [];
-        }
+        this.options = await this.executeSearch({
+          searchTerm: this.cleanSearchTerm,
+          rawSearchTerm: newSearchTerm,
+          selectedIds: this._value
+        });
+        this.setDisplayableOptions(this.options);
       }
 
       this.searchThrottlingTimeout = null;
@@ -456,7 +459,6 @@ export default class BaseLookup extends LightningElement {
 
   get allOptions() {
     const result = new Map();
-
     const options = [...(this.defaultOptions || []), ...(this.options || [])];
 
     for (const option of options) {
@@ -646,22 +648,17 @@ export default class BaseLookup extends LightningElement {
   }
 
   async init() {
-    this.defaultOptions = await Promise.resolve(
-      this.searchHandler({
-        getDefault: true
-      })
-    );
+    assert(typeof this.searchHandler === "function");
 
+    this.defaultOptions = await this.executeSearch({ getDefault: true });
     this.setDisplayableOptions(this.defaultOptions);
 
     if (this._value.length) {
-      this.options = await Promise.resolve(
-        this.searchHandler({
-          getInitialSelection: true,
-          value: this._value
-        })
-      );
-      this.setSelected(this.getAsArray(this._value));
+      this.options = await this.executeSearch({
+        getInitialSelection: true,
+        selectedIds: this._value
+      });
+      this.setSelected(this._value);
     }
 
     this.hasInit = true;

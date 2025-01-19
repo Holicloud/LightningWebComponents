@@ -22,8 +22,13 @@ describe("c-base-lookup event handling", () => {
     label: "Lookup Input"
   });
 
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
   afterEach(() => {
     resetDOM();
+    jest.useRealTimers();
   });
 
   it("can clear selection when single entry", async () => {
@@ -97,8 +102,6 @@ describe("c-base-lookup event handling", () => {
   });
 
   it("can select item with mouse", async () => {
-    jest.useFakeTimers();
-
     const element = await elementBuilder.build();
     const changeFn = jest.fn();
     element.addEventListener("change", changeFn);
@@ -123,8 +126,6 @@ describe("c-base-lookup event handling", () => {
   });
 
   it("can select item with keyboard", async () => {
-    jest.useFakeTimers();
-
     const element = await elementBuilder.build();
     const changeFn = jest.fn();
     element.addEventListener("change", changeFn);
@@ -159,8 +160,6 @@ describe("c-base-lookup event handling", () => {
   });
 
   it("custom action is shown", async () => {
-    jest.useFakeTimers();
-
     const element = await elementBuilder.build({
       actions: [{ name: "NewAccount", label: "New Account" }]
     });

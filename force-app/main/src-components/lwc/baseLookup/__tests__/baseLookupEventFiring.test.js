@@ -48,7 +48,7 @@ describe("c-base-lookup event fires", () => {
     );
     expect(element.searchHandler).toHaveBeenNthCalledWith(
       2,
-      expect.objectContaining({ getInitialSelection: true, value })
+      expect.objectContaining({ getInitialSelection: true, selectedIds: value })
     );
 
     await assertElementIsAccesible(element);
@@ -69,7 +69,7 @@ describe("c-base-lookup event fires", () => {
       expect.objectContaining({
         searchTerm: SAMPLE_SEARCH_CLEAN,
         rawSearchTerm: SAMPLE_SEARCH_RAW,
-        value: OPTIONS.map((result) => result.id)
+        selectedIds: OPTIONS.map((result) => result.id)
       })
     );
 
@@ -150,7 +150,7 @@ describe("c-base-lookup event fires", () => {
       expect.objectContaining({
         searchTerm: SAMPLE_SEARCH_CLEAN,
         rawSearchTerm: SAMPLE_SEARCH_RAW,
-        value: undefined
+        selectedIds: []
       })
     );
 
