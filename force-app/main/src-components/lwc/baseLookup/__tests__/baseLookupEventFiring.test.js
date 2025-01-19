@@ -5,7 +5,7 @@ import {
   getByDataId
 } from "test/utils";
 import BaseLookup from "c/baseLookup";
-import SAMPLE_SEARCH_ITEMS from "./data/searchItems.json";
+import OPTIONS from "./data/options.json";
 import { inputSearchTerm } from "./baseLookup.utils.js";
 
 const SAMPLE_SEARCH_TOO_SHORT_WHITESPACE = "A ";
@@ -17,7 +17,10 @@ describe("c-base-lookup event fires", () => {
   const elementBuilder = new ElementBuilder(
     "c-base-lookup",
     BaseLookup
-  ).setDefaultApiProperties({ label: "Lookup Input" });
+  ).setDefaultApiProperties({
+    options: OPTIONS,
+    label: "Lookup Input"
+  });
 
   afterEach(() => {
     resetDOM();
@@ -29,7 +32,7 @@ describe("c-base-lookup event fires", () => {
     // Create lookup with mock search handler
     const element = elementBuilder.build({
       isMultiEntry: true,
-      value: SAMPLE_SEARCH_ITEMS
+      value: OPTIONS.map((result) => result.id)
     });
     const mockSearchFn = jest.fn();
     element.addEventListener("search", mockSearchFn);
@@ -43,7 +46,7 @@ describe("c-base-lookup event fires", () => {
     expect(searchEvent.detail).toEqual({
       searchTerm: SAMPLE_SEARCH_CLEAN,
       rawSearchTerm: SAMPLE_SEARCH_RAW,
-      selectedIds: ["id1", "id2"]
+      selectedIds: OPTIONS.map((result) => result.id)
     });
 
     await assertElementIsAccesible(element);

@@ -3,7 +3,7 @@ import {
   classSet,
   classListMutation,
   clone,
-  Assert,
+  assert,
   isNotBlank,
   excuteAfterRender
 } from "c/utils";
@@ -66,10 +66,11 @@ export default class BaseLookup extends LightningElement {
   searchTerm = "";
   searchThrottlingTimeout;
   showHelpMessage = false;
+  displayableOptions = [];
 
-  _defaultSearchResults = [];
+  _defaultOptions = [];
   _minSearchTermLength = MIN_SEARCH_TERM_LENGTH;
-  _searchResults = [];
+  _options = [];
   _value = [];
   _variant = VARIANTS.LABEL_STACKED;
 
@@ -101,7 +102,7 @@ export default class BaseLookup extends LightningElement {
   }
 
   set value(value) {
-    this.setValue(value);
+    this.setSelected(value);
     this.processSelectionUpdate(false);
   }
 
@@ -111,23 +112,23 @@ export default class BaseLookup extends LightningElement {
   }
 
   @api
-  get searchResults() {
-    return this._searchResults;
+  get options() {
+    return this._options;
   }
 
-  set searchResults(value) {
-    this.setSearchResults(Array.isArray(value) ? value : []);
+  set options(value) {
+    this.setDisplayableOptions(value);
+    this._options = value;
   }
 
   @api
-  get defaultSearchResults() {
-    return this._defaultSearchResults;
+  get defaultOptions() {
+    return this._defaultOptions;
   }
 
-  set defaultSearchResults(value) {
-    const results = clone(value);
-    this.setSearchResults(results);
-    this._defaultSearchResults = results;
+  set defaultOptions(value) {
+    this.setDisplayableOptions(value);
+    this._defaultOptions = value;
   }
 
   get inputElement() {
@@ -215,7 +216,7 @@ export default class BaseLookup extends LightningElement {
   }
 
   get hasResults() {
-    return this.searchResults.length;
+    return this.displayableOptions.length;
   }
 
   get getContainerClass() {
@@ -276,8 +277,8 @@ export default class BaseLookup extends LightningElement {
   }
 
   get getSelectIconName() {
-    return this.hasSelection && this.value[0].icon?.iconName
-      ? this.value[0].icon.iconName
+    return this.hasSelection && this.selectedOption.icon?.iconName
+      ? this.selectedOption.icon.iconName
       : "standard:default";
   }
 
@@ -290,11 +291,13 @@ export default class BaseLookup extends LightningElement {
   get getInputValue() {
     return this.isMultiEntry || !this.hasSelection
       ? this.searchTerm
-      : this.value[0].title;
+      : this.selectedOption.title;
   }
 
   get getInputTitle() {
-    return this.isMultiEntry || !this.hasSelection ? "" : this.value[0].title;
+    return this.isMultiEntry || !this.hasSelection
+      ? ""
+      : this.selectedOption.title;
   }
 
   get getListboxClass() {
@@ -341,10 +344,10 @@ export default class BaseLookup extends LightningElement {
     });
   }
 
-  setSearchResults(results) {
+  setDisplayableOptions(results) {
+    results = Array.isArray(results) ? results : [];
     // Reset the spinner
     this.loading = false;
-    Assert.isArray(results);
 
     const cleanSearchTerm = this.searchTerm
       .replace(REGEX_SOSL_RESERVED, ".?")
@@ -352,10 +355,9 @@ export default class BaseLookup extends LightningElement {
     const regex = new RegExp(`(${cleanSearchTerm})`, "gi");
 
     // Remove selected items from search results
-    const selectedIds = this.value.map((sel) => sel.id);
 
-    this._searchResults = clone(results)
-      .filter((result) => !selectedIds.includes(result.id))
+    this.displayableOptions = clone(results)
+      .filter((result) => !this.value.includes(result.id))
       .map((result, index) => {
         this.updateTitle(result, regex);
         result.hasSubtitles = !!result.subtitles?.length;
@@ -397,7 +399,7 @@ export default class BaseLookup extends LightningElement {
     if (
       newCleanSearchTerm.replace(/\?/g, "").length < this.minSearchTermLength
     ) {
-      this.setSearchResults(this.defaultSearchResults);
+      this.setDisplayableOptions(this.defaultOptions);
       return;
     }
 
@@ -417,7 +419,7 @@ export default class BaseLookup extends LightningElement {
             detail: {
               searchTerm: this.cleanSearchTerm,
               rawSearchTerm: newSearchTerm,
-              selectedIds: this.value.map(({ id }) => id)
+              selectedIds: this.value
             }
           })
         );
@@ -445,17 +447,31 @@ export default class BaseLookup extends LightningElement {
     return this.required && !this.disabled && !this.hasSelection;
   }
 
+  get allOptions() {
+    return this.options.concat(this.defaultOptions);
+  }
+
+  get selectedOptions() {
+    return this._value
+      .map((id) => this.allOptions.find((opt) => opt.id === id))
+      .filter(Boolean);
+  }
+
+  get selectedOption() {
+    return this.selectedOptions[0];
+  }
+
   processSelectionUpdate(isUserInteraction) {
     // Reset search
     this.cleanSearchTerm = "";
     this.searchTerm = "";
-    this.setSearchResults(this.defaultSearchResults);
+    this.setDisplayableOptions(this.defaultOptions);
 
     // If selection was changed by user, notify parent components
     if (isUserInteraction) {
       this.dispatchEvent(
         new CustomEvent("change", {
-          detail: { value: this.value.map(({ id }) => id) }
+          detail: { value: this.value }
         })
       );
     }
@@ -487,7 +503,7 @@ export default class BaseLookup extends LightningElement {
     if (event.keyCode === KEY_INPUTS.ARROW_DOWN) {
       // If we hit 'down', select the next item, or cycle over.
       this.focusedResultIndex++;
-      if (this.focusedResultIndex >= this.searchResults.length) {
+      if (this.focusedResultIndex >= this.allOptions.length) {
         this.focusedResultIndex = 0;
       }
       event.preventDefault();
@@ -495,7 +511,7 @@ export default class BaseLookup extends LightningElement {
       // If we hit 'up', select the previous item, or cycle over.
       this.focusedResultIndex--;
       if (this.focusedResultIndex < 0) {
-        this.focusedResultIndex = this.searchResults.length - 1;
+        this.focusedResultIndex = this.allOptions.length - 1;
       }
       event.preventDefault();
     } else if (
@@ -505,7 +521,7 @@ export default class BaseLookup extends LightningElement {
     ) {
       // If the user presses enter, and the box is open, and we have used arrows,
       // treat this just like a click on the listbox item
-      const { id } = this.searchResults[this.focusedResultIndex];
+      const { id } = this.allOptions[this.focusedResultIndex];
       this.template.querySelector(`[data-item-id="${id}"]`).click();
       event.preventDefault();
     }
@@ -515,7 +531,7 @@ export default class BaseLookup extends LightningElement {
       event.keyCode === KEY_INPUTS.ARROW_UP
     ) {
       const focusedElement = this.template.querySelector(
-        `[data-item-id="${this.searchResults[this.focusedResultIndex].id}"]`
+        `[data-item-id="${this.allOptions[this.focusedResultIndex].id}"]`
       );
 
       if (focusedElement) {
@@ -527,16 +543,8 @@ export default class BaseLookup extends LightningElement {
   handleResultClick(event) {
     const recordId = event.currentTarget.dataset.itemId;
 
-    // Save selection
-    const selectedItem = this.searchResults.find(({ id }) => id === recordId);
+    this.setSelected([...this.value, recordId]);
 
-    if (!selectedItem) {
-      return;
-    }
-
-    this.setValue([...this.value, selectedItem]);
-
-    // Process selection update
     this.processSelectionUpdate(true);
   }
 
@@ -549,7 +557,6 @@ export default class BaseLookup extends LightningElement {
 
   handleComboboxMouseUp() {
     this.cancelBlur = false;
-    // Re-focus to text input for the next blur event
     this.inputElement.focus();
   }
 
@@ -574,8 +581,7 @@ export default class BaseLookup extends LightningElement {
       return;
     }
     const recordId = event.currentTarget.name;
-    this.setValue(this.value.filter(({ id }) => id !== recordId));
-    // Process selection update
+    this.setSelected(this.value.filter((id) => id !== recordId));
     this.processSelectionUpdate(true);
 
     if (!this.hasSelection) {
@@ -583,22 +589,26 @@ export default class BaseLookup extends LightningElement {
     }
   }
 
-  setValue(value) {
-    if (Array.isArray(value)) {
-      this._value = clone(value);
-    } else if (value) {
-      this._value = [clone(value)];
-    } else {
-      this._value = [];
+  setSelected(selectedIds) {
+    assert(Array.isArray(selectedIds), "value has to be an array");
+
+    const validSelectedIds = [];
+
+    for (const id of [...new Set(selectedIds)]) {
+      assert(isNotBlank(id), "Id cannot be invalid");
+      const option = this.allOptions.find((opt) => opt.id === id);
+      if (option) {
+        validSelectedIds.push(id);
+      }
     }
+
+    this._value = validSelectedIds;
   }
 
   handleClearSelection() {
-    this.setValue();
+    this.setSelected([]);
     this.hasFocus = false;
-    // Process selection update
     this.processSelectionUpdate(true);
-    // eslint-disable-next-line @lwc/lwc/no-async-operation
     this.focus();
   }
 

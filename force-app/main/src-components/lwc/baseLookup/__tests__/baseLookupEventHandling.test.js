@@ -5,7 +5,8 @@ import {
   getByDataId
 } from "test/utils";
 import BaseLookup, { KEY_INPUTS } from "c/baseLookup";
-import SAMPLE_SEARCH_ITEMS from "./data/searchItems.json";
+import OPTIONS from "./data/options.json";
+import DEFAULT_OPTIONS from "./data/defaultOptions.json";
 import { inputSearchTerm } from "./baseLookup.utils.js";
 
 const SAMPLE_SEARCH = "sample";
@@ -14,7 +15,10 @@ describe("c-base-lookup event handling", () => {
   const elementBuilder = new ElementBuilder(
     "c-base-lookup",
     BaseLookup
-  ).setDefaultApiProperties({ label: "Lookup Input" });
+  ).setDefaultApiProperties({
+    options: OPTIONS,
+    label: "Lookup Input"
+  });
 
   afterEach(() => {
     resetDOM();
@@ -24,7 +28,8 @@ describe("c-base-lookup event handling", () => {
     // Create lookup
     const element = elementBuilder.build({
       isMultiEntry: false,
-      value: SAMPLE_SEARCH_ITEMS[0]
+      options: OPTIONS,
+      value: [OPTIONS[0].id]
     });
 
     // Clear selection
@@ -39,13 +44,14 @@ describe("c-base-lookup event handling", () => {
     // Create lookup
     const element = elementBuilder.build({
       isMultiEntry: true,
-      value: SAMPLE_SEARCH_ITEMS
+      options: OPTIONS,
+      value: OPTIONS.map((result) => result.id)
     });
 
     // Remove a selected item
     getByDataId(element, "pill").dispatchEvent(new CustomEvent("remove"));
     // Check selection
-    expect(element.value.length).toBe(SAMPLE_SEARCH_ITEMS.length - 1);
+    expect(element.value.length).toBe(OPTIONS.length - 1);
     await assertElementIsAccesible(element);
   });
 
@@ -54,13 +60,13 @@ describe("c-base-lookup event handling", () => {
     const element = elementBuilder.build({
       isMultiEntry: true,
       disabled: true,
-      value: SAMPLE_SEARCH_ITEMS
+      value: OPTIONS.map((result) => result.id)
     });
 
     // Remove a selected item
     getByDataId(element, "pill").dispatchEvent(new CustomEvent("remove"));
     // Check selection
-    expect(element.value.length).toBe(SAMPLE_SEARCH_ITEMS.length);
+    expect(element.value.length).toBe(OPTIONS.length);
     await assertElementIsAccesible(element);
   });
 
@@ -69,7 +75,7 @@ describe("c-base-lookup event handling", () => {
 
     // Create lookup with search handler
     const element = elementBuilder.build({
-      defaultSearchResults: SAMPLE_SEARCH_ITEMS
+      defaultOptions: DEFAULT_OPTIONS
     });
 
     // Simulate search term input
@@ -79,8 +85,7 @@ describe("c-base-lookup event handling", () => {
     element.shadowRoot.querySelector("div[data-item-id]").click();
 
     // Check selection
-    expect(element.value.length).toBe(1);
-    expect(element.value[0].id).toBe(SAMPLE_SEARCH_ITEMS[0].id);
+    expect(element.value).toEqual([DEFAULT_OPTIONS[0].id]);
     await assertElementIsAccesible(element);
   });
 
@@ -89,7 +94,7 @@ describe("c-base-lookup event handling", () => {
 
     // Create lookup with search handler
     const element = elementBuilder.build({
-      defaultSearchResults: SAMPLE_SEARCH_ITEMS
+      options: OPTIONS
     });
 
     const scrollIntoView = jest.fn();
@@ -108,8 +113,7 @@ describe("c-base-lookup event handling", () => {
     );
 
     // Check selection
-    expect(element.value.length).toBe(1);
-    expect(element.value[0].id).toBe(SAMPLE_SEARCH_ITEMS[0].id);
+    expect(element.value).toEqual([OPTIONS[0].id]);
     expect(scrollIntoView).toHaveBeenCalled();
     await assertElementIsAccesible(element);
   });

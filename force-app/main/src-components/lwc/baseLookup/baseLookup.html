@@ -105,7 +105,7 @@
 
             <!-- Result list start -->
             <template
-              for:each={_searchResults}
+              for:each={displayableOptions}
               for:item="item"
               for:index="index"
               lwc:if={hasResults}
@@ -241,7 +241,7 @@
           role="group"
           aria-label="Selected options"
         >
-          <template for:each={value} for:item="item">
+          <template for:each={selectedOptions} for:item="item">
             <li key={item.id} role="presentation">
               <lightning-pill
                 data-id="pill"

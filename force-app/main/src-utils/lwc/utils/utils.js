@@ -16,20 +16,6 @@ function assert(condition, message) {
   }
 }
 
-class Assert {
-  static isNumber(value) {
-    assert(Number.isInteger(value), "Has to Be a Number");
-  }
-
-  static isArray(value) {
-    assert(Array.isArray(value), "Has to Be a Array");
-  }
-
-  static assert(condition, message) {
-    assert(condition, message);
-  }
-}
-
-export { isBlank, clone, Assert, isNotBlank };
+export { isBlank, clone, isNotBlank, assert };
 export { classSet } from "./classSet";
 export { classListMutation } from "./classListMutation";

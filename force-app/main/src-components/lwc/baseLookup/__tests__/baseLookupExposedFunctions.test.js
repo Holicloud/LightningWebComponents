@@ -6,47 +6,49 @@ import {
   getByDataId
 } from "test/utils";
 import BaseLookup from "c/baseLookup";
-import SAMPLE_SEARCH_ITEMS from "./data/searchItems.json";
+import OPTIONS from "./data/options.json";
+import DEFAULT_OPTIONS from "./data/defaultOptions.json";
 import { inputSearchTerm } from "./baseLookup.utils.js";
 
 describe("c-base-lookup exposed functions", () => {
   const elementBuilder = new ElementBuilder(
     "c-base-lookup",
     BaseLookup
-  ).setDefaultApiProperties({ label: "Lookup Input" });
+  ).setDefaultApiProperties({
+    options: OPTIONS,
+    label: "Lookup Input"
+  });
 
   afterEach(() => {
     resetDOM();
   });
 
-  it("getSelection returns correct selection when initial selection is an array", async () => {
+  it("sets all valid options from selected", async () => {
     // Create lookup
     const element = elementBuilder.build({
-      value: SAMPLE_SEARCH_ITEMS
+      value: OPTIONS.map((result) => result.id)
     });
 
-    // Verify selection
-    const selection = element.value;
-    expect(selection.length).toBe(2);
+    expect(element.value.length).toBe(OPTIONS.length);
     await assertElementIsAccesible(element);
   });
 
-  it("getSelection returns correct selection when initial selection is a single item", async () => {
+  it("should not set option when invalid", async () => {
     // Create lookup
     const element = elementBuilder.build({
-      value: SAMPLE_SEARCH_ITEMS[0]
+      options: [],
+      defaultOptions: [],
+      value: ["any"]
     });
 
-    // Verify selection
-    const selection = element.value;
-    expect(selection.length).toBe(1);
+    expect(element.value.length).toBe(0);
     await assertElementIsAccesible(element);
   });
 
   it("setSearchResults renders correct results", async () => {
     // Create lookup
     const element = elementBuilder.build({
-      defaultSearchResults: SAMPLE_SEARCH_ITEMS
+      defaultOptions: DEFAULT_OPTIONS
     });
     await flushPromises();
 
@@ -54,11 +56,11 @@ describe("c-base-lookup exposed functions", () => {
     const listItemEls = element.shadowRoot.querySelectorAll(
       "[data-id='list-item']"
     );
-    expect(listItemEls.length).toBe(SAMPLE_SEARCH_ITEMS.length);
+    expect(listItemEls.length).toBe(DEFAULT_OPTIONS.length);
     const resultItemEls = listItemEls[0].querySelectorAll(
       "[data-id='subtitle']"
     );
-    expect(resultItemEls.length).toBe(SAMPLE_SEARCH_ITEMS[0].subtitles.length);
+    expect(resultItemEls.length).toBe(DEFAULT_OPTIONS[0].subtitles.length);
     await assertElementIsAccesible(element);
   });
 
@@ -67,7 +69,7 @@ describe("c-base-lookup exposed functions", () => {
 
     // Create lookup with search handler
     const element = elementBuilder.build({
-      defaultSearchResults: SAMPLE_SEARCH_ITEMS
+      defaultOptions: DEFAULT_OPTIONS
     });
 
     // Simulate search term input with regex characters
@@ -77,7 +79,7 @@ describe("c-base-lookup exposed functions", () => {
     const listItemEls = element.shadowRoot.querySelectorAll(
       "[data-id='list-item']"
     );
-    expect(listItemEls.length).toBe(SAMPLE_SEARCH_ITEMS.length);
+    expect(listItemEls.length).toBe(DEFAULT_OPTIONS.length);
     await assertElementIsAccesible(element);
   });
 
@@ -96,7 +98,7 @@ describe("c-base-lookup exposed functions", () => {
 
     // Create lookup with search handler
     const element = elementBuilder.build({
-      defaultSearchResults: SAMPLE_SEARCH_ITEMS
+      defaultOptions: DEFAULT_OPTIONS
     });
 
     // Simulate search term input (forces focus on lookup and opens drowdown)

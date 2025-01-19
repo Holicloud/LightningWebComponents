@@ -7,7 +7,8 @@ import {
   assertElementIsNotAccesible
 } from "test/utils";
 import BaseLookup, { VARIANTS, LABELS } from "c/baseLookup";
-import SAMPLE_SEARCH_ITEMS from "./data/searchItems.json";
+import OPTIONS from "./data/options.json";
+import DEFAULT_OPTIONS from "./data/defaultOptions.json";
 import { inputSearchTerm } from "./baseLookup.utils.js";
 
 const BASE_LABEL = "Lookup";
@@ -16,14 +17,19 @@ describe("c-base-lookup rendering", () => {
   const elementBuilder = new ElementBuilder(
     "c-base-lookup",
     BaseLookup
-  ).setDefaultApiProperties({ label: BASE_LABEL });
+  ).setDefaultApiProperties({
+    options: OPTIONS,
+    label: BASE_LABEL
+  });
 
   afterEach(() => {
     resetDOM();
   });
 
   it("shows no results by default", async () => {
-    const element = elementBuilder.build();
+    const element = elementBuilder.build({
+      options: []
+    });
 
     // Query for rendered list items
     const noResultsElement = getByDataId(element, "no-result-or-loading");
@@ -34,14 +40,14 @@ describe("c-base-lookup rendering", () => {
 
   it("shows default search results by default", async () => {
     const element = elementBuilder.build({
-      defaultSearchResults: SAMPLE_SEARCH_ITEMS
+      defaultOptions: DEFAULT_OPTIONS
     });
     await flushPromises();
 
     // Query for rendered list items
     const listItemEls = element.shadowRoot.querySelectorAll("[data-item-id]");
-    expect(listItemEls.length).toBe(SAMPLE_SEARCH_ITEMS.length);
-    expect(listItemEls[0].dataset.itemId).toBe(SAMPLE_SEARCH_ITEMS[0].id);
+    expect(listItemEls.length).toBe(DEFAULT_OPTIONS.length);
+    expect(listItemEls[0].dataset.itemId).toBe(DEFAULT_OPTIONS[0].id);
 
     await assertElementIsAccesible(element);
   });
@@ -135,11 +141,11 @@ describe("c-base-lookup rendering", () => {
   it("renders title on selection in single-select", async () => {
     const element = elementBuilder.build({
       isMultiEntry: false,
-      value: SAMPLE_SEARCH_ITEMS[0]
+      value: OPTIONS.map((result) => result.id)
     });
 
     const inputBox = getByDataId(element, "input");
-    expect(inputBox.title).toBe(SAMPLE_SEARCH_ITEMS[0].title);
+    expect(inputBox.title).toBe(OPTIONS[0].title);
 
     await assertElementIsAccesible(element);
   });
@@ -147,7 +153,7 @@ describe("c-base-lookup rendering", () => {
   it("renders title on selection in multi-select", async () => {
     const element = elementBuilder.build({
       isMultiEntry: true,
-      value: SAMPLE_SEARCH_ITEMS
+      value: OPTIONS.map((result) => result.id)
     });
 
     const inputBox = getByDataId(element, "input");
@@ -155,9 +161,9 @@ describe("c-base-lookup rendering", () => {
 
     // Verify that default selection is showing up
     const selPills = element.shadowRoot.querySelectorAll('[data-id="pill"]');
-    expect(selPills.length).toBe(2);
-    expect(selPills[0].title).toBe(SAMPLE_SEARCH_ITEMS[0].title);
-    expect(selPills[1].title).toBe(SAMPLE_SEARCH_ITEMS[1].title);
+    expect(selPills.length).toBe(OPTIONS.length);
+    expect(selPills[0].title).toBe(OPTIONS[0].title);
+    expect(selPills[1].title).toBe(OPTIONS[1].title);
 
     await assertElementIsAccesible(element);
   });
@@ -165,9 +171,9 @@ describe("c-base-lookup rendering", () => {
   it("does not shows default search results when they are already selected", async () => {
     const element = elementBuilder.build({
       isMultiEntry: true,
-      value: SAMPLE_SEARCH_ITEMS
+      defaultOptions: DEFAULT_OPTIONS,
+      value: DEFAULT_OPTIONS.map((result) => result.id)
     });
-    element.defaultSearchResults = SAMPLE_SEARCH_ITEMS;
     await flushPromises();
 
     // Query for rendered list items
@@ -179,6 +185,7 @@ describe("c-base-lookup rendering", () => {
 
   it("renders new record creation option when no selection", async () => {
     const element = elementBuilder.build({
+      options: [],
       actions: [{ name: "Account", label: "New Account" }]
     });
 
@@ -208,7 +215,7 @@ describe("c-base-lookup rendering", () => {
     // Create lookup
     const element = elementBuilder.build({
       disabled: true,
-      value: SAMPLE_SEARCH_ITEMS[0]
+      value: OPTIONS.map((result) => result.id)
     });
 
     // Clear selection
@@ -250,7 +257,7 @@ describe("c-base-lookup rendering", () => {
 
     // Create lookup with search handler
     const element = elementBuilder.build({
-      defaultSearchResults: SAMPLE_SEARCH_ITEMS
+      defaultOptions: DEFAULT_OPTIONS
     });
 
     // Simulate search term input (forces focus on lookup and opens drowdown)
