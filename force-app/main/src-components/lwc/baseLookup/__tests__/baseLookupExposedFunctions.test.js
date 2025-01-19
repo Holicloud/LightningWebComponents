@@ -15,17 +15,24 @@ describe("c-base-lookup exposed functions", () => {
     "c-base-lookup",
     BaseLookup
   ).setDefaultApiProperties({
-    options: OPTIONS,
+    searchHandler: ({ getDefault }) => {
+      return getDefault ? DEFAULT_OPTIONS : OPTIONS;
+    },
     label: "Lookup Input"
+  });
+
+  beforeEach(() => {
+    jest.useFakeTimers();
   });
 
   afterEach(() => {
     resetDOM();
+    jest.useRealTimers();
   });
 
   it("sets all valid options from selected", async () => {
     // Create lookup
-    const element = elementBuilder.build({
+    const element = await elementBuilder.build({
       isMultiEntry: true,
       value: OPTIONS.map((result) => result.id)
     });
@@ -36,9 +43,10 @@ describe("c-base-lookup exposed functions", () => {
 
   it("should not set option when invalid", async () => {
     // Create lookup
-    const element = elementBuilder.build({
-      options: [],
-      defaultOptions: [],
+    const element = await elementBuilder.build({
+      searchHandler: () => {
+        return [];
+      },
       value: "any"
     });
 
@@ -46,11 +54,9 @@ describe("c-base-lookup exposed functions", () => {
     await assertElementIsAccesible(element);
   });
 
-  it("setSearchResults renders correct results", async () => {
+  it("renders valid options", async () => {
     // Create lookup
-    const element = elementBuilder.build({
-      defaultOptions: DEFAULT_OPTIONS
-    });
+    const element = await elementBuilder.build();
     await flushPromises();
 
     // Query for rendered list items
@@ -65,28 +71,21 @@ describe("c-base-lookup exposed functions", () => {
     await assertElementIsAccesible(element);
   });
 
-  it("setSearchResults supports special regex characters in search term", async () => {
-    jest.useFakeTimers();
+  it("supports special regex characters in search term", async () => {
+    const element = await elementBuilder.build();
 
-    // Create lookup with search handler
-    const element = elementBuilder.build({
-      defaultOptions: DEFAULT_OPTIONS
-    });
-
-    // Simulate search term input with regex characters
     await inputSearchTerm(element, "[ab");
 
-    // Query for rendered list items
     const listItemEls = element.shadowRoot.querySelectorAll(
       "[data-id='list-item']"
     );
-    expect(listItemEls.length).toBe(DEFAULT_OPTIONS.length);
+    expect(listItemEls?.length).toBe(OPTIONS.length);
     await assertElementIsAccesible(element);
   });
 
   it("focus the element", async () => {
     // Create lookup
-    const element = elementBuilder.build();
+    const element = await elementBuilder.build();
     element.focus();
 
     // Verify focus
@@ -98,9 +97,7 @@ describe("c-base-lookup exposed functions", () => {
     jest.useFakeTimers();
 
     // Create lookup with search handler
-    const element = elementBuilder.build({
-      defaultOptions: DEFAULT_OPTIONS
-    });
+    const element = await elementBuilder.build();
 
     // Simulate search term input (forces focus on lookup and opens drowdown)
     await inputSearchTerm(element, "sample");
@@ -118,7 +115,7 @@ describe("c-base-lookup exposed functions", () => {
 
   it("reports valid by default", async () => {
     // Create lookup
-    const element = elementBuilder.build();
+    const element = await elementBuilder.build();
 
     // Verify validity
     expect(element.validity).toEqual({ valid: true });
@@ -127,7 +124,7 @@ describe("c-base-lookup exposed functions", () => {
 
   it("reports non valid when there are errors", async () => {
     // Create lookup
-    const element = elementBuilder.build();
+    const element = await elementBuilder.build();
     element.setCustomValidity("Some error");
 
     // Verify validity

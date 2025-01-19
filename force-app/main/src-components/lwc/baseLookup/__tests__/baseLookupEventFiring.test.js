@@ -6,6 +6,7 @@ import {
 } from "test/utils";
 import BaseLookup from "c/baseLookup";
 import OPTIONS from "./data/options.json";
+import DEFAULT_OPTIONS from "./data/defaultOptions.json";
 import { inputSearchTerm } from "./baseLookup.utils.js";
 
 const SAMPLE_SEARCH_TOO_SHORT_WHITESPACE = "A ";
@@ -18,183 +19,156 @@ describe("c-base-lookup event fires", () => {
     "c-base-lookup",
     BaseLookup
   ).setDefaultApiProperties({
-    options: OPTIONS,
+    searchHandler: jest.fn(({ getDefault }) => {
+      return getDefault ? DEFAULT_OPTIONS : OPTIONS;
+    }),
     label: "Lookup Input"
+  });
+
+  beforeEach(() => {
+    jest.useFakeTimers();
   });
 
   afterEach(() => {
     resetDOM();
+    jest.clearAllMocks();
+    jest.useRealTimers();
   });
 
-  it("fires search event", async () => {
-    jest.useFakeTimers();
+  it("executes the searchHandler to populate default options and selected options", async () => {
+    const value = OPTIONS.map((result) => result.id);
+    const element = await elementBuilder.build({
+      isMultiEntry: true,
+      value
+    });
 
-    // Create lookup with mock search handler
-    const element = elementBuilder.build({
+    expect(element.searchHandler).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ getDefault: true })
+    );
+    expect(element.searchHandler).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ getInitialSelection: true, value })
+    );
+
+    await assertElementIsAccesible(element);
+  });
+
+  it("executes the searchHandler when user types on input", async () => {
+    const element = await elementBuilder.build({
       isMultiEntry: true,
       value: OPTIONS.map((result) => result.id)
     });
-    const mockSearchFn = jest.fn();
-    element.addEventListener("search", mockSearchFn);
 
-    // Simulate search term input
-    inputSearchTerm(element, SAMPLE_SEARCH_RAW);
+    element.searchHandler = jest.fn();
 
-    // Check fired search event
-    expect(mockSearchFn).toHaveBeenCalledTimes(1);
-    const searchEvent = mockSearchFn.mock.calls[0][0];
-    expect(searchEvent.detail).toEqual({
-      searchTerm: SAMPLE_SEARCH_CLEAN,
-      rawSearchTerm: SAMPLE_SEARCH_RAW,
-      value: OPTIONS.map((result) => result.id)
-    });
+    await inputSearchTerm(element, SAMPLE_SEARCH_RAW);
 
-    await assertElementIsAccesible(element);
-  });
-
-  it("does not fire search event when search term is too short with whitespace", async () => {
-    jest.useFakeTimers();
-
-    // Create lookup with mock search handler
-    const element = elementBuilder.build();
-    const mockSearchFn = jest.fn();
-    element.addEventListener("search", mockSearchFn);
-
-    // Simulate search term input
-    inputSearchTerm(element, SAMPLE_SEARCH_TOO_SHORT_WHITESPACE);
-
-    // Check that search event wasn't fired
-    expect(mockSearchFn).not.toHaveBeenCalled();
+    expect(element.searchHandler).toHaveBeenCalledTimes(1);
+    expect(element.searchHandler).toHaveBeenCalledWith(
+      expect.objectContaining({
+        searchTerm: SAMPLE_SEARCH_CLEAN,
+        rawSearchTerm: SAMPLE_SEARCH_RAW,
+        value: OPTIONS.map((result) => result.id)
+      })
+    );
 
     await assertElementIsAccesible(element);
   });
 
-  it("does not fire search event when search term is too short with special chars", async () => {
-    jest.useFakeTimers();
+  it("does not execute searchHandler when search term is too short with whitespace", async () => {
+    const element = await elementBuilder.build();
+    element.searchHandler.mockReset();
 
-    // Create lookup with mock search handler
-    const element = elementBuilder.build();
-    const mockSearchFn = jest.fn();
-    element.addEventListener("search", mockSearchFn);
+    await inputSearchTerm(element, SAMPLE_SEARCH_TOO_SHORT_WHITESPACE);
 
-    // Simulate search term input
-    inputSearchTerm(element, SAMPLE_SEARCH_TOO_SHORT_SPECIAL);
-
-    // Check that search event wasn't fired
-    expect(mockSearchFn).not.toHaveBeenCalled();
+    expect(element.searchHandler).not.toHaveBeenCalled();
     await assertElementIsAccesible(element);
   });
 
-  it("does not fire search event when search term is under custom minimum length", async () => {
-    jest.useFakeTimers();
+  it("does not execute searchHandler when search term is too short with special chars", async () => {
+    const element = await elementBuilder.build();
+    element.searchHandler.mockReset();
 
-    // Create lookup with mock search handler and custom minimum search term length
-    const element = elementBuilder.build({
+    await inputSearchTerm(element, SAMPLE_SEARCH_TOO_SHORT_SPECIAL);
+
+    expect(element.searchHandler).not.toHaveBeenCalled();
+    await assertElementIsAccesible(element);
+  });
+
+  it("does not execute searchHandler event when search term is under custom minimum length", async () => {
+    const element = await elementBuilder.build({
       minSearchTermLength: 3
     });
-    const mockSearchFn = jest.fn();
-    element.addEventListener("search", mockSearchFn);
+    element.searchHandler.mockReset();
 
-    // Simulate search term input
-    inputSearchTerm(element, "ab");
+    await inputSearchTerm(element, "ab");
 
-    // Check that search event wasn't fired
-    expect(mockSearchFn).not.toHaveBeenCalled();
+    expect(element.searchHandler).not.toHaveBeenCalled();
     await assertElementIsAccesible(element);
   });
 
-  it("fires search event when search term is above custom minimum length", async () => {
-    jest.useFakeTimers();
+  it("fires searchHanlder when search term is above custom minimum length", async () => {
+    const element = await elementBuilder.build({ minSearchTermLength: 5 });
+    element.searchHandler.mockReset();
 
-    // Create lookup with mock search handler
-    const element = elementBuilder.build({ minSearchTermLength: 5 });
-    const mockSearchFn = jest.fn();
-    element.addEventListener("search", mockSearchFn);
+    await inputSearchTerm(element, "123456");
 
-    // Simulate search term input
-    inputSearchTerm(element, "123456");
-
-    // Check fired search event
-    expect(mockSearchFn).toHaveBeenCalledTimes(1);
+    expect(element.searchHandler).toHaveBeenCalledTimes(1);
     await assertElementIsAccesible(element);
   });
 
-  it("does not fire search event when search term is under custom minimum length with special characters", async () => {
-    jest.useFakeTimers();
+  it("does not fire searchHandler when search term is under custom minimum length with special characters", async () => {
+    const element = await elementBuilder.build({ minSearchTermLength: 5 });
+    element.searchHandler.mockReset();
 
-    // Create lookup with mock search handler and custom minimum search term length
-    const element = elementBuilder.build({ minSearchTermLength: 5 });
-    const mockSearchFn = jest.fn();
-    element.addEventListener("search", mockSearchFn);
+    await inputSearchTerm(element, "1234*?");
 
-    // Simulate search term input
-    inputSearchTerm(element, "1234*?");
-
-    // Check that search event wasn't fired
-    expect(mockSearchFn).not.toHaveBeenCalled();
+    expect(element.searchHandler).not.toHaveBeenCalled();
     await assertElementIsAccesible(element);
   });
 
-  it("fires search event when search term is above custom minimum length with special characters", async () => {
-    jest.useFakeTimers();
+  it("fires searchHandler when search term is above custom minimum length with special characters", async () => {
+    const element = await elementBuilder.build({ minSearchTermLength: 5 });
+    element.searchHandler.mockReset();
 
-    // Create lookup with mock search handler
-    const element = elementBuilder.build({ minSearchTermLength: 5 });
-    const mockSearchFn = jest.fn();
-    element.addEventListener("search", mockSearchFn);
+    await inputSearchTerm(element, "123456*?");
 
-    // Simulate search term input
-    inputSearchTerm(element, "123456*?");
-
-    // Check fired search event
-    expect(mockSearchFn).toHaveBeenCalledTimes(1);
+    expect(element.searchHandler).toHaveBeenCalledTimes(1);
     await assertElementIsAccesible(element);
   });
 
-  it("does not fire search event twice when search term matches clean search term", async () => {
-    jest.useFakeTimers();
+  it("does not fire searchHandler twice when search term matches clean search term", async () => {
+    const element = await elementBuilder.build();
+    element.searchHandler.mockReset();
 
-    // Create lookup with mock search handler
-    const element = elementBuilder.build();
-    const mockSearchFn = jest.fn();
-    element.addEventListener("search", mockSearchFn);
+    await inputSearchTerm(element, SAMPLE_SEARCH_RAW);
+    await inputSearchTerm(element, SAMPLE_SEARCH_CLEAN);
 
-    // Simulate search term input
-    inputSearchTerm(element, SAMPLE_SEARCH_RAW);
-
-    // Simulate search term input a second time
-    inputSearchTerm(element, SAMPLE_SEARCH_CLEAN);
-
-    // Check fired search events
-    expect(mockSearchFn).toHaveBeenCalledTimes(1);
-    const searchEvent = mockSearchFn.mock.calls[0][0];
-    expect(searchEvent.detail).toEqual({
-      searchTerm: SAMPLE_SEARCH_CLEAN,
-      rawSearchTerm: SAMPLE_SEARCH_RAW,
-      value: undefined
-    });
+    expect(element.searchHandler).toHaveBeenCalledTimes(1);
+    expect(element.searchHandler).toHaveBeenCalledWith(
+      expect.objectContaining({
+        searchTerm: SAMPLE_SEARCH_CLEAN,
+        rawSearchTerm: SAMPLE_SEARCH_RAW,
+        value: undefined
+      })
+    );
 
     await assertElementIsAccesible(element);
   });
 
   it("fires action event when action is clicked", async () => {
-    jest.useFakeTimers();
-
-    // Create lookup with search handler and new record options
-    const element = elementBuilder.build({
+    const element = await elementBuilder.build({
       actions: [{ name: "NewAccount", label: "New Account" }]
     });
     const actionFn = jest.fn();
     element.addEventListener("action", actionFn);
 
-    // Simulate search term input
     await inputSearchTerm(element, SAMPLE_SEARCH_RAW);
 
-    // Simulate mouse selection
     const newRecordEl = getByDataId(element, "action-button");
     newRecordEl.click();
 
-    // Check fired search event
     expect(newRecordEl).not.toBeNull();
     expect(actionFn).toHaveBeenCalledTimes(1);
     await assertElementIsAccesible(element);

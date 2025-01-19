@@ -53,7 +53,7 @@ class ElementBuilder {
     return this;
   }
 
-  build(props = {}, options = {}) {
+  async build(props = {}, options = {}) {
     const { addToDOM = true } = options;
     const element = createElement(this.descriptor, {
       is: this.componentReference
@@ -64,6 +64,7 @@ class ElementBuilder {
       document.body.appendChild(element);
     }
 
+    await flushPromises();
     return element;
   }
 }

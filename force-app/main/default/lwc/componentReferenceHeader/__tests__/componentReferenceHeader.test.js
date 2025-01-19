@@ -4,7 +4,6 @@ import ComponentReferenceHeader, {
 import {
   ElementBuilder,
   resetDOM,
-  addToDOM,
   flushPromises,
   removeFromDOM,
   getByDataId
@@ -26,8 +25,7 @@ describe("c-component-reference-header", () => {
   });
 
   it("should sub/unsub", async () => {
-    const element = elementBuilder.build();
-    addToDOM(element);
+    const element = await elementBuilder.build();
 
     expect(isSubscribed(messageChannel)).toBe(true);
 
@@ -37,8 +35,7 @@ describe("c-component-reference-header", () => {
   });
 
   it("should display header info from first component", async () => {
-    const element = elementBuilder.build();
-    addToDOM(element);
+    const element = await elementBuilder.build();
 
     expect(getByDataId(element, "description").textContent).toBe(
       BASE_INFO.description
@@ -53,8 +50,7 @@ describe("c-component-reference-header", () => {
   });
 
   it("should display header info when changed component", async () => {
-    const element = elementBuilder.build();
-    addToDOM(element);
+    const element = await elementBuilder.build();
 
     publish({
       channel: messageChannel,

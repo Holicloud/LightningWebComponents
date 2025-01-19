@@ -55,6 +55,7 @@ export default class BaseLookup extends LightningElement {
   @api placeholder = "";
   @api required = false;
   @api scrollAfterNItems = "*";
+  @api searchHandler = async () => {};
 
   cancelBlur = false;
   cleanSearchTerm;
@@ -67,6 +68,9 @@ export default class BaseLookup extends LightningElement {
   searchThrottlingTimeout;
   showHelpMessage = false;
   displayableOptions = [];
+  options = [];
+  defaultOptions = [];
+  hasInit = false;
 
   _defaultOptions = [];
   _minSearchTermLength = MIN_SEARCH_TERM_LENGTH;
@@ -105,33 +109,16 @@ export default class BaseLookup extends LightningElement {
     if (!this.isMultiEntry) {
       assert(!Array.isArray(value), "value should not be an array");
     }
-    this.setSelected(this.getAsArray(value));
-    this.processSelectionUpdate(false);
+    if (this.hasInit) {
+      this.setSelected(this.getAsArray(value));
+    } else {
+      this._value = this.getAsArray(value);
+    }
   }
 
   @api
   get validity() {
     return { valid: !this.hasMissingValue && !this.helpMessage };
-  }
-
-  @api
-  get options() {
-    return this._options;
-  }
-
-  set options(value) {
-    this.setDisplayableOptions(value);
-    this._options = value;
-  }
-
-  @api
-  get defaultOptions() {
-    return this._defaultOptions;
-  }
-
-  set defaultOptions(value) {
-    this.setDisplayableOptions(value);
-    this._defaultOptions = value;
   }
 
   @api
@@ -221,7 +208,7 @@ export default class BaseLookup extends LightningElement {
     const isSearchTermValid =
       this.cleanSearchTerm &&
       this.cleanSearchTerm.length >= this.minSearchTermLength;
-    return (
+    return !!(
       this.hasFocus &&
       this.isSelectionAllowed &&
       (isSearchTermValid || this.hasResults || this.actions?.length)
@@ -379,6 +366,7 @@ export default class BaseLookup extends LightningElement {
           this.updateSubtitles(result, regex);
         }
 
+        result.ariaSelected = this.focusedResultIndex === index;
         result.classes = classSet("slds-media")
           .add("slds-media_center")
           .add("slds-listbox__option")
@@ -421,21 +409,27 @@ export default class BaseLookup extends LightningElement {
       clearTimeout(this.searchThrottlingTimeout);
     }
     // eslint-disable-next-line @lwc/lwc/no-async-operation
-    this.searchThrottlingTimeout = setTimeout(() => {
+    this.searchThrottlingTimeout = setTimeout(async () => {
       // Send search event if search term is long enougth
       if (this.cleanSearchTerm.length >= this.minSearchTermLength) {
         // Display spinner until results are returned
         this.loading = true;
 
-        this.dispatchEvent(
-          new CustomEvent("search", {
-            detail: {
+        try {
+          this.options = await Promise.resolve(
+            this.searchHandler({
               searchTerm: this.cleanSearchTerm,
               rawSearchTerm: newSearchTerm,
               value: this.value
-            }
-          })
-        );
+            })
+          );
+          this.setDisplayableOptions(this.options);
+        } catch (error) {
+          console.error(error);
+          this.setCustomValidity("error seaching for data");
+          this.reportValidity();
+          this.options = [];
+        }
       }
 
       this.searchThrottlingTimeout = null;
@@ -463,7 +457,9 @@ export default class BaseLookup extends LightningElement {
   get allOptions() {
     const result = new Map();
 
-    for (const option of this.defaultOptions.concat(this.options)) {
+    const options = [...(this.defaultOptions || []), ...(this.options || [])];
+
+    for (const option of options) {
       if (!result.has(option.id)) {
         result.set(option.id, option);
       }
@@ -644,6 +640,31 @@ export default class BaseLookup extends LightningElement {
   connectedCallback() {
     this.classList.add("slds-form-element");
     this.updateClassList();
+    if (!this.hasInit) {
+      this.init();
+    }
+  }
+
+  async init() {
+    this.defaultOptions = await Promise.resolve(
+      this.searchHandler({
+        getDefault: true
+      })
+    );
+
+    this.setDisplayableOptions(this.defaultOptions);
+
+    if (this._value.length) {
+      this.options = await Promise.resolve(
+        this.searchHandler({
+          getInitialSelection: true,
+          value: this._value
+        })
+      );
+      this.setSelected(this.getAsArray(this._value));
+    }
+
+    this.hasInit = true;
   }
 
   updateClassList() {

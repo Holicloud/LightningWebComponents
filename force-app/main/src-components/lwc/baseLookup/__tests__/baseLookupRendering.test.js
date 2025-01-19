@@ -18,20 +18,28 @@ describe("c-base-lookup rendering", () => {
     "c-base-lookup",
     BaseLookup
   ).setDefaultApiProperties({
-    options: OPTIONS,
-    label: BASE_LABEL
+    label: BASE_LABEL,
+    searchHandler: ({ getDefault }) => {
+      return getDefault ? DEFAULT_OPTIONS : OPTIONS;
+    }
+  });
+
+  beforeEach(() => {
+    jest.useFakeTimers();
   });
 
   afterEach(() => {
     resetDOM();
+    jest.useRealTimers();
   });
 
-  it("shows no results by default", async () => {
-    const element = elementBuilder.build({
-      options: []
+  it("shows no results when there are no options", async () => {
+    const element = await elementBuilder.build({
+      searchHandler: () => {
+        return [];
+      }
     });
 
-    // Query for rendered list items
     const noResultsElement = getByDataId(element, "no-result-or-loading");
     expect(noResultsElement?.textContent).toBe(LABELS.noResults);
 
@@ -39,9 +47,7 @@ describe("c-base-lookup rendering", () => {
   });
 
   it("shows default search results by default", async () => {
-    const element = elementBuilder.build({
-      defaultOptions: DEFAULT_OPTIONS
-    });
+    const element = await elementBuilder.build();
     await flushPromises();
 
     // Query for rendered list items
@@ -53,7 +59,7 @@ describe("c-base-lookup rendering", () => {
   });
 
   it("renders label by default", async () => {
-    const element = elementBuilder.build();
+    const element = await elementBuilder.build();
 
     // Verify label
     const labelEl = getByDataId(element, "label");
@@ -64,7 +70,7 @@ describe("c-base-lookup rendering", () => {
   });
 
   it("does not render label if omitted", async () => {
-    const element = elementBuilder.build({ label: "" });
+    const element = await elementBuilder.build({ label: "" });
 
     // Verify label doesn't exist
     const labelEl = getByDataId(element, "label");
@@ -75,7 +81,7 @@ describe("c-base-lookup rendering", () => {
   });
 
   it("renders but hides label when variant set to label-hidden", async () => {
-    const element = elementBuilder.build({
+    const element = await elementBuilder.build({
       label: "Sample Lookup",
       variant: VARIANTS.LABEL_HIDDEN
     });
@@ -89,7 +95,7 @@ describe("c-base-lookup rendering", () => {
   });
 
   it("renders horizontal label when variant set to label-inline", async () => {
-    const element = elementBuilder.build({
+    const element = await elementBuilder.build({
       label: "Sample Lookup",
       variant: VARIANTS.LABEL_INLINE
     });
@@ -101,7 +107,7 @@ describe("c-base-lookup rendering", () => {
   });
 
   it("renders single entry (no selection)", async () => {
-    const element = elementBuilder.build({ isMultiEntry: false });
+    const element = await elementBuilder.build({ isMultiEntry: false });
 
     // Verify selected icon
     const selIcon = getByDataId(element, "search-icon");
@@ -119,7 +125,7 @@ describe("c-base-lookup rendering", () => {
   });
 
   it("renders multi entry (no selection)", async () => {
-    const element = elementBuilder.build({ isMultiEntry: true });
+    const element = await elementBuilder.build({ isMultiEntry: true });
 
     // Verify selected icon is NOT rendered
     const selIcon = element.shadowRoot.querySelectorAll(
@@ -139,7 +145,7 @@ describe("c-base-lookup rendering", () => {
   });
 
   it("renders title on selection in single-select", async () => {
-    const element = elementBuilder.build({
+    const element = await elementBuilder.build({
       isMultiEntry: false,
       value: OPTIONS[0].id
     });
@@ -151,7 +157,7 @@ describe("c-base-lookup rendering", () => {
   });
 
   it("renders title on selection in multi-select", async () => {
-    const element = elementBuilder.build({
+    const element = await elementBuilder.build({
       isMultiEntry: true,
       value: OPTIONS.map((result) => result.id)
     });
@@ -169,9 +175,8 @@ describe("c-base-lookup rendering", () => {
   });
 
   it("does not shows default search results when they are already selected", async () => {
-    const element = elementBuilder.build({
+    const element = await elementBuilder.build({
       isMultiEntry: true,
-      defaultOptions: DEFAULT_OPTIONS,
       value: DEFAULT_OPTIONS.map((result) => result.id)
     });
     await flushPromises();
@@ -184,23 +189,20 @@ describe("c-base-lookup rendering", () => {
   });
 
   it("renders new record creation option when no selection", async () => {
-    const element = elementBuilder.build({
-      options: [],
-      actions: [{ name: "Account", label: "New Account" }]
+    const element = await elementBuilder.build({
+      actions: [{ name: "Account", label: "New Account" }],
+      searchHandler: () => {
+        return [];
+      }
     });
 
-    // Query for rendered list items
-    const noResultElement = getByDataId(element, "no-result-or-loading");
-    const action = getByDataId(element, "action");
-
-    expect(noResultElement?.textContent).toBe(LABELS.noResults);
-    expect(action?.textContent).toBe("New Account");
+    expect(getByDataId(element, "action")?.textContent).toBe("New Account");
 
     await assertElementIsAccesible(element);
   });
 
   it("can be disabled", async () => {
-    const element = elementBuilder.build({
+    const element = await elementBuilder.build({
       disabled: true
     });
 
@@ -213,7 +215,7 @@ describe("c-base-lookup rendering", () => {
 
   it("disables clear selection button when single entry and disabled", async () => {
     // Create lookup
-    const element = elementBuilder.build({
+    const element = await elementBuilder.build({
       disabled: true,
       value: OPTIONS[0].id
     });
@@ -226,7 +228,7 @@ describe("c-base-lookup rendering", () => {
   });
 
   it("renders error", async () => {
-    const element = elementBuilder.build();
+    const element = await elementBuilder.build();
     const message = "Sample error";
 
     element.setCustomValidity(message);
@@ -243,7 +245,7 @@ describe("c-base-lookup rendering", () => {
 
   it("renders helptext by default", async () => {
     const props = { fieldLevelText: "some help text" };
-    const element = elementBuilder.build(props);
+    const element = await elementBuilder.build(props);
 
     // Verify label
     const helpTextElement = getByDataId(element, "help-text");
@@ -253,26 +255,17 @@ describe("c-base-lookup rendering", () => {
   });
 
   it("blurs on error and closes dropdown", async () => {
-    jest.useFakeTimers();
+    const element = await elementBuilder.build();
 
-    // Create lookup with search handler
-    const element = elementBuilder.build({
-      defaultOptions: DEFAULT_OPTIONS
-    });
-
-    // Simulate search term input (forces focus on lookup and opens drowdown)
     await inputSearchTerm(element, "sample");
-
-    // Simulate error
     element.setCustomValidity("Some Error");
+
     await flushPromises();
 
-    // Check that lookup no longer has focus and that dropdown is closed
     expect(document.activeElement).not.toBe(element);
     const dropdownEl = getByDataId(element, "input");
     expect(dropdownEl.classList).not.toContain("slds-is-open");
 
-    jest.useRealTimers();
     await assertElementIsAccesible(element);
   });
 });

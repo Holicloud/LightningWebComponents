@@ -16,7 +16,9 @@ describe("c-base-lookup event handling", () => {
     "c-base-lookup",
     BaseLookup
   ).setDefaultApiProperties({
-    options: OPTIONS,
+    searchHandler: ({ getDefault }) => {
+      return getDefault ? DEFAULT_OPTIONS : OPTIONS;
+    },
     label: "Lookup Input"
   });
 
@@ -26,9 +28,8 @@ describe("c-base-lookup event handling", () => {
 
   it("can clear selection when single entry", async () => {
     // Create lookup
-    const element = elementBuilder.build({
+    const element = await elementBuilder.build({
       isMultiEntry: false,
-      options: OPTIONS,
       value: OPTIONS[0].id
     });
     const changeFn = jest.fn();
@@ -52,9 +53,8 @@ describe("c-base-lookup event handling", () => {
 
   it("can clear selection when multi entry", async () => {
     // Create lookup
-    const element = elementBuilder.build({
+    const element = await elementBuilder.build({
       isMultiEntry: true,
-      options: OPTIONS,
       value: OPTIONS.map((result) => result.id)
     });
 
@@ -79,7 +79,7 @@ describe("c-base-lookup event handling", () => {
 
   it("doesn't remove pill when multi entry and disabled", async () => {
     // Create lookup
-    const element = elementBuilder.build({
+    const element = await elementBuilder.build({
       isMultiEntry: true,
       disabled: true,
       value: OPTIONS.map((result) => result.id)
@@ -99,9 +99,7 @@ describe("c-base-lookup event handling", () => {
   it("can select item with mouse", async () => {
     jest.useFakeTimers();
 
-    const element = elementBuilder.build({
-      defaultOptions: DEFAULT_OPTIONS
-    });
+    const element = await elementBuilder.build();
     const changeFn = jest.fn();
     element.addEventListener("change", changeFn);
 
@@ -127,9 +125,7 @@ describe("c-base-lookup event handling", () => {
   it("can select item with keyboard", async () => {
     jest.useFakeTimers();
 
-    const element = elementBuilder.build({
-      options: OPTIONS
-    });
+    const element = await elementBuilder.build();
     const changeFn = jest.fn();
     element.addEventListener("change", changeFn);
 
@@ -165,7 +161,7 @@ describe("c-base-lookup event handling", () => {
   it("custom action is shown", async () => {
     jest.useFakeTimers();
 
-    const element = elementBuilder.build({
+    const element = await elementBuilder.build({
       actions: [{ name: "NewAccount", label: "New Account" }]
     });
     const actionFn = jest.fn();

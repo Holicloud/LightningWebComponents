@@ -61,9 +61,8 @@ describe("c-message-channel-mixing", () => {
     });
   }
 
-  it("Should publish to channels", () => {
-    const element = elementBuilder.build();
-    addToDOM(element);
+  it("Should publish to channels", async () => {
+    const element = await elementBuilder.build();
     MessageContext.emit(MessageContextData);
     element.publish({
       channel: messageChannelA,
@@ -88,8 +87,8 @@ describe("c-message-channel-mixing", () => {
     );
   });
 
-  it("Should subscribe to channels", () => {
-    const element = elementBuilder.build();
+  it("Should subscribe to channels", async () => {
+    const element = await elementBuilder.build();
     MessageContext.emit(MessageContextData);
     addToDOM(element);
     subscribeToChannels(element);
@@ -111,8 +110,8 @@ describe("c-message-channel-mixing", () => {
     );
   });
 
-  it("Should unsubscribe to channels", () => {
-    const element = elementBuilder.build();
+  it("Should unsubscribe to channels", async () => {
+    const element = await elementBuilder.build();
     MessageContext.emit(MessageContextData);
 
     addToDOM(element);
@@ -126,7 +125,7 @@ describe("c-message-channel-mixing", () => {
   });
 
   it("Should unsubscribe on disconnectedCallback", async () => {
-    const element = elementBuilder.build();
+    const element = await elementBuilder.build();
     MessageContext.emit(MessageContextData);
 
     addToDOM(element);

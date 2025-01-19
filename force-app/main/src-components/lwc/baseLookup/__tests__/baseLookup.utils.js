@@ -1,4 +1,4 @@
-import { flushPromises, getByDataId } from "test/utils";
+import { getByDataId, flushPromises } from "test/utils";
 
 export const inputSearchTerm = async (element, searchTerm) => {
   // Sets input search term and force input change
@@ -7,6 +7,6 @@ export const inputSearchTerm = async (element, searchTerm) => {
   searchInput.value = searchTerm;
   searchInput.dispatchEvent(new CustomEvent("input"));
   // Disable search throttling
-  jest.runAllTimers();
+  jest.runOnlyPendingTimers();
   await flushPromises();
 };
