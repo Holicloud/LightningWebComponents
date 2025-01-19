@@ -31,11 +31,21 @@ describe("c-base-lookup event handling", () => {
       options: OPTIONS,
       value: OPTIONS[0].id
     });
+    const changeFn = jest.fn();
+    element.addEventListener("change", changeFn);
 
     // Clear selection
     getByDataId(element, "remove").click();
     // Check selection
     expect(element.value).toBeUndefined();
+    expect(changeFn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        detail: {
+          value: undefined,
+          info: undefined
+        }
+      })
+    );
 
     await assertElementIsAccesible(element);
   });
@@ -48,10 +58,22 @@ describe("c-base-lookup event handling", () => {
       value: OPTIONS.map((result) => result.id)
     });
 
+    const changeFn = jest.fn();
+    element.addEventListener("change", changeFn);
+
     // Remove a selected item
     getByDataId(element, "pill").dispatchEvent(new CustomEvent("remove"));
     // Check selection
     expect(element.value.length).toBe(OPTIONS.length - 1);
+
+    expect(changeFn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        detail: {
+          value: OPTIONS.slice(1).map((option) => option.id),
+          info: OPTIONS.slice(1)
+        }
+      })
+    );
     await assertElementIsAccesible(element);
   });
 
@@ -63,20 +85,25 @@ describe("c-base-lookup event handling", () => {
       value: OPTIONS.map((result) => result.id)
     });
 
+    const changeFn = jest.fn();
+    element.addEventListener("change", changeFn);
+
     // Remove a selected item
     getByDataId(element, "pill").dispatchEvent(new CustomEvent("remove"));
     // Check selection
     expect(element.value.length).toBe(OPTIONS.length);
+    expect(changeFn).not.toHaveBeenCalled();
     await assertElementIsAccesible(element);
   });
 
   it("can select item with mouse", async () => {
     jest.useFakeTimers();
 
-    // Create lookup with search handler
     const element = elementBuilder.build({
       defaultOptions: DEFAULT_OPTIONS
     });
+    const changeFn = jest.fn();
+    element.addEventListener("change", changeFn);
 
     // Simulate search term input
     await inputSearchTerm(element, SAMPLE_SEARCH);
@@ -86,16 +113,25 @@ describe("c-base-lookup event handling", () => {
 
     // Check selection
     expect(element.value).toEqual(DEFAULT_OPTIONS[0].id);
+    expect(changeFn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        detail: {
+          value: DEFAULT_OPTIONS[0].id,
+          info: DEFAULT_OPTIONS[0]
+        }
+      })
+    );
     await assertElementIsAccesible(element);
   });
 
   it("can select item with keyboard", async () => {
     jest.useFakeTimers();
 
-    // Create lookup with search handler
     const element = elementBuilder.build({
       options: OPTIONS
     });
+    const changeFn = jest.fn();
+    element.addEventListener("change", changeFn);
 
     const scrollIntoView = jest.fn();
     window.HTMLElement.prototype.scrollIntoView = scrollIntoView;
@@ -115,13 +151,20 @@ describe("c-base-lookup event handling", () => {
     // Check selection
     expect(element.value).toEqual(OPTIONS[0].id);
     expect(scrollIntoView).toHaveBeenCalled();
+    expect(changeFn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        detail: {
+          value: OPTIONS[0].id,
+          info: OPTIONS[0]
+        }
+      })
+    );
     await assertElementIsAccesible(element);
   });
 
   it("custom action is shown", async () => {
     jest.useFakeTimers();
 
-    // Create lookup with search handler and new record options
     const element = elementBuilder.build({
       actions: [{ name: "NewAccount", label: "New Account" }]
     });

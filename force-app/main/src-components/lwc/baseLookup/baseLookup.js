@@ -461,7 +461,15 @@ export default class BaseLookup extends LightningElement {
   }
 
   get allOptions() {
-    return this.options.concat(this.defaultOptions);
+    const result = new Map();
+
+    for (const option of this.defaultOptions.concat(this.options)) {
+      if (!result.has(option.id)) {
+        result.set(option.id, option);
+      }
+    }
+
+    return Array.from(result.values());
   }
 
   get selectedOptions() {
@@ -484,7 +492,10 @@ export default class BaseLookup extends LightningElement {
     if (isUserInteraction) {
       this.dispatchEvent(
         new CustomEvent("change", {
-          detail: { value: this.value }
+          detail: {
+            value: this.value,
+            info: this.isMultiEntry ? this.selectedOptions : this.selectedOption
+          }
         })
       );
     }
