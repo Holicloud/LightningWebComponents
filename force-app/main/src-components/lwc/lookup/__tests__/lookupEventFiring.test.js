@@ -4,10 +4,10 @@ import {
   assertElementIsAccesible,
   getByDataId
 } from "test/utils";
-import BaseLookup from "c/baseLookup";
+import Lookup from "c/Lookup";
 import OPTIONS from "./data/options.json";
 import DEFAULT_OPTIONS from "./data/defaultOptions.json";
-import { inputSearchTerm } from "./baseLookup.utils.js";
+import { inputSearchTerm } from "./Lookup.utils.js";
 
 const SAMPLE_SEARCH_TOO_SHORT_WHITESPACE = "A ";
 const SAMPLE_SEARCH_TOO_SHORT_SPECIAL = "a*";
@@ -17,7 +17,7 @@ const SAMPLE_SEARCH_CLEAN = "sample search?";
 describe("c-base-lookup event fires", () => {
   const elementBuilder = new ElementBuilder(
     "c-base-lookup",
-    BaseLookup
+    Lookup
   ).setDefaultApiProperties({
     searchHandler: jest.fn(({ getDefault }) => {
       return getDefault ? DEFAULT_OPTIONS : OPTIONS;

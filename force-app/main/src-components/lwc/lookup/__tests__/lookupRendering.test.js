@@ -6,17 +6,17 @@ import {
   assertElementIsAccesible,
   assertElementIsNotAccesible
 } from "test/utils";
-import BaseLookup, { VARIANTS, LABELS } from "c/baseLookup";
+import Lookup, { VARIANTS, LABELS } from "c/Lookup";
 import OPTIONS from "./data/options.json";
 import DEFAULT_OPTIONS from "./data/defaultOptions.json";
-import { inputSearchTerm } from "./baseLookup.utils.js";
+import { inputSearchTerm } from "./Lookup.utils.js";
 
 const BASE_LABEL = "Lookup";
 
 describe("c-base-lookup rendering", () => {
   const elementBuilder = new ElementBuilder(
     "c-base-lookup",
-    BaseLookup
+    Lookup
   ).setDefaultApiProperties({
     label: BASE_LABEL,
     searchHandler: ({ getDefault }) => {

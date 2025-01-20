@@ -45,7 +45,7 @@ const FORMATTED_TEXT_TYPE = "lightning-formatted-rich-text";
 // Minimum required characters for triggering a search
 const MIN_SEARCH_TERM_LENGTH = 2;
 
-export default class BaseLookup extends LightningElement {
+export default class Lookup extends LightningElement {
   @api actions = [];
   @api disabled = false;
   @api fieldLevelText = "";

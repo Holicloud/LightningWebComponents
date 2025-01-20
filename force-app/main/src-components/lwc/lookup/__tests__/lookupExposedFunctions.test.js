@@ -5,15 +5,15 @@ import {
   flushPromises,
   getByDataId
 } from "test/utils";
-import BaseLookup from "c/baseLookup";
+import Lookup from "c/Lookup";
 import OPTIONS from "./data/options.json";
 import DEFAULT_OPTIONS from "./data/defaultOptions.json";
-import { inputSearchTerm } from "./baseLookup.utils.js";
+import { inputSearchTerm } from "./Lookup.utils.js";
 
 describe("c-base-lookup exposed functions", () => {
   const elementBuilder = new ElementBuilder(
     "c-base-lookup",
-    BaseLookup
+    Lookup
   ).setDefaultApiProperties({
     searchHandler: ({ getDefault }) => {
       return getDefault ? DEFAULT_OPTIONS : OPTIONS;

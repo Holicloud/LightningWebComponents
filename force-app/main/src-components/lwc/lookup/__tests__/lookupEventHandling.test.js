@@ -4,17 +4,17 @@ import {
   assertElementIsAccesible,
   getByDataId
 } from "test/utils";
-import BaseLookup, { KEY_INPUTS } from "c/baseLookup";
+import Lookup, { KEY_INPUTS } from "c/Lookup";
 import OPTIONS from "./data/options.json";
 import DEFAULT_OPTIONS from "./data/defaultOptions.json";
-import { inputSearchTerm } from "./baseLookup.utils.js";
+import { inputSearchTerm } from "./Lookup.utils.js";
 
 const SAMPLE_SEARCH = "sample";
 
 describe("c-base-lookup event handling", () => {
   const elementBuilder = new ElementBuilder(
     "c-base-lookup",
-    BaseLookup
+    Lookup
   ).setDefaultApiProperties({
     searchHandler: ({ getDefault }) => {
       return getDefault ? DEFAULT_OPTIONS : OPTIONS;
