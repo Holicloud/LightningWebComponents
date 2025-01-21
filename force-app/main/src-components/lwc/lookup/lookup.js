@@ -146,7 +146,7 @@ export default class Lookup extends LightningElement {
     }
   }
 
-  _searchHandler = async () => {};
+  _searchHandler = () => [];
 
   @api
   get searchHandler() {
@@ -250,6 +250,7 @@ export default class Lookup extends LightningElement {
       this.cleanSearchTerm &&
       this.cleanSearchTerm.length >= this.minSearchTermLength;
     return !!(
+      this.displayListBox &&
       this.hasFocus &&
       this.isSelectionAllowed &&
       (isSearchTermValid || this.hasResults || this.actions?.length)
@@ -332,7 +333,7 @@ export default class Lookup extends LightningElement {
   get getInputValue() {
     return this.isMultiEntry || !this.hasSelection
       ? this.searchTerm
-      : this.selectedOption.id;
+      : this.selectedOption.title;
   }
 
   get getInputTitle() {
@@ -569,13 +570,13 @@ export default class Lookup extends LightningElement {
     }
 
     if (
-      isBlank(this.searchTerm) &&
       this.hasSelection &&
       !this.isMultiEntry &&
       (event.keyCode === KEY_INPUTS.BACKSPACE ||
         event.keyCode === KEY_INPUTS.DEL)
     ) {
-      this.clearSelection();
+      this.displayListBox = false;
+      this.template.querySelector(`[data-id="remove"]`).click();
     } else if (event.keyCode === KEY_INPUTS.KEY_ESCAPE) {
       this.setDisplayableOptions([]);
     } else if (event.keyCode === KEY_INPUTS.ARROW_DOWN) {
@@ -599,13 +600,17 @@ export default class Lookup extends LightningElement {
     ) {
       // If the user presses enter, and the box is open, and we have used arrows,
       // treat this just like a click on the listbox item
-      const { id } = this.allOptions[this.focusedResultIndex];
+      const { id } = this.displayableOptions[this.focusedResultIndex];
       this.template.querySelector(`[data-item-id="${id}"]`).click();
       event.preventDefault();
+    } else if (
+      !this.hasSelection &&
+      event.keyCode === KEY_INPUTS.ENTER &&
+      isBlank(this.searchTerm)
+    ) {
+      this.hasFocus = true;
+      this.displayListBox = true;
     }
-    // else if (!this.hasSelection && event.keyCode === KEY_INPUTS.ENTER && isBlank(this.searchTerm)) {
-    //   this.setDisplayableOptions(this.defaultOptions);
-    // }
 
     if (
       event.keyCode === KEY_INPUTS.ARROW_DOWN ||
@@ -642,6 +647,7 @@ export default class Lookup extends LightningElement {
   }
 
   handleFocus() {
+    this.displayListBox = true;
     this.hasFocus = true;
     this.focusedResultIndex = null;
     this.dispatchEvent(new CustomEvent("focus"));
@@ -687,12 +693,8 @@ export default class Lookup extends LightningElement {
   }
 
   handleClearSelection() {
-    this.clearSelection();
-  }
-
-  clearSelection() {
     this.setSelected([]);
-    this.hasFocus = false;
+    // this.hasFocus = false;
     this.processSelectionUpdate(true);
     this.focus();
   }

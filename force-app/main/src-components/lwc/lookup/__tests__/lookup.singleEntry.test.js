@@ -160,7 +160,7 @@ describe("c-base-lookup rendering", () => {
       })
     );
 
-    expect(getByDataId(element, "input").value).toBe(RECORDS[0].id);
+    expect(getByDataId(element, "input").value).toBe(RECORDS[0].title);
     expect(getByDataId(element, "input").title).toBe(RECORDS[0].title);
     await assertElementIsAccesible(element);
   });

@@ -1,8 +1,11 @@
 import { setImmediate } from "timers";
 import { createElement } from "@lwc/engine-dom";
 
-function getByDataId(element, dataId) {
-  return element.shadowRoot.querySelector(`[data-id="${dataId}"]`);
+function getByDataId(element, dataId, all = false) {
+  const selector = `[data-id="${dataId}"]`;
+  return all
+    ? element.shadowRoot.querySelectorAll(selector)
+    : element.shadowRoot.querySelector(selector);
 }
 
 async function flushPromises() {
@@ -62,7 +65,7 @@ class ElementBuilder {
   }
 
   setDefaultApiProperties(defaultApiProps) {
-    this.defaultApiProps = defaultApiProps;
+    Object.assign(this.defaultApiProps, defaultApiProps);
     return this;
   }
 
