@@ -7,12 +7,18 @@
       class={computedLabelClass}
       for="combobox"
     >
-      <abbr lwc:if={required} title="required" class="slds-required">*</abbr>
+      <abbr
+        lwc:if={required}
+        data-id="required-indicator"
+        title="required"
+        class="slds-required"
+        >*</abbr
+      >
       {label}
       <lightning-helptext
         data-id="help-text"
-        lwc:if={fieldLevelText}
-        content={fieldLevelText}
+        lwc:if={fieldLevelHelp}
+        content={fieldLevelHelp}
       ></lightning-helptext>
     </label>
     <div class="slds-form-element__control">
@@ -66,14 +72,14 @@
               data-id="search-icon"
               icon-name="utility:search"
               size="x-small"
-              alternative-text="Search icon"
+              alternative-text={labels.searchIcon}
               class={getSearchIconClass}
             ></lightning-icon>
 
             <!-- Clear selection button icon for single entry lookups -->
             <template lwc:if={isSingleEntry}>
               <button
-                title="Remove selected option"
+                title={labels.removeOption}
                 type="button"
                 onclick={handleClearSelection}
                 class={getClearSelectionButtonClass}
@@ -83,7 +89,7 @@
                 <lightning-icon
                   icon-name="utility:close"
                   size="x-small"
-                  alternative-text="Remove selected option"
+                  alternative-text={labels.removeOption}
                   class="slds-button__icon"
                 ></lightning-icon>
               </button>
@@ -94,6 +100,7 @@
           <!-- Result list box start -->
           <div
             id="listbox-id-15"
+            data-id="result-list-box"
             role="listbox"
             aria-label={label}
             onmousedown={handleComboboxMouseDown}
@@ -121,7 +128,7 @@
                     class={item.classes}
                     role="option"
                     id={index}
-                    aria-selected={item.ariaSelected}
+                    aria-selected="true"
                     aria-label={item.title}
                     onclick={handleResultClick}
                     data-item-id={item.id}
@@ -206,7 +213,7 @@
                     class="slds-media slds-media_center slds-listbox__option slds-listbox__option_entity"
                     onclick={handleActionClick}
                     data-name={action.name}
-                    data-id="action-button"
+                    data-id={action.name}
                     role="option"
                   >
                     <span class="slds-media__figure slds-listbox__option-icon">
@@ -256,6 +263,7 @@
                 >
                   <lightning-icon
                     data-id="pill-icon"
+                    icon-name="standard:default"
                     lwc:spread={item.icon}
                   ></lightning-icon>
                 </lightning-pill>
@@ -269,8 +277,7 @@
     <!-- Help Message start -->
     <template if:true={displayHelpMessage}>
       <div
-        id="field-level-text"
-        data-id="data-field-level-text"
+        data-id="help-message"
         class="slds-form-element__help"
         aria-live="assertive"
       >

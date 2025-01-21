@@ -1,0 +1,113 @@
+<template>
+  <div class="slds-m-top_medium slds-m-bottom_x-large">
+    <h2 class="slds-text-heading_medium slds-m-bottom_medium">Default Basic</h2>
+
+    <div class="slds-p-around_medium lgc-bg">
+      <c-lookup label="Account"></c-lookup>
+    </div>
+  </div>
+  <div class="slds-m-top_medium slds-m-bottom_x-large">
+    <h2 class="slds-text-heading_medium slds-m-bottom_medium">Disabled</h2>
+
+    <div class="slds-p-around_medium lgc-bg">
+      <c-lookup label="Account" disabled></c-lookup>
+    </div>
+  </div>
+
+  <div class="slds-m-top_medium slds-m-bottom_x-large">
+    <h2 class="slds-text-heading_medium slds-m-bottom_medium">
+      With fieldLevelHelp
+    </h2>
+
+    <div class="slds-p-around_medium lgc-bg">
+      <c-lookup label="Account" field-level-help="Hello World"></c-lookup>
+    </div>
+  </div>
+
+  <div class="slds-m-top_medium slds-m-bottom_x-large">
+    <h2 class="slds-text-heading_medium slds-m-bottom_medium">Required</h2>
+
+    <div class="slds-p-around_medium lgc-bg">
+      <c-lookup label="Account" required></c-lookup>
+    </div>
+  </div>
+
+  <div class="slds-m-top_medium slds-m-bottom_x-large">
+    <h2 class="slds-text-heading_medium slds-m-bottom_medium">
+      With Message when value missing
+    </h2>
+
+    <div class="slds-p-around_medium lgc-bg">
+      <c-lookup
+        label="Account"
+        message-when-value-missing="Hello World"
+        required
+      ></c-lookup>
+    </div>
+  </div>
+
+  <div class="slds-m-top_medium slds-m-bottom_x-large">
+    <h2 class="slds-text-heading_medium slds-m-bottom_medium">
+      With Placeholder
+    </h2>
+
+    <div class="slds-p-around_medium lgc-bg">
+      <c-lookup label="Account" placeholder="Hello World"></c-lookup>
+    </div>
+  </div>
+
+  <div class="slds-m-top_medium slds-m-bottom_x-large">
+    <h2 class="slds-text-heading_medium slds-m-bottom_medium">
+      With min search term length (type at least 5 characters)
+    </h2>
+
+    <div class="slds-p-around_medium lgc-bg">
+      <c-lookup label="Account" min-search-term-length="5"></c-lookup>
+    </div>
+  </div>
+
+  <div class="slds-m-top_medium slds-m-bottom_x-large">
+    <h2 class="slds-text-heading_medium slds-m-bottom_medium">
+      Variant label-stacked
+    </h2>
+
+    <div class="slds-p-around_medium lgc-bg">
+      <c-lookup label="Account" variant="label-stacked"></c-lookup>
+    </div>
+  </div>
+
+  <div class="slds-m-top_medium slds-m-bottom_x-large">
+    <h2 class="slds-text-heading_medium slds-m-bottom_medium">
+      Variant label-inline
+    </h2>
+
+    <div class="slds-p-around_medium lgc-bg">
+      <c-lookup label="Account" variant="label-inline"></c-lookup>
+    </div>
+  </div>
+
+  <div class="slds-m-top_medium slds-m-bottom_x-large">
+    <h2 class="slds-text-heading_medium slds-m-bottom_medium">
+      Variant label-hidden
+    </h2>
+
+    <div class="slds-p-around_medium lgc-bg">
+      <c-lookup label="Account" variant="label-hidden"></c-lookup>
+    </div>
+  </div>
+
+  <div class="slds-m-top_medium slds-m-bottom_x-large">
+    <h2 class="slds-text-heading_medium slds-m-bottom_medium">With actions</h2>
+
+    <div class="slds-p-around_medium lgc-bg">
+      <p>select an action</p>
+      <c-lookup
+        label="Account"
+        actions={actions}
+        onaction={handleAction}
+      ></c-lookup>
+      action selected:
+      <p>{actionClicked}</p>
+    </div>
+  </div>
+</template>

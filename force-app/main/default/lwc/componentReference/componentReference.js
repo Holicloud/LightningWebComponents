@@ -33,8 +33,13 @@ export const COMPONENTS = {
   },
   C_ALERT: {
     type: COMPONENT_TYPES.COMPONENT,
-    descriptor: "Alert",
+    descriptor: "c-alert",
     label: "Alert"
+  },
+  C_LOOKUP: {
+    type: COMPONENT_TYPES.COMPONENT,
+    descriptor: "c-lookup",
+    label: "Lookup"
   }
 };
 
@@ -83,6 +88,23 @@ export const EXAMPLES = {
       "{0}",
       "messageChannelMixin"
     )
+  },
+  [COMPONENTS.C_LOOKUP.descriptor]: {
+    documentation: GIT_HUB_SOURCE_COMPONENTS.replace("{0}", "lookup"),
+    examples: [
+      {
+        title: "Basic",
+        description: "this is some sample",
+        codeBase: EXAMPLES_GIT_HUB_SOURCE.replace("{0}", "lookupBasic"),
+        constructor: () => import("c/lookupBasic")
+      },
+      {
+        title: "With Results",
+        description: "this is some sample",
+        codeBase: EXAMPLES_GIT_HUB_SOURCE.replace("{0}", "lookupWithResults"),
+        constructor: () => import("c/lookupWithResults")
+      }
+    ]
   }
 };
 
@@ -114,6 +136,16 @@ export const HEADER_INFO = {
     title: COMPONENTS.C_ALERT.label,
     description: "Its a C_ALERT",
     descriptor: COMPONENTS.C_ALERT.descriptor,
+    targets: [
+      TARGETS.LIGHTNING_EXPERIENCE,
+      TARGETS.EXPERIENCE_BUILDER_SITES,
+      TARGETS.SALESFORCE_MOBILE_APP
+    ]
+  },
+  [COMPONENTS.C_LOOKUP.descriptor]: {
+    title: COMPONENTS.C_LOOKUP.label,
+    description: "Its a C_LOOKUP",
+    descriptor: COMPONENTS.C_LOOKUP.descriptor,
     targets: [
       TARGETS.LIGHTNING_EXPERIENCE,
       TARGETS.EXPERIENCE_BUILDER_SITES,

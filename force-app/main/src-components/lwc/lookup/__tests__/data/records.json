@@ -1,0 +1,41 @@
+[
+  {
+    "id": "id1",
+    "title": "Santiago"
+  },
+  {
+    "id": "id2",
+    "title": "Nicolas",
+    "recentlyViewed": true,
+    "subtitles": [
+      { "label": "sub1", "value": "sub1" },
+      { "label": "sub2", "value": "sub2" }
+    ]
+  },
+  {
+    "id": "id3",
+    "title": "Johana"
+  },
+  {
+    "id": "id4",
+    "title": "Carmensa",
+    "recentlyViewed": true
+  },
+  {
+    "id": "id5",
+    "title": "Felipe"
+  },
+  {
+    "id": "id6",
+    "title": "Gracia"
+  },
+  {
+    "id": "id7",
+    "title": "John"
+  },
+  {
+    "id": "id8",
+    "title": "Cass",
+    "recentlyViewed": true
+  }
+]

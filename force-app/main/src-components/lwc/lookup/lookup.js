@@ -4,8 +4,9 @@ import {
   classListMutation,
   clone,
   assert,
+  isBlank,
   isNotBlank,
-  excuteAfterRender
+  executeAfterRender
 } from "c/utils";
 
 // Delay for search execution after user input (in milliseconds)
@@ -16,7 +17,9 @@ const KEY_INPUTS = {
   KEY_ESCAPE: 27,
   ARROW_UP: 38,
   ARROW_DOWN: 40,
-  ENTER: 13
+  ENTER: 13,
+  DEL: 46,
+  BACKSPACE: 8
 };
 
 // HTML formatting for matched search terms
@@ -37,27 +40,42 @@ const REGEX_EXTRA_TRAP = /(\$|\\)/g;
 // Default labels for component states
 const LABELS = {
   noResults: "No results.",
-  loading: "Loading..."
+  loading: "Loading...",
+  searchIcon: "Search Icon",
+  removeOption: "Remove selected option",
+  errors: {
+    labelRequired: "label is required",
+    completeThisField: "Complete this field.",
+    invalidHandler: "search handler has to be a function",
+    errorFetchingData: "Error Fetching Data"
+  }
 };
 
 const FORMATTED_TEXT_TYPE = "lightning-formatted-rich-text";
 
 // Minimum required characters for triggering a search
 const MIN_SEARCH_TERM_LENGTH = 2;
+const SCROLL_AFTER_N = "*";
 
 export default class Lookup extends LightningElement {
   @api actions = [];
   @api disabled = false;
-  @api fieldLevelText = "";
+  @api fieldLevelHelp = "";
   @api isMultiEntry = false;
-  @api label = "";
-  @api messageWhenValueMissing = "Complete this field.";
+  @api messageWhenValueMissing = LABELS.errors.completeThisField;
   @api placeholder = "";
   @api required = false;
-  @api scrollAfterNItems = "*";
-  @api searchHandler = async () => {};
+
+  _defaultOptions = [];
+  _minSearchTermLength = MIN_SEARCH_TERM_LENGTH;
+  _options = [];
+  _value = [];
+  _variant = VARIANTS.LABEL_STACKED;
+  _label = "";
+  _scrollAfterNItems = SCROLL_AFTER_N;
 
   cancelBlur = false;
+  labels = LABELS;
   cleanSearchTerm;
   focusedResultIndex = null;
   hasFocus = false;
@@ -72,11 +90,23 @@ export default class Lookup extends LightningElement {
   defaultOptions = [];
   hasInit = false;
 
-  _defaultOptions = [];
-  _minSearchTermLength = MIN_SEARCH_TERM_LENGTH;
-  _options = [];
-  _value = [];
-  _variant = VARIANTS.LABEL_STACKED;
+  @api
+  get scrollAfterNItems() {
+    return this._scrollAfterNItems;
+  }
+  set scrollAfterNItems(value) {
+    this._scrollAfterNItems =
+      value === "*" || Number.isInteger(value) ? value : SCROLL_AFTER_N;
+  }
+
+  @api
+  get label() {
+    return this._label;
+  }
+  set label(value) {
+    assert(isNotBlank(value), LABELS.errors.labelRequired);
+    this._label = value;
+  }
 
   @api
   get minSearchTermLength() {
@@ -116,6 +146,18 @@ export default class Lookup extends LightningElement {
     }
   }
 
+  _searchHandler = async () => {};
+
+  @api
+  get searchHandler() {
+    return this._searchHandler;
+  }
+
+  set searchHandler(value) {
+    assert(typeof value === "function", LABELS.errors.invalidHandler);
+    this._searchHandler = value;
+  }
+
   @api
   get validity() {
     return { valid: !this.hasMissingValue && !this.helpMessage };
@@ -126,7 +168,7 @@ export default class Lookup extends LightningElement {
     if (this.inputElement?.focus) {
       this.inputElement.focus();
     } else {
-      excuteAfterRender(() => {
+      executeAfterRender(() => {
         this.inputElement?.focus();
       });
     }
@@ -137,8 +179,8 @@ export default class Lookup extends LightningElement {
     if (this.inputElement?.blur) {
       this.inputElement.blur();
     } else {
-      excuteAfterRender(() => {
-        this.inputElement?.focus();
+      executeAfterRender(() => {
+        this.inputElement?.blur();
       });
     }
   }
@@ -174,7 +216,6 @@ export default class Lookup extends LightningElement {
   @api
   setCustomValidity(message) {
     this.helpMessage = message;
-    this.blur();
   }
 
   @api
@@ -197,7 +238,7 @@ export default class Lookup extends LightningElement {
   }
 
   get hasSelection() {
-    return this._value.length;
+    return !!this._value.length;
   }
 
   get isSingleEntry() {
@@ -291,7 +332,7 @@ export default class Lookup extends LightningElement {
   get getInputValue() {
     return this.isMultiEntry || !this.hasSelection
       ? this.searchTerm
-      : this.selectedOption.title;
+      : this.selectedOption.id;
   }
 
   get getInputTitle() {
@@ -316,9 +357,10 @@ export default class Lookup extends LightningElement {
     return this.loading ? LABELS.loading : LABELS.noResults;
   }
 
-  updateTitle(result, regex) {
+  highlightTitle(result, regex) {
     result.titleFormatted =
-      this.searchTerm.length && isNotBlank(result.title)
+      this.searchTerm.length >= this.minSearchTermLength &&
+      isNotBlank(result.title)
         ? result.title.replace(regex, BOLD_MATCHER_REGEX)
         : result.title;
   }
@@ -330,7 +372,7 @@ export default class Lookup extends LightningElement {
       subtitle.type = subtitle.type || FORMATTED_TEXT_TYPE;
 
       if (
-        this.searchTerm.length &&
+        this.searchTerm.length >= this.minSearchTermLength &&
         subtitle.highlightSearchTerm &&
         subtitle.type === FORMATTED_TEXT_TYPE
       ) {
@@ -355,11 +397,12 @@ export default class Lookup extends LightningElement {
     const regex = new RegExp(`(${cleanSearchTerm})`, "gi");
 
     // Remove selected items from search results
+    this.focusedResultIndex = null;
 
     this.displayableOptions = clone(results)
       .filter((result) => !this._value.includes(result.id))
       .map((result, index) => {
-        this.updateTitle(result, regex);
+        this.highlightTitle(result, regex);
         result.hasSubtitles = !!result.subtitles?.length;
 
         if (result.hasSubtitles) {
@@ -367,25 +410,31 @@ export default class Lookup extends LightningElement {
         }
 
         result.ariaSelected = this.focusedResultIndex === index;
-        result.classes = classSet("slds-media")
-          .add("slds-media_center")
-          .add("slds-listbox__option")
-          .add("slds-listbox__option_entity")
-          .add({
-            "slds-listbox__option_has-meta": result.hasSubtitles
-          })
-          .add({ "slds-has-focus": this.focusedResultIndex === index })
-          .toString();
+        // by defining this as a getter it will be updated anytime focusResultIndex changes
+        Object.defineProperty(result, "classes", {
+          get: () => {
+            return classSet("slds-media")
+              .add("slds-media_center")
+              .add("slds-listbox__option")
+              .add("slds-listbox__option_entity")
+              .add({
+                "slds-listbox__option_has-meta": result.hasSubtitles
+              })
+              .add({ "slds-has-focus": this.focusedResultIndex === index })
+              .toString();
+          }
+        });
         return result;
       });
   }
 
   async executeSearch(input) {
     try {
-      return await Promise.resolve(this.searchHandler(input));
+      const options = await Promise.resolve(this.searchHandler(input));
+      assert(options instanceof Array);
+      return options;
     } catch (error) {
-      console.error(error);
-      this.setCustomValidity("Error fetching Data");
+      this.setCustomValidity(LABELS.errors.errorFetchingData);
       this.reportValidity();
     }
 
@@ -399,9 +448,10 @@ export default class Lookup extends LightningElement {
 
     const newCleanSearchTerm = newSearchTerm
       .trim()
-      .replace(REGEX_SOSL_RESERVED, "?")
-      .toLowerCase();
-    if (this.cleanSearchTerm === newCleanSearchTerm) {
+      .replace(REGEX_SOSL_RESERVED, "?");
+    if (
+      this.cleanSearchTerm?.toLowerCase() === newCleanSearchTerm.toLowerCase()
+    ) {
       return;
     }
 
@@ -485,6 +535,10 @@ export default class Lookup extends LightningElement {
     this.cleanSearchTerm = "";
     this.searchTerm = "";
     this.setDisplayableOptions(this.defaultOptions);
+    // Blur input after single select lookup selection
+    if (!this.isMultiEntry && this.hasSelection) {
+      this.hasFocus = false;
+    }
 
     // If selection was changed by user, notify parent components
     if (isUserInteraction) {
@@ -514,15 +568,17 @@ export default class Lookup extends LightningElement {
       this.focusedResultIndex = -1;
     }
 
-    if (event.keyCode === KEY_INPUTS.KEY_ESCAPE) {
-      // Reset search
-      this.processSelectionUpdate(true);
-      // Blur input after single select lookup selection
-      if (!this.isMultiEntry && this.hasSelection) {
-        this.hasFocus = false;
-      }
-    }
-    if (event.keyCode === KEY_INPUTS.ARROW_DOWN) {
+    if (
+      isBlank(this.searchTerm) &&
+      this.hasSelection &&
+      !this.isMultiEntry &&
+      (event.keyCode === KEY_INPUTS.BACKSPACE ||
+        event.keyCode === KEY_INPUTS.DEL)
+    ) {
+      this.clearSelection();
+    } else if (event.keyCode === KEY_INPUTS.KEY_ESCAPE) {
+      this.setDisplayableOptions([]);
+    } else if (event.keyCode === KEY_INPUTS.ARROW_DOWN) {
       // If we hit 'down', select the next item, or cycle over.
       this.focusedResultIndex++;
       if (this.focusedResultIndex >= this.allOptions.length) {
@@ -547,6 +603,9 @@ export default class Lookup extends LightningElement {
       this.template.querySelector(`[data-item-id="${id}"]`).click();
       event.preventDefault();
     }
+    // else if (!this.hasSelection && event.keyCode === KEY_INPUTS.ENTER && isBlank(this.searchTerm)) {
+    //   this.setDisplayableOptions(this.defaultOptions);
+    // }
 
     if (
       event.keyCode === KEY_INPUTS.ARROW_DOWN ||
@@ -628,6 +687,10 @@ export default class Lookup extends LightningElement {
   }
 
   handleClearSelection() {
+    this.clearSelection();
+  }
+
+  clearSelection() {
     this.setSelected([]);
     this.hasFocus = false;
     this.processSelectionUpdate(true);
@@ -648,7 +711,11 @@ export default class Lookup extends LightningElement {
   }
 
   async init() {
-    assert(typeof this.searchHandler === "function");
+    assert(isNotBlank(this.label), LABELS.errors.labelRequired);
+    assert(
+      typeof this.searchHandler === "function",
+      LABELS.errors.invalidHandler
+    );
 
     this.defaultOptions = await this.executeSearch({ getDefault: true });
     this.setDisplayableOptions(this.defaultOptions);
@@ -672,4 +739,4 @@ export default class Lookup extends LightningElement {
   }
 }
 
-export { KEY_INPUTS, VARIANTS, LABELS, MIN_SEARCH_TERM_LENGTH };
+export { KEY_INPUTS, VARIANTS, LABELS, MIN_SEARCH_TERM_LENGTH, SCROLL_AFTER_N };

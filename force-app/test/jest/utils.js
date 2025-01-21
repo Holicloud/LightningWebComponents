@@ -35,17 +35,30 @@ async function assertElementIsNotAccesible(element) {
   jest.useFakeTimers();
 }
 
-function excuteAfterRender(callback) {
-  // eslint-disable-next-line @lwc/lwc/no-async-operation
-  setTimeout(callback, 0);
+function mockFunction(element, name, implementation = () => {}) {
+  const mockedFunction = jest.fn(implementation);
+  element.addEventListener(name, mockedFunction);
+  return mockedFunction;
 }
 
 class ElementBuilder {
   defaultApiProps = {};
+  addToDOM = true;
+  flushPromisesAfter = true;
 
   constructor(descriptor, componentReference) {
     this.descriptor = descriptor;
     this.componentReference = componentReference;
+  }
+
+  addToDOM(value) {
+    this.addToDOM = value;
+    return this;
+  }
+
+  flushPromises(value) {
+    this.flushPromisesAfter = value;
+    return this;
   }
 
   setDefaultApiProperties(defaultApiProps) {
@@ -53,18 +66,19 @@ class ElementBuilder {
     return this;
   }
 
-  async build(props = {}, options = {}) {
-    const { addToDOM = true } = options;
+  async build(props = {}) {
     const element = createElement(this.descriptor, {
       is: this.componentReference
     });
     Object.assign(element, this.defaultApiProps, props);
 
-    if (addToDOM) {
+    if (this.addToDOM) {
       document.body.appendChild(element);
+      if (this.flushPromisesAfter) {
+        await flushPromises();
+      }
     }
 
-    await flushPromises();
     return element;
   }
 }
@@ -77,6 +91,6 @@ export {
   removeFromDOM,
   assertElementIsAccesible,
   assertElementIsNotAccesible,
-  excuteAfterRender,
-  ElementBuilder
+  ElementBuilder,
+  mockFunction
 };

@@ -1,0 +1,53 @@
+<template>
+  <div class="slds-m-top_medium slds-m-bottom_x-large">
+    <h2 class="slds-text-heading_medium slds-m-bottom_medium">
+      With Default Search Results
+    </h2>
+
+    <div class="slds-p-around_medium lgc-bg">
+      <c-lookup label="Account" search-handler={searchHandler}></c-lookup>
+    </div>
+  </div>
+
+  <div class="slds-m-top_medium slds-m-bottom_x-large">
+    <h2 class="slds-text-heading_medium slds-m-bottom_medium">
+      With initial selection
+    </h2>
+
+    <div class="slds-p-around_medium lgc-bg">
+      <c-lookup
+        label="Account"
+        value="id1"
+        disabled
+        search-handler={searchHandler}
+      ></c-lookup>
+    </div>
+  </div>
+
+  <div class="slds-m-top_medium slds-m-bottom_x-large">
+    <h2 class="slds-text-heading_medium slds-m-bottom_medium">Multi Entry</h2>
+
+    <div class="slds-p-around_medium lgc-bg">
+      <c-lookup
+        is-multi-entry
+        label="Account"
+        search-handler={searchHandler}
+      ></c-lookup>
+    </div>
+  </div>
+
+  <div class="slds-m-top_medium slds-m-bottom_x-large">
+    <h2 class="slds-text-heading_medium slds-m-bottom_medium">
+      Multi Entry with selection
+    </h2>
+
+    <div class="slds-p-around_medium lgc-bg">
+      <c-lookup
+        is-multi-entry
+        value={value}
+        label="Account"
+        search-handler={searchHandler}
+      ></c-lookup>
+    </div>
+  </div>
+</template>
