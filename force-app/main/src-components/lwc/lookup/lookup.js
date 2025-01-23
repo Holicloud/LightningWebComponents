@@ -71,14 +71,14 @@ export default class Lookup extends LightningElement {
   @api placeholder = "";
   @api required = false;
 
-  _minSearchTermLength = MIN_SEARCH_TERM_LENGTH;
-  _variant = VARIANTS.LABEL_STACKED;
   _label = "";
+  _minSearchTermLength = MIN_SEARCH_TERM_LENGTH;
   _scrollAfterNItems = SCROLL_AFTER_N;
+  _variant = VARIANTS.LABEL_STACKED;
 
-  @track isLoading = true;
-  @track records = new Map();
   @track recordsDropdown = [];
+  isLoading = true;
+  records = new Map();
   cancelBlur = false;
   cleanSearchTerm;
   displayListBox = false;
@@ -88,8 +88,6 @@ export default class Lookup extends LightningElement {
   hasInit = false;
   helpMessage;
   labels = LABELS;
-  matchingSearchTermOptions = new Map();
-  recordById = new Map();
   searchTerm = "";
   searchThrottlingTimeout;
   showHelpMessage = false;
