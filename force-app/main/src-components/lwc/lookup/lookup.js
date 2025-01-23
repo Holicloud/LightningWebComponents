@@ -77,9 +77,12 @@ export default class Lookup extends LightningElement {
   _scrollAfterNItems = SCROLL_AFTER_N;
 
   @track isLoading = true;
+  @track records = new Map();
+  @track recordsDropdown = [];
   cancelBlur = false;
   cleanSearchTerm;
   displayListBox = false;
+  displayMatching = false;
   focusedResultIndex = null;
   hasFocus = false;
   hasInit = false;
@@ -87,12 +90,9 @@ export default class Lookup extends LightningElement {
   labels = LABELS;
   matchingSearchTermOptions = new Map();
   recordById = new Map();
-  @track records = new Map();
   searchTerm = "";
   searchThrottlingTimeout;
   showHelpMessage = false;
-  displayMatching = false;
-  @track recordsDropdown = [];
 
   @api
   get scrollAfterNItems() {
@@ -289,7 +289,6 @@ export default class Lookup extends LightningElement {
     const css = classSet("slds-input")
       .add("slds-combobox__input")
       .add("has-custom-height")
-      // .add({ "slds-has-focus": this.hasFocus })
       .add({
         "slds-has-focus": this.hasFocus && this.recordsDropdown?.length
       })
@@ -502,8 +501,8 @@ export default class Lookup extends LightningElement {
     // Reset search
     this.cleanSearchTerm = "";
     this.searchTerm = "";
-    this.displayMatching = false;
     if (!this.isMultiEntry && this.hasSelection) {
+      this.displayMatching = false;
       this.displayListBox = false;
     }
 

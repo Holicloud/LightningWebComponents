@@ -1,56 +1,178 @@
 import { LightningElement } from "lwc";
 const RECORDS = [
   {
-    id: "id1",
-    title: "Santiago"
+    id: "0",
+    title: "Home Dashboard",
+    icon: { iconName: "utility:home", variant: "error" },
+    subtitles: [
+      {
+        label: "Status",
+        value: "Not Connected",
+        type: "lightning-icon",
+        props: { iconName: "utility:info", variant: "warning" }
+      }
+    ],
+    retrieveOnDefault: true
   },
   {
-    id: "id2",
-    title: "Nicolas",
-    recentlyViewed: true
+    id: "1",
+    title: "System Alerts",
+    icon: { iconName: "utility:warning", variant: "success" },
+    subtitles: [
+      {
+        label: "High Priority",
+        value: "5 Alerts",
+        type: "custom-type",
+        props: { key1: "value1" }
+      },
+      {
+        label: "Low Priority",
+        value: "2 Alerts",
+        type: "lightning-icon"
+      }
+    ]
   },
   {
-    id: "id3",
-    title: "Johana"
+    id: "2",
+    title: "User Info",
+    icon: { iconName: "utility:info", variant: "warning" }
   },
   {
-    id: "id4",
-    title: "Carmensa",
-    recentlyViewed: true
+    id: "3",
+    title: "Settings Panel",
+    icon: { iconName: "utility:home", variant: "success" }
+  },
+  { id: "4", title: "Support Center" },
+  {
+    id: "5",
+    title: "Notifications",
+    subtitles: [
+      {
+        label: "Unread Messages",
+        value: "3 New Messages",
+        type: "lightning-icon",
+        props: { iconName: "utility:info", variant: "warning" }
+      }
+    ]
   },
   {
-    id: "id5",
-    title: "Felipe"
+    id: "6",
+    title: "Activity Logs",
+    subtitles: [
+      { label: "Last Login", value: "2 Hours Ago", type: "lightning-icon" }
+    ]
+  },
+  { id: "7", title: "Billing Information", retrieveOnDefault: true },
+  { id: "8", title: "Reports Center" },
+  {
+    id: "9",
+    title: "System Health",
+    icon: { iconName: "utility:warning", variant: "success" },
+    retrieveOnDefault: true
   },
   {
-    id: "id6",
-    title: "Gracia"
+    id: "10",
+    title: "Admin Dashboard",
+    icon: { iconName: "utility:info", variant: "success" },
+    subtitles: [
+      {
+        label: "Admin Tools",
+        value: "Enabled",
+        type: "custom-type",
+        props: { key2: "value1" },
+        icon: { iconName: "utility:warning", variant: "warning" }
+      }
+    ]
   },
   {
-    id: "id7",
-    title: "John"
+    id: "11",
+    title: "Network Status",
+    icon: { iconName: "utility:info", variant: "inverse" }
   },
   {
-    id: "id8",
-    title: "Cass",
-    recentlyViewed: true
+    id: "12",
+    title: "Email Settings",
+    icon: { iconName: "utility:info", variant: "error" }
+  },
+  {
+    id: "13",
+    title: "Security Dashboard",
+    icon: { iconName: "utility:info", variant: "warning" }
+  },
+  {
+    id: "14",
+    title: "Email Notifications",
+    icon: { iconName: "utility:email", variant: "error" },
+    subtitles: [{ label: "Unread Emails", value: "10", type: "lightning-icon" }]
+  },
+  {
+    id: "15",
+    title: "Risk Analysis",
+    icon: { iconName: "utility:warning", variant: "inverse" }
+  },
+  { id: "16", title: "Backup Settings" },
+  { id: "17", title: "Error Logs" },
+  {
+    id: "18",
+    title: "Data Sync",
+    icon: { iconName: "utility:info", variant: "success" },
+    retrieveOnDefault: true
+  },
+  {
+    id: "19",
+    title: "File Manager",
+    subtitles: [
+      { label: "Total Files", value: "120 Files", type: "lightning-icon" },
+      { label: "Free Space", value: "10 GB", type: "custom-type" }
+    ]
+  },
+  {
+    id: "20",
+    title: "Help Center",
+    icon: { iconName: "utility:home", variant: "error" }
+  },
+  {
+    id: "21",
+    title: "Integration Tools",
+    icon: { iconName: "utility:info", variant: "warning" }
+  },
+  {
+    id: "22",
+    title: "Performance Reports",
+    icon: { iconName: "utility:info", variant: "error" }
+  },
+  { id: "23", title: "Usage Metrics" },
+  {
+    id: "24",
+    title: "Audit Logs",
+    icon: { iconName: "utility:info", variant: "success" },
+    retrieveOnDefault: true
+  },
+  {
+    id: "25",
+    title: "System Summary",
+    subtitles: [
+      {
+        label: "Users Online",
+        value: "25",
+        type: "lightning-icon"
+      }
+    ]
   }
 ];
 
 export default class LookupWithResults extends LightningElement {
-  value = ["id1", "id2"];
+  value = ["6", "7"];
 
   searchHandler(config) {
-    const { getDefault, getInitialSelection, rawSearchTerm, selectedIds } =
-      config;
+    const { getDefault, getInitialSelection, selectedIds } = config;
     if (getDefault) {
-      return RECORDS.filter((record) => record.recentlyViewed);
+      return RECORDS.filter((record) => record.retrieveOnDefault);
     } else if (getInitialSelection) {
       return RECORDS.filter((record) => selectedIds.includes(record.id));
     }
 
-    return RECORDS.filter((record) =>
-      record.title.toLowerCase().includes(rawSearchTerm.toLowerCase())
-    );
+    // filter your records using rawSearchTerm or searchTerm
+    return RECORDS;
   }
 }

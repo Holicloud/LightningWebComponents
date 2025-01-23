@@ -1,12 +1,12 @@
 [
   {
-    "id": "6",
-    "title": "Record 6",
+    "id": "0",
+    "title": "Home Dashboard",
     "icon": { "iconName": "utility:home", "variant": "error" },
     "subtitles": [
       {
-        "label": "Subtitle 21",
-        "value": "sub1",
+        "label": "Status",
+        "value": "Not Connected",
         "type": "lightning-icon",
         "props": { "iconName": "utility:info", "variant": "warning" }
       }
@@ -14,69 +14,73 @@
     "retrieveOnDefault": true
   },
   {
-    "id": "7",
-    "title": "Record 7",
+    "id": "1",
+    "title": "System Alerts",
     "icon": { "iconName": "utility:warning", "variant": "success" },
     "subtitles": [
       {
-        "label": "Subtitle 13",
-        "value": "Record 7",
+        "label": "High Priority",
+        "value": "5 Alerts",
         "type": "custom-type",
         "props": { "key1": "value1" }
       },
       {
-        "label": "Subtitle 19",
-        "value": "sub1",
+        "label": "Low Priority",
+        "value": "2 Alerts",
         "type": "lightning-icon"
       }
     ]
   },
   {
-    "id": "8",
-    "title": "Record 8",
+    "id": "2",
+    "title": "User Info",
     "icon": { "iconName": "utility:info", "variant": "warning" }
   },
   {
-    "id": "9",
-    "title": "Record 9",
+    "id": "3",
+    "title": "Settings Panel",
     "icon": { "iconName": "utility:home", "variant": "success" }
   },
-  { "id": "10", "title": "Record 10" },
+  { "id": "4", "title": "Support Center" },
   {
-    "id": "11",
-    "title": "Record 11",
+    "id": "5",
+    "title": "Notifications",
     "subtitles": [
       {
-        "label": "Subtitle 7",
-        "value": "Record 11",
+        "label": "Unread Messages",
+        "value": "3 New Messages",
         "type": "lightning-icon",
         "props": { "iconName": "utility:info", "variant": "warning" }
       }
     ]
   },
   {
-    "id": "12",
-    "title": "Record 12",
+    "id": "6",
+    "title": "Activity Logs",
     "subtitles": [
-      { "label": "Subtitle 18", "value": "Record 12", "type": "lightning-icon" }
+      {
+        "label": "Last Login",
+        "value": "2 Hours Ago",
+        "type": "lightning-icon"
+      }
     ]
   },
-  { "id": "13", "title": "Record 13", "retrieveOnDefault": true },
-  { "id": "14", "title": "Record 14" },
+  { "id": "7", "title": "Billing Information", "retrieveOnDefault": true },
+  { "id": "8", "title": "Reports Center" },
   {
-    "id": "15",
-    "title": "Record 15",
+    "id": "9",
+    "title": "System Health",
     "icon": { "iconName": "utility:warning", "variant": "success" },
     "retrieveOnDefault": true
   },
   {
-    "id": "16",
-    "title": "Record 16",
+    "id": "10",
+    "title": "Admin Dashboard",
     "icon": { "iconName": "utility:info", "variant": "success" },
     "subtitles": [
       {
-        "label": "Subtitle 14",
-        "value": "sub1",
+        "label": "Admin Tools",
+        "value": "Enabled",
         "type": "custom-type",
         "props": { "key2": "value1" },
         "icon": { "iconName": "utility:warning", "variant": "warning" }
@@ -84,47 +88,84 @@
     ]
   },
   {
-    "id": "17",
-    "title": "Record 17",
+    "id": "11",
+    "title": "Network Status",
     "icon": { "iconName": "utility:info", "variant": "inverse" }
   },
   {
-    "id": "18",
-    "title": "Record 18",
+    "id": "12",
+    "title": "Email Settings",
     "icon": { "iconName": "utility:info", "variant": "error" }
   },
   {
-    "id": "19",
-    "title": "Record 19",
+    "id": "13",
+    "title": "Security Dashboard",
     "icon": { "iconName": "utility:info", "variant": "warning" }
   },
   {
-    "id": "20",
-    "title": "Record 20",
+    "id": "14",
+    "title": "Email Notifications",
     "icon": { "iconName": "utility:email", "variant": "error" },
     "subtitles": [
-      { "label": "Subtitle 3", "value": "sub1", "type": "lightning-icon" }
+      { "label": "Unread Emails", "value": "10", "type": "lightning-icon" }
     ]
   },
   {
-    "id": "21",
-    "title": "Record 21",
+    "id": "15",
+    "title": "Risk Analysis",
     "icon": { "iconName": "utility:warning", "variant": "inverse" }
   },
-  { "id": "22", "title": "Record 22" },
-  { "id": "23", "title": "Record 23" },
+  { "id": "16", "title": "Backup Settings" },
+  { "id": "17", "title": "Error Logs" },
+  {
+    "id": "18",
+    "title": "Data Sync",
+    "icon": { "iconName": "utility:info", "variant": "success" },
+    "retrieveOnDefault": true
+  },
+  {
+    "id": "19",
+    "title": "File Manager",
+    "subtitles": [
+      {
+        "label": "Total Files",
+        "value": "120 Files",
+        "type": "lightning-icon"
+      },
+      { "label": "Free Space", "value": "10 GB", "type": "custom-type" }
+    ]
+  },
+  {
+    "id": "20",
+    "title": "Help Center",
+    "icon": { "iconName": "utility:home", "variant": "error" }
+  },
+  {
+    "id": "21",
+    "title": "Integration Tools",
+    "icon": { "iconName": "utility:info", "variant": "warning" }
+  },
+  {
+    "id": "22",
+    "title": "Performance Reports",
+    "icon": { "iconName": "utility:info", "variant": "error" }
+  },
+  { "id": "23", "title": "Usage Metrics" },
   {
     "id": "24",
-    "title": "Record 24",
+    "title": "Audit Logs",
     "icon": { "iconName": "utility:info", "variant": "success" },
     "retrieveOnDefault": true
   },
   {
     "id": "25",
-    "title": "Record 25",
+    "title": "System Summary",
     "subtitles": [
-      { "label": "Subtitle 1", "value": "Record 25", "type": "lightning-icon" },
-      { "label": "Subtitle 23", "value": "Record 25", "type": "custom-type" }
+      {
+        "label": "Users Online",
+        "value": "25",
+        "type": "lightning-icon"
+      }
     ]
   }
 ]
