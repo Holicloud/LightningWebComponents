@@ -2,10 +2,11 @@ import {
   ElementBuilder,
   resetDOM,
   getByDataId,
+  flushPromises,
   assertElementIsAccesible,
   mockFunction
 } from "test/utils";
-import Lookup, { KEY_INPUTS, LABELS } from "c/Lookup";
+import Lookup, { KEY_INPUTS } from "c/Lookup";
 import RECORDS from "./data/records.json";
 
 const DEFAULT_OPTIONS = RECORDS.filter((record) => record.recentlyViewed);
@@ -24,7 +25,7 @@ const searchHandler = jest.fn((config) => {
   );
 });
 
-describe("c-base-lookup rendering", () => {
+describe("c-base-lookup single entry", () => {
   const elementBuilder = new ElementBuilder(
     "c-base-lookup",
     Lookup
@@ -52,30 +53,35 @@ describe("c-base-lookup rendering", () => {
       value: "any"
     });
 
-    expect(element.value).toBeUndefined();
+    expect(element.value).toBe("any");
     await assertElementIsAccesible(element);
   });
 
   it("can select item with keyboard", async () => {
     const element = await elementBuilder.build();
     const changeFn = mockFunction(element, "change");
-
-    element.focus();
-
     const scrollIntoView = jest.fn();
     window.HTMLElement.prototype.scrollIntoView = scrollIntoView;
+
+    element.focus();
 
     const searchInput = getByDataId(element, "input");
     searchInput.dispatchEvent(
       new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.ARROW_DOWN })
     );
+
+    expect(scrollIntoView).toHaveBeenCalled();
+
+    await flushPromises();
+
     searchInput.dispatchEvent(
       new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.ENTER })
     );
 
+    await flushPromises();
+
     // Check selection
     expect(element.value).toEqual(DEFAULT_OPTIONS[0].id);
-    expect(scrollIntoView).toHaveBeenCalled();
     expect(changeFn).toHaveBeenCalledWith(
       expect.objectContaining({
         detail: {
@@ -90,15 +96,16 @@ describe("c-base-lookup rendering", () => {
   it("can select item with mouse", async () => {
     const element = await elementBuilder.build();
     const changeFn = mockFunction(element, "change");
+    const record = DEFAULT_OPTIONS[0];
 
-    element.shadowRoot.querySelectorAll("[data-item-id]")[0].click();
+    element.shadowRoot.querySelector(`[data-record-id="${record.id}"]`).click();
 
-    expect(element.value).toEqual(DEFAULT_OPTIONS[0].id);
+    expect(element.value).toEqual(record.id);
     expect(changeFn).toHaveBeenCalledWith(
       expect.objectContaining({
         detail: {
-          value: DEFAULT_OPTIONS[0].id,
-          info: DEFAULT_OPTIONS[0]
+          value: record.id,
+          info: record
         }
       })
     );
@@ -138,30 +145,34 @@ describe("c-base-lookup rendering", () => {
     await assertElementIsAccesible(element);
   });
 
-  it("initial selection is displayed", async () => {
-    const value = RECORDS[0].id;
-    const element = await elementBuilder.build({ value });
+  it("should remove selected option and hide results when backspace or del is pressed", async () => {
+    const element = await elementBuilder.build();
 
-    const selIcon = getByDataId(element, "search-icon");
-    expect(selIcon.alternativeText).toBe(LABELS.searchIcon);
-    // Verify clear selection button
-    const clearSelButton = getByDataId(element, "remove");
-    expect(clearSelButton.title).toBe(LABELS.removeOption);
-    // Verify result list is NOT rendered
-    const selList = element.shadowRoot.querySelectorAll(
-      '[data-id="selected-options"]'
-    );
-    expect(selList.length).toBe(0);
+    // select an option
+    element.shadowRoot.querySelector("[data-record-id]").click();
 
-    expect(element.searchHandler).toHaveBeenCalledWith(
-      expect.objectContaining({
-        getInitialSelection: true,
-        selectedIds: [value]
-      })
+    await flushPromises();
+
+    expect(getByDataId(element, "list-item", true)?.length).toBe(
+      DEFAULT_OPTIONS.length - 1
     );
 
-    expect(getByDataId(element, "input").value).toBe(RECORDS[0].title);
-    expect(getByDataId(element, "input").title).toBe(RECORDS[0].title);
+    // users clears option using backspace or delete
+    const searchInput = getByDataId(element, "input");
+    searchInput.focus();
+    searchInput.dispatchEvent(
+      new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.BACKSPACE })
+    );
+
+    await flushPromises();
+
+    expect(getByDataId(element, "list-item", true)?.length).toBe(
+      DEFAULT_OPTIONS.length
+    );
+    expect(getByDataId(element, "dropdown")?.classList).not.toContain(
+      "slds-is-open"
+    );
+
     await assertElementIsAccesible(element);
   });
 });

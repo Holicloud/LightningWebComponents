@@ -20,11 +20,11 @@
 // const DEFAULT_OPTIONS = RECORDS.filter((record) => record.recentlyViewed);
 
 // const searchHandler = jest.fn((builder) => {
-//   const { getDefault, getInitialSelection, rawSearchTerm, selectedIds } =
+//   const { getDefault, selection, rawSearchTerm, selectedIds } =
 //     builder;
 //   if (getDefault) {
 //     return DEFAULT_OPTIONS;
-//   } else if (getInitialSelection) {
+//   } else if (selection) {
 //     return RECORDS.filter((record) => selectedIds.includes(record.id));
 //   }
 
@@ -72,7 +72,7 @@ describe("c-base-lookup rendering", () => {
   //   //   const element = await builder.build();
 
   //   //   // select an option
-  //   //   element.shadowRoot.querySelector("[data-item-id]").click();
+  //   //   element.shadowRoot.querySelector("[data-record-id]").click();
 
   //   //   await flushPromises();
 

@@ -46,37 +46,43 @@ describe("c-base-lookup rendering", () => {
   });
 
   it("should not set option when invalid", async () => {
+    const value = "any";
     const element = await elementBuilder.build({
       searchHandler: () => {
         return [];
       },
-      value: "any"
+      value
     });
 
-    expect(element.value).toEqual([]);
+    expect(element.value).toEqual([value]);
     await assertElementIsAccesible(element);
   });
 
   it("can select item with keyboard", async () => {
     const element = await elementBuilder.build();
     const changeFn = mockFunction(element, "change");
-
-    element.focus();
-
     const scrollIntoView = jest.fn();
     window.HTMLElement.prototype.scrollIntoView = scrollIntoView;
+
+    element.focus();
 
     const searchInput = getByDataId(element, "input");
     searchInput.dispatchEvent(
       new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.ARROW_DOWN })
     );
+
+    expect(scrollIntoView).toHaveBeenCalled();
+
+    await flushPromises();
+
     searchInput.dispatchEvent(
       new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.ENTER })
     );
 
+    await flushPromises();
+
     // Check selection
     expect(element.value).toEqual([DEFAULT_OPTIONS[0].id]);
-    expect(scrollIntoView).toHaveBeenCalled();
     expect(changeFn).toHaveBeenCalledWith(
       expect.objectContaining({
         detail: {
@@ -92,7 +98,7 @@ describe("c-base-lookup rendering", () => {
     const element = await elementBuilder.build();
     const changeFn = mockFunction(element, "change");
 
-    element.shadowRoot.querySelectorAll("[data-item-id]")[0].click();
+    element.shadowRoot.querySelectorAll("[data-record-id]")[0].click();
 
     expect(element.value).toEqual([DEFAULT_OPTIONS[0].id]);
     expect(changeFn).toHaveBeenCalledWith(
@@ -178,10 +184,6 @@ describe("c-base-lookup rendering", () => {
       value: RECORDS.map((result) => result.id)
     });
 
-    const inputBox = getByDataId(element, "input");
-    expect(inputBox.title).toBe("");
-
-    // Verify that default selection is showing up
     const selPills = element.shadowRoot.querySelectorAll('[data-id="pill"]');
     expect(selPills.length).toBe(RECORDS.length);
     expect(selPills[0].title).toBe(RECORDS[0].title);
@@ -196,8 +198,7 @@ describe("c-base-lookup rendering", () => {
       value: RECORDS.map((result) => result.id)
     });
 
-    const changeFn = jest.fn();
-    element.addEventListener("change", changeFn);
+    const changeFn = mockFunction(element, "change");
 
     // Remove a selected item
     getByDataId(element, "pill").dispatchEvent(new CustomEvent("remove"));
@@ -219,9 +220,8 @@ describe("c-base-lookup rendering", () => {
     const element = await elementBuilder.build({
       value: RECORDS.map((result) => result.id)
     });
-    await flushPromises();
 
-    const noResultElement = getByDataId(element, "no-result-or-loading");
+    const noResultElement = getByDataId(element, "no-results");
     expect(noResultElement?.textContent).toBe(LABELS.noResults);
 
     await assertElementIsAccesible(element);

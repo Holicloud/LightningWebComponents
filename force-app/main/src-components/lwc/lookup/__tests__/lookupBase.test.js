@@ -34,7 +34,7 @@ const searchHandler = jest.fn((config) => {
 });
 
 const elementBuilder = new ElementBuilder(
-  "c-base-lookup",
+  "c-lookup",
   Lookup
 ).setDefaultApiProperties({
   label: BASE_LABEL,
@@ -46,7 +46,7 @@ const modes = [
   elementBuilder.setDefaultApiProperties({ isMultiEntry: false })
 ];
 
-describe("c-base-lookup rendering", () => {
+describe("c-lookup rendering", () => {
   beforeEach(() => {
     jest.useFakeTimers();
   });
@@ -134,8 +134,9 @@ describe("c-base-lookup rendering", () => {
       await flushPromises();
 
       expect(document.activeElement).not.toBe(element);
-      const dropdownEl = getByDataId(element, "dropdown");
-      expect(dropdownEl.classList).not.toContain("slds-is-open");
+      expect(getByDataId(element, "dropdown").classList).not.toContain(
+        "slds-is-open"
+      );
 
       expect(element?.classList).toContain("slds-has-error");
       expect(getByDataId(element, "help-message")?.textContent).toBe(
@@ -416,6 +417,7 @@ describe("c-base-lookup rendering", () => {
     const mocked = mockFunction(getByDataId(element, "input"), "blur");
 
     element.focus();
+    await flushPromises();
     element.blur();
 
     expect(mocked).toHaveBeenCalled();
@@ -458,9 +460,9 @@ describe("c-base-lookup rendering", () => {
       expect.objectContaining({ getDefault: true })
     );
 
-    expect(element.shadowRoot.querySelectorAll("[data-item-id]")?.length).toBe(
-      searchHandler({ getDefault: true }).length
-    );
+    expect(
+      element.shadowRoot.querySelectorAll("[data-record-id]")?.length
+    ).toBe(DEFAULT_OPTIONS.length);
     await assertElementIsAccesible(element);
   });
 
@@ -477,7 +479,7 @@ describe("c-base-lookup rendering", () => {
         expect.objectContaining({
           searchTerm: SAMPLE_SEARCH_CLEAN,
           rawSearchTerm: SAMPLE_SEARCH_RAW,
-          selectedIds: []
+          fetchedIds: []
         })
       );
 
@@ -525,7 +527,7 @@ describe("c-base-lookup rendering", () => {
         expect.objectContaining({
           searchTerm: SAMPLE_SEARCH_CLEAN,
           rawSearchTerm: SAMPLE_SEARCH_RAW,
-          selectedIds: []
+          fetchedIds: []
         })
       );
 
@@ -542,7 +544,7 @@ describe("c-base-lookup rendering", () => {
         }
       });
 
-      const noResultsElement = getByDataId(element, "no-result-or-loading");
+      const noResultsElement = getByDataId(element, "no-results");
       expect(noResultsElement?.textContent).toBe(LABELS.noResults);
 
       await assertElementIsAccesible(element);
@@ -553,9 +555,9 @@ describe("c-base-lookup rendering", () => {
     const element = await builder.build();
     await flushPromises();
 
-    const listItemEls = element.shadowRoot.querySelectorAll("[data-item-id]");
+    const listItemEls = element.shadowRoot.querySelectorAll("[data-record-id]");
     expect(listItemEls.length).toBe(DEFAULT_OPTIONS.length);
-    expect(listItemEls[0].dataset.itemId).toBe(DEFAULT_OPTIONS[0].id);
+    expect(listItemEls[0].dataset.recordId).toBe(DEFAULT_OPTIONS[0].id);
 
     await assertElementIsAccesible(element);
   });
@@ -590,20 +592,20 @@ describe("c-base-lookup rendering", () => {
     }
   );
 
-  it.each(modes)("renders valid options", async (builder) => {
+  it.each(modes)("renders default options and subtitles", async (builder) => {
     // Create lookup
     const element = await builder.build();
     await flushPromises();
 
     // Query for rendered list items
-    const listItemEls = element.shadowRoot.querySelectorAll(
+    const listOfRecords = element.shadowRoot.querySelectorAll(
       "[data-id='list-item']"
     );
-    expect(listItemEls.length).toBe(DEFAULT_OPTIONS.length);
-    const resultItemEls = listItemEls[0].querySelectorAll(
+    expect(listOfRecords.length).toBe(DEFAULT_OPTIONS.length);
+    const firstSubtitles = listOfRecords[0].querySelectorAll(
       "[data-id='subtitle']"
     );
-    expect(resultItemEls.length).toBe(DEFAULT_OPTIONS[0].subtitles.length);
+    expect(firstSubtitles.length).toBe(DEFAULT_OPTIONS[0].subtitles.length);
     await assertElementIsAccesible(element);
   });
 
@@ -624,57 +626,39 @@ describe("c-base-lookup rendering", () => {
     await assertElementIsAccesible(element);
   });
 
+  it.each(modes)("should show options when enter pressed", async (builder) => {
+    const element = await builder.build();
+
+    await flushPromises();
+
+    const searchInput = getByDataId(element, "input");
+    searchInput.focus();
+    searchInput.dispatchEvent(
+      new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.ENTER })
+    );
+
+    await flushPromises();
+
+    expect(getByDataId(element, "list-item", true)?.length).toBe(
+      DEFAULT_OPTIONS.length
+    );
+    expect(getByDataId(element, "dropdown")?.classList).toContain(
+      "slds-is-open"
+    );
+
+    await assertElementIsAccesible(element);
+  });
   it.each(modes)(
-    "should remove selected option and hide results when backspace or del is pressed",
+    "should show options when space is pressed",
     async (builder) => {
       const element = await builder.build();
-
-      // select an option
-      element.shadowRoot.querySelector("[data-item-id]").click();
-
-      await flushPromises();
-
-      expect(getByDataId(element, "list-item", true)?.length).toBe(
-        DEFAULT_OPTIONS.length - 1
-      );
-
-      // users clears option using backspace or delete
-      const searchInput = getByDataId(element, "input");
-      searchInput.focus();
-      searchInput.dispatchEvent(
-        new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.BACKSPACE })
-      );
-
-      await flushPromises();
-
-      expect(getByDataId(element, "list-item", true)?.length).toBe(
-        DEFAULT_OPTIONS.length
-      );
-      expect(getByDataId(element, "dropdown")?.classList).not.toContain(
-        "slds-is-open"
-      );
-
-      await assertElementIsAccesible(element);
-    }
-  );
-
-  it.each(modes)(
-    "should show options when enter or space is pressed",
-    async (builder) => {
-      const element = await builder.build();
-
-      // select an option
-      element.shadowRoot.querySelector("[data-item-id]").click();
 
       await flushPromises();
 
       const searchInput = getByDataId(element, "input");
       searchInput.focus();
       searchInput.dispatchEvent(
-        new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.BACKSPACE })
-      );
-      searchInput.dispatchEvent(
-        new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.ENTER })
+        new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.SPACE })
       );
 
       await flushPromises();
@@ -685,6 +669,116 @@ describe("c-base-lookup rendering", () => {
       expect(getByDataId(element, "dropdown")?.classList).toContain(
         "slds-is-open"
       );
+
+      await assertElementIsAccesible(element);
+    }
+  );
+
+  it.each(modes)(
+    "should options removed from keyboard and starts typing",
+    async (builder) => {
+      const element = await builder.build();
+
+      // select an option
+      element.shadowRoot.querySelector("[data-record-id]").click();
+      await flushPromises();
+
+      // clears input using backspace
+      const searchInput = getByDataId(element, "input");
+      searchInput.focus();
+      searchInput.dispatchEvent(
+        new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.BACKSPACE })
+      );
+
+      await flushPromises();
+
+      // types again
+      await inputSearchTerm(element, RECORDS[0].title);
+
+      expect(getByDataId(element, "list-item", true)?.length).toBe(1);
+      expect(getByDataId(element, "dropdown")?.classList).toContain(
+        "slds-is-open"
+      );
+
+      await assertElementIsAccesible(element);
+    }
+  );
+
+  it.each(modes)(
+    "options should not be visible when user types escape",
+    async (builder) => {
+      const element = await builder.build();
+
+      await inputSearchTerm(element, RECORDS[0].title);
+
+      const searchInput = getByDataId(element, "input");
+      searchInput.dispatchEvent(
+        new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.ESCAPE })
+      );
+
+      await flushPromises();
+
+      expect(getByDataId(element, "list-item", true)?.length).toBe(1);
+      expect(getByDataId(element, "dropdown")?.classList).not.toContain(
+        "slds-is-open"
+      );
+
+      await assertElementIsAccesible(element);
+    }
+  );
+
+  it.each(modes)(
+    "should clear the input and display default list items when clear button is clicked",
+    async (builder) => {
+      const element = await builder.build();
+
+      await inputSearchTerm(element, "any");
+
+      getByDataId(element, "clear").click();
+
+      await flushPromises();
+
+      expect(getByDataId(element, "list-item", true)?.length).toBe(
+        DEFAULT_OPTIONS.length
+      );
+      expect(getByDataId(element, "input").value).toBe("");
+      expect(getByDataId(element, "dropdown")?.classList).toContain(
+        "slds-is-open"
+      );
+
+      await assertElementIsAccesible(element);
+    }
+  );
+
+  it.each(modes)("should hide search icon when user typed", async (builder) => {
+    const element = await builder.build();
+
+    await inputSearchTerm(element, "any");
+
+    getByDataId(element, "clear").click();
+
+    await flushPromises();
+
+    expect(getByDataId(element, "search-icon")).toBeDefined();
+    await assertElementIsAccesible(element);
+  });
+
+  it.each(modes)(
+    "should hide clear icon when the user has not put input anything",
+    async (builder) => {
+      const element = await builder.build();
+
+      await inputSearchTerm(element, "any");
+
+      expect(getByDataId(element, "clear")).toBeDefined();
+      expect(getByDataId(element, "search-icon")).toBeFalsy();
+
+      getByDataId(element, "clear").click();
+
+      await flushPromises();
+
+      expect(getByDataId(element, "search-icon")).toBeDefined();
+      expect(getByDataId(element, "clear")).toBeFalsy();
 
       await assertElementIsAccesible(element);
     }

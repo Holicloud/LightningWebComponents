@@ -67,8 +67,35 @@
               onkeydown={handleKeyDown}
             />
 
+            <div class="slds-input__icon-group slds-input__icon-group_right">
+              <div
+                lwc:if={isLoading}
+                role="status"
+                class="slds-spinner slds-spinner_brand slds-spinner_x-small slds-input__spinner"
+              >
+                <span class="slds-assistive-text">{labels.loading}</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+              </div>
+              <button
+                data-id="clear"
+                lwc:if={showClearIcon}
+                class="slds-button slds-button_icon slds-input__icon slds-input__icon_right"
+                title="Clear"
+                onclick={handleClearSearchTerm}
+              >
+                <lightning-icon
+                  icon-name="utility:clear"
+                  size="x-small"
+                  class="slds-button__icon slds-icon-text-light"
+                  alternative-text={labels.clear}
+                ></lightning-icon>
+              </button>
+            </div>
+
             <!-- Search icon -->
             <lightning-icon
+              lwc:if={showSearchIcon}
               data-id="search-icon"
               icon-name="utility:search"
               size="x-small"
@@ -81,7 +108,7 @@
               <button
                 title={labels.removeOption}
                 type="button"
-                onclick={handleClearSelection}
+                onclick={handleRemoveSelectionSingleEntry}
                 class={getClearSelectionButtonClass}
                 disabled={disabled}
                 data-id="remove"
@@ -113,10 +140,9 @@
 
               <!-- Result list start -->
               <template
-                for:each={displayableOptions}
+                lwc:if={recordsDropdown.length}
+                for:each={recordsDropdown}
                 for:item="item"
-                for:index="index"
-                lwc:if={hasResults}
               >
                 <li
                   data-id="list-item"
@@ -127,11 +153,12 @@
                   <div
                     class={item.classes}
                     role="option"
-                    id={index}
+                    id={item.id}
                     aria-selected="true"
                     aria-label={item.title}
-                    onclick={handleResultClick}
-                    data-item-id={item.id}
+                    onclick={handleAddSelectedRecord}
+                    data-index={item.index}
+                    data-record-id={item.id}
                   >
                     <span class="slds-media__figure slds-listbox__option-icon">
                       <lightning-icon
@@ -145,12 +172,12 @@
                         class="slds-listbox__option-text slds-listbox__option-text_entity"
                       >
                         <lightning-formatted-rich-text
-                          value={item.titleFormatted}
+                          value={item.title}
                           disable-linkify
                         ></lightning-formatted-rich-text>
                       </span>
                       <template
-                        for:each={item.subtitlesFormatted}
+                        for:each={item.subtitles}
                         for:item="subtitle"
                         lwc:if={item.hasSubtitles}
                       >
@@ -185,17 +212,15 @@
               <!-- Result list end -->
 
               <!-- No results start -->
-              <template lwc:else>
+              <template lwc:elseif={doneLoading}>
                 <li role="presentation" class="slds-listbox__item">
                   <span
                     class="slds-media slds-listbox__option_entity"
                     role="option"
-                    aria-label={emptyItemLabel}
+                    aria-label={labels.noResults}
                   >
-                    <span
-                      class="slds-media__body"
-                      data-id="no-result-or-loading"
-                      >{emptyItemLabel}</span
+                    <span class="slds-media__body" data-id="no-results"
+                      >{labels.noResults}</span
                     >
                   </span>
                 </li>
@@ -252,7 +277,7 @@
             role="group"
             aria-label="Selected options"
           >
-            <template for:each={selectedOptions} for:item="item">
+            <template for:each={selectedRecords} for:item="item">
               <li key={item.id} role="presentation">
                 <lightning-pill
                   data-id="pill"
