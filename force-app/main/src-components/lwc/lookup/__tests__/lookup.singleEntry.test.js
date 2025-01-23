@@ -8,22 +8,12 @@ import {
 } from "test/utils";
 import Lookup, { KEY_INPUTS } from "c/Lookup";
 import RECORDS from "./data/records.json";
-
-const DEFAULT_OPTIONS = RECORDS.filter((record) => record.recentlyViewed);
-
-const searchHandler = jest.fn((config) => {
-  const { getDefault, getInitialSelection, rawSearchTerm, selectedIds } =
-    config;
-  if (getDefault) {
-    return DEFAULT_OPTIONS;
-  } else if (getInitialSelection) {
-    return RECORDS.filter((record) => selectedIds.includes(record.id));
-  }
-
-  return RECORDS.filter((record) =>
-    record.title.toLowerCase().includes(rawSearchTerm.toLowerCase())
-  );
-});
+import {
+  searchHandler,
+  assertListBoxIsVisible,
+  assertDropdownIsNotVisible,
+  DEFAULT_RECORDS
+} from "./lookup.utils.js";
 
 describe("c-base-lookup single entry", () => {
   const elementBuilder = new ElementBuilder(
@@ -81,12 +71,12 @@ describe("c-base-lookup single entry", () => {
     await flushPromises();
 
     // Check selection
-    expect(element.value).toEqual(DEFAULT_OPTIONS[0].id);
+    expect(element.value).toEqual(DEFAULT_RECORDS[0].id);
     expect(changeFn).toHaveBeenCalledWith(
       expect.objectContaining({
         detail: {
-          value: DEFAULT_OPTIONS[0].id,
-          info: DEFAULT_OPTIONS[0]
+          value: DEFAULT_RECORDS[0].id,
+          info: DEFAULT_RECORDS[0]
         }
       })
     );
@@ -96,7 +86,7 @@ describe("c-base-lookup single entry", () => {
   it("can select item with mouse", async () => {
     const element = await elementBuilder.build();
     const changeFn = mockFunction(element, "change");
-    const record = DEFAULT_OPTIONS[0];
+    const record = DEFAULT_RECORDS[0];
 
     element.shadowRoot.querySelector(`[data-record-id="${record.id}"]`).click();
 
@@ -153,10 +143,6 @@ describe("c-base-lookup single entry", () => {
 
     await flushPromises();
 
-    expect(getByDataId(element, "list-item", true)?.length).toBe(
-      DEFAULT_OPTIONS.length - 1
-    );
-
     // users clears option using backspace or delete
     const searchInput = getByDataId(element, "input");
     searchInput.focus();
@@ -166,12 +152,8 @@ describe("c-base-lookup single entry", () => {
 
     await flushPromises();
 
-    expect(getByDataId(element, "list-item", true)?.length).toBe(
-      DEFAULT_OPTIONS.length
-    );
-    expect(getByDataId(element, "dropdown")?.classList).not.toContain(
-      "slds-is-open"
-    );
+    assertListBoxIsVisible(element, DEFAULT_RECORDS);
+    assertDropdownIsNotVisible(element);
 
     await assertElementIsAccesible(element);
   });

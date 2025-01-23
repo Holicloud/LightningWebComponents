@@ -187,22 +187,26 @@ export default class Lookup extends LightningElement {
 
   @api
   focus() {
-    if (this.inputElement) {
-      this.inputElement.dispatchEvent(new CustomEvent("focus"));
+    if (this.refs.input) {
+      this.refs.input.focus();
+      this.refs.input.dispatchEvent(new CustomEvent("focus"));
     } else {
       executeAfterRender(() => {
-        this.inputElement.dispatchEvent(new CustomEvent("focus"));
+        this.refs.input.focus();
+        this.refs.input.dispatchEvent(new CustomEvent("focus"));
       });
     }
   }
 
   @api
   blur() {
-    if (this.inputElement) {
-      this.inputElement.dispatchEvent(new CustomEvent("blur"));
+    if (this.refs.input) {
+      this.refs.input.blur();
+      this.refs.input.dispatchEvent(new CustomEvent("blur"));
     } else {
       executeAfterRender(() => {
-        this.inputElement.dispatchEvent(new CustomEvent("blur"));
+        this.refs.input.blur();
+        this.refs.input.dispatchEvent(new CustomEvent("blur"));
       });
     }
   }
@@ -243,10 +247,6 @@ export default class Lookup extends LightningElement {
   @api
   showHelpMessageIfInvalid() {
     this.reportValidity();
-  }
-
-  get inputElement() {
-    return this.template.querySelector('[data-id="input"');
   }
 
   get hasSelection() {

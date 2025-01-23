@@ -1,41 +1,130 @@
 [
   {
-    "id": "id1",
-    "title": "Santiago"
+    "id": "6",
+    "title": "Record 6",
+    "icon": { "iconName": "utility:home", "variant": "error" },
+    "subtitles": [
+      {
+        "label": "Subtitle 21",
+        "value": "sub1",
+        "type": "lightning-icon",
+        "props": { "iconName": "utility:info", "variant": "warning" }
+      }
+    ],
+    "retrieveOnDefault": true
   },
   {
-    "id": "id2",
-    "title": "Nicolas",
-    "recentlyViewed": true,
+    "id": "7",
+    "title": "Record 7",
+    "icon": { "iconName": "utility:warning", "variant": "success" },
     "subtitles": [
-      { "label": "sub1", "value": "sub1" },
-      { "label": "sub2", "value": "sub2" }
+      {
+        "label": "Subtitle 13",
+        "value": "Record 7",
+        "type": "custom-type",
+        "props": { "key1": "value1" }
+      },
+      {
+        "label": "Subtitle 19",
+        "value": "sub1",
+        "type": "lightning-icon"
+      }
     ]
   },
   {
-    "id": "id3",
-    "title": "Johana"
+    "id": "8",
+    "title": "Record 8",
+    "icon": { "iconName": "utility:info", "variant": "warning" }
   },
   {
-    "id": "id4",
-    "title": "Carmensa",
-    "recentlyViewed": true
+    "id": "9",
+    "title": "Record 9",
+    "icon": { "iconName": "utility:home", "variant": "success" }
+  },
+  { "id": "10", "title": "Record 10" },
+  {
+    "id": "11",
+    "title": "Record 11",
+    "subtitles": [
+      {
+        "label": "Subtitle 7",
+        "value": "Record 11",
+        "type": "lightning-icon",
+        "props": { "iconName": "utility:info", "variant": "warning" }
+      }
+    ]
   },
   {
-    "id": "id5",
-    "title": "Felipe"
+    "id": "12",
+    "title": "Record 12",
+    "subtitles": [
+      { "label": "Subtitle 18", "value": "Record 12", "type": "lightning-icon" }
+    ]
+  },
+  { "id": "13", "title": "Record 13", "retrieveOnDefault": true },
+  { "id": "14", "title": "Record 14" },
+  {
+    "id": "15",
+    "title": "Record 15",
+    "icon": { "iconName": "utility:warning", "variant": "success" },
+    "retrieveOnDefault": true
   },
   {
-    "id": "id6",
-    "title": "Gracia"
+    "id": "16",
+    "title": "Record 16",
+    "icon": { "iconName": "utility:info", "variant": "success" },
+    "subtitles": [
+      {
+        "label": "Subtitle 14",
+        "value": "sub1",
+        "type": "custom-type",
+        "props": { "key2": "value1" },
+        "icon": { "iconName": "utility:warning", "variant": "warning" }
+      }
+    ]
   },
   {
-    "id": "id7",
-    "title": "John"
+    "id": "17",
+    "title": "Record 17",
+    "icon": { "iconName": "utility:info", "variant": "inverse" }
   },
   {
-    "id": "id8",
-    "title": "Cass",
-    "recentlyViewed": true
+    "id": "18",
+    "title": "Record 18",
+    "icon": { "iconName": "utility:info", "variant": "error" }
+  },
+  {
+    "id": "19",
+    "title": "Record 19",
+    "icon": { "iconName": "utility:info", "variant": "warning" }
+  },
+  {
+    "id": "20",
+    "title": "Record 20",
+    "icon": { "iconName": "utility:email", "variant": "error" },
+    "subtitles": [
+      { "label": "Subtitle 3", "value": "sub1", "type": "lightning-icon" }
+    ]
+  },
+  {
+    "id": "21",
+    "title": "Record 21",
+    "icon": { "iconName": "utility:warning", "variant": "inverse" }
+  },
+  { "id": "22", "title": "Record 22" },
+  { "id": "23", "title": "Record 23" },
+  {
+    "id": "24",
+    "title": "Record 24",
+    "icon": { "iconName": "utility:info", "variant": "success" },
+    "retrieveOnDefault": true
+  },
+  {
+    "id": "25",
+    "title": "Record 25",
+    "subtitles": [
+      { "label": "Subtitle 1", "value": "Record 25", "type": "lightning-icon" },
+      { "label": "Subtitle 23", "value": "Record 25", "type": "custom-type" }
+    ]
   }
 ]

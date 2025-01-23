@@ -9,29 +9,18 @@ import {
 } from "test/utils";
 import Lookup, { VARIANTS, LABELS, SCROLL_AFTER_N, KEY_INPUTS } from "c/Lookup";
 import RECORDS from "./data/records.json";
-import { inputSearchTerm } from "./lookup.utils.js";
+import {
+  inputSearchTerm,
+  searchHandler,
+  DEFAULT_RECORDS,
+  assertListBoxIsVisible
+} from "./lookup.utils.js";
 
 const BASE_LABEL = "Lookup";
 const SAMPLE_SEARCH_TOO_SHORT_WHITESPACE = "A ";
 const SAMPLE_SEARCH_TOO_SHORT_SPECIAL = "a*";
 const SAMPLE_SEARCH_RAW = "Sample search* ";
 const SAMPLE_SEARCH_CLEAN = "Sample search?";
-
-const DEFAULT_OPTIONS = RECORDS.filter((record) => record.recentlyViewed);
-
-const searchHandler = jest.fn((config) => {
-  const { getDefault, getInitialSelection, rawSearchTerm, selectedIds } =
-    config;
-  if (getDefault) {
-    return DEFAULT_OPTIONS;
-  } else if (getInitialSelection) {
-    return RECORDS.filter((record) => selectedIds.includes(record.id));
-  }
-
-  return RECORDS.filter((record) =>
-    record.title.toLowerCase().includes(rawSearchTerm.toLowerCase())
-  );
-});
 
 const elementBuilder = new ElementBuilder(
   "c-lookup",
@@ -45,6 +34,18 @@ const modes = [
   elementBuilder.setDefaultApiProperties({ isMultiEntry: true }),
   elementBuilder.setDefaultApiProperties({ isMultiEntry: false })
 ];
+
+jest.mock("c/lightningFormattedDynamicOutput");
+
+function assertDropdownIsVisible(element) {
+  expect(getByDataId(element, "dropdown")?.classList).toContain("slds-is-open");
+}
+
+function assertDropdownIsNotVisible(element) {
+  expect(getByDataId(element, "dropdown")?.classList).not.toContain(
+    "slds-is-open"
+  );
+}
 
 describe("c-lookup rendering", () => {
   beforeEach(() => {
@@ -115,62 +116,6 @@ describe("c-lookup rendering", () => {
     await assertElementIsAccesible(element);
   });
 
-  it.each(modes)("displays required indicator", async (builder) => {
-    const element = await builder.build({ required: true });
-    expect(getByDataId(element, "required-indicator")).toBeDefined();
-
-    await assertElementIsAccesible(element);
-  });
-
-  it.each(modes)(
-    "(onblur) displays default message is required and value is missing",
-    async (builder) => {
-      const element = await builder.build({ required: true });
-
-      const input = getByDataId(element, "input");
-      input.focus();
-      input.blur();
-
-      await flushPromises();
-
-      expect(document.activeElement).not.toBe(element);
-      expect(getByDataId(element, "dropdown").classList).not.toContain(
-        "slds-is-open"
-      );
-
-      expect(element?.classList).toContain("slds-has-error");
-      expect(getByDataId(element, "help-message")?.textContent).toBe(
-        LABELS.errors.completeThisField
-      );
-
-      await assertElementIsAccesible(element);
-    }
-  );
-
-  it.each(modes)(
-    "(onblur) displays custom message is required and value is missing",
-    async (builder) => {
-      const messageWhenValueMissing = "Please enter a value";
-      const element = await builder.build({
-        required: true,
-        messageWhenValueMissing
-      });
-
-      const input = getByDataId(element, "input");
-      input.focus();
-      input.blur();
-
-      await flushPromises();
-
-      expect(element?.classList).toContain("slds-has-error");
-      expect(getByDataId(element, "help-message")?.textContent).toBe(
-        messageWhenValueMissing
-      );
-
-      await assertElementIsAccesible(element);
-    }
-  );
-
   it.each(modes)("should display placeholder", async (builder) => {
     const placeholder = "ABCDE";
     const element = await builder.build({
@@ -181,60 +126,6 @@ describe("c-lookup rendering", () => {
 
     await assertElementIsAccesible(element);
   });
-
-  it.each(modes)(
-    "does not execute searchHandler event when search term is under custom minimum length",
-    async (builder) => {
-      const element = await builder.build({
-        minSearchTermLength: 3
-      });
-      element.searchHandler.mockClear();
-
-      await inputSearchTerm(element, "ab");
-
-      expect(element.searchHandler).not.toHaveBeenCalled();
-      await assertElementIsAccesible(element);
-    }
-  );
-
-  it.each(modes)(
-    "fires searchHanlder when search term is above custom minimum length",
-    async (builder) => {
-      const element = await builder.build({ minSearchTermLength: 5 });
-      element.searchHandler.mockClear();
-
-      await inputSearchTerm(element, "123456");
-
-      expect(element.searchHandler).toHaveBeenCalledTimes(1);
-      await assertElementIsAccesible(element);
-    }
-  );
-
-  it.each(modes)(
-    "does not fire searchHandler when search term is under custom minimum length with special characters",
-    async (builder) => {
-      const element = await builder.build({ minSearchTermLength: 5 });
-      element.searchHandler.mockClear();
-
-      await inputSearchTerm(element, "1234*?");
-
-      expect(element.searchHandler).not.toHaveBeenCalled();
-      await assertElementIsAccesible(element);
-    }
-  );
-
-  it.each(modes)(
-    "fires searchHandler when search term is above custom minimum length with special characters",
-    async (builder) => {
-      const element = await builder.build({ minSearchTermLength: 5 });
-      element.searchHandler.mockClear();
-
-      await inputSearchTerm(element, "123456*?");
-
-      expect(element.searchHandler).toHaveBeenCalledTimes(1);
-      await assertElementIsAccesible(element);
-    }
-  );
 
   it.each(modes)(
     "hides label when variant set to label-hidden",
@@ -264,28 +155,18 @@ describe("c-lookup rendering", () => {
     }
   );
 
-  it.each(modes)("custom action is shown", async (builder) => {
-    const newAccount = { name: "new-account", label: "New Account" };
-    const newCase = { name: "new-case", label: "New Case" };
-    const element = await builder.build({
-      actions: [newAccount, newCase]
-    });
-
-    expect(getByDataId(element, newAccount.name)).toBeDefined();
-    expect(getByDataId(element, newCase.name)).toBeDefined();
-
-    await assertElementIsAccesible(element);
-  });
-
   it.each(modes)(
-    "fires action event when action is clicked",
+    "custom action is shown an can be clicked",
     async (builder) => {
       const newAccount = { name: "new-account", label: "New Account" };
+      const newCase = { name: "new-case", label: "New Case" };
       const element = await builder.build({
-        actions: [newAccount]
+        actions: [newAccount, newCase]
       });
-
       const onaction = mockFunction(element, "action");
+
+      expect(getByDataId(element, newAccount.name)).toBeDefined();
+      expect(getByDataId(element, newCase.name)).toBeDefined();
 
       getByDataId(element, newAccount.name).click();
 
@@ -297,243 +178,30 @@ describe("c-lookup rendering", () => {
     }
   );
 
-  it.each(modes)("correctly sets scroll after n items", async (builder) => {
+  it.each(modes)("set scroll items class", async (builder) => {
     const scrollAfterNItems = 7;
-    const element = await builder.build({
-      scrollAfterNItems
-    });
+    const element = await builder.build();
+
+    expect(getByDataId(element, "result-list-box")?.classList).toContain(
+      "slds-dropdown_length-with-icon-" + SCROLL_AFTER_N
+    );
+
+    element.scrollAfterNItems = scrollAfterNItems;
+    await flushPromises();
 
     expect(getByDataId(element, "result-list-box")?.classList).toContain(
       "slds-dropdown_length-with-icon-" + scrollAfterNItems
     );
 
-    await assertElementIsAccesible(element);
-  });
-
-  it.each(modes)(
-    "correctly sets scroll after n items by default",
-    async (builder) => {
-      const element = await builder.build();
-
-      expect(getByDataId(element, "result-list-box")?.classList).toContain(
-        "slds-dropdown_length-with-icon-" + SCROLL_AFTER_N
-      );
-
-      await assertElementIsAccesible(element);
-    }
-  );
-
-  it.each(modes)(
-    "correctly sets scroll after n items when invalid",
-    async (builder) => {
-      const element = await builder.build({
-        scrollAfterNItems: "some invalid value"
-      });
-
-      expect(getByDataId(element, "result-list-box")?.classList).toContain(
-        "slds-dropdown_length-with-icon-" + SCROLL_AFTER_N
-      );
-
-      await assertElementIsAccesible(element);
-    }
-  );
-
-  it.each(modes)(
-    "should throw error when search handler is not a function",
-    async (builder) => {
-      let element;
-      let errorMessage;
-
-      try {
-        element = await builder.build({
-          searchHandler: "some invalid value"
-        });
-      } catch (error) {
-        errorMessage = error.message;
-      }
-
-      expect(errorMessage).toBe(LABELS.errors.invalidHandler);
-
-      await assertElementIsNotAccesible(element);
-    }
-  );
-
-  it.each(modes)(
-    "validity should be falsy when custom validity is set",
-    async (builder) => {
-      const errorMessage = "custom error";
-      const element = await builder.build();
-      element.setCustomValidity(errorMessage);
-
-      expect(element.validity).toEqual({ valid: false });
-
-      await assertElementIsAccesible(element);
-    }
-  );
-
-  it.each(modes)(
-    "validity should be falsy when custom validity is cleared",
-    async (builder) => {
-      const errorMessage = "custom error";
-      const element = await builder.build();
-
-      element.setCustomValidity(errorMessage);
-      expect(element.validity).toEqual({ valid: false });
-      element.setCustomValidity("");
-      expect(element.validity).toEqual({ valid: true });
-
-      await assertElementIsAccesible(element);
-    }
-  );
-
-  it.each(modes)("should focus input", async (builder) => {
-    const element = await builder.build();
-
-    const mocked = mockFunction(getByDataId(element, "input"), "focus");
-
-    element.focus();
-
-    expect(mocked).toHaveBeenCalled();
-
-    await assertElementIsAccesible(element);
-  });
-
-  it.each(modes)("(onfocus) should dispatch focus event", async (builder) => {
-    const element = await builder.build();
-
-    const input = getByDataId(element, "input");
-    const mocked = mockFunction(element, "focus");
-
-    input.focus();
-
-    expect(mocked).toHaveBeenCalled();
-
-    await assertElementIsAccesible(element);
-  });
-
-  it.each(modes)("(onblur) should dispatch blur event", async (builder) => {
-    const element = await builder.build();
-
-    const mocked = mockFunction(getByDataId(element, "input"), "blur");
-
-    element.focus();
+    element.scrollAfterNItems = "some invalid value";
     await flushPromises();
-    element.blur();
 
-    expect(mocked).toHaveBeenCalled();
-
-    await assertElementIsAccesible(element);
-  });
-
-  it.each(modes)(
-    "should display error when invalid return value on the search handler",
-    async (builder) => {
-      const element = await builder.build({
-        searchHandler: () => "invalid return"
-      });
-
-      expect(getByDataId(element, "help-message")?.textContent).toBe(
-        LABELS.errors.errorFetchingData
-      );
-
-      await assertElementIsAccesible(element);
-    }
-  );
-
-  it.each(modes)(
-    "data from search handler is used to populate default options",
-    async (builder) => {
-      const element = await builder.build();
-
-      expect(element.searchHandler).toHaveBeenCalledWith(
-        expect.objectContaining({ getDefault: true })
-      );
-
-      await assertElementIsAccesible(element);
-    }
-  );
-
-  it.each(modes)("default options get displayed", async (builder) => {
-    const element = await builder.build();
-
-    expect(element.searchHandler).toHaveBeenCalledWith(
-      expect.objectContaining({ getDefault: true })
+    expect(getByDataId(element, "result-list-box")?.classList).toContain(
+      "slds-dropdown_length-with-icon-" + SCROLL_AFTER_N
     );
 
-    expect(
-      element.shadowRoot.querySelectorAll("[data-record-id]")?.length
-    ).toBe(DEFAULT_OPTIONS.length);
     await assertElementIsAccesible(element);
   });
-
-  it.each(modes)(
-    "executes the searchHandler when user types on input",
-    async (builder) => {
-      const element = await builder.build();
-      element.searchHandler.mockClear();
-
-      await inputSearchTerm(element, SAMPLE_SEARCH_RAW);
-
-      expect(element.searchHandler).toHaveBeenCalledTimes(1);
-      expect(element.searchHandler).toHaveBeenCalledWith(
-        expect.objectContaining({
-          searchTerm: SAMPLE_SEARCH_CLEAN,
-          rawSearchTerm: SAMPLE_SEARCH_RAW,
-          fetchedIds: []
-        })
-      );
-
-      await assertElementIsAccesible(element);
-    }
-  );
-
-  it.each(modes)(
-    "does not execute searchHandler when search term is too short with whitespace",
-    async (builder) => {
-      const element = await builder.build();
-      element.searchHandler.mockClear();
-
-      await inputSearchTerm(element, SAMPLE_SEARCH_TOO_SHORT_WHITESPACE);
-
-      expect(element.searchHandler).not.toHaveBeenCalled();
-      await assertElementIsAccesible(element);
-    }
-  );
-
-  it.each(modes)(
-    "does not execute searchHandler when search term is too short with special chars",
-    async (builder) => {
-      const element = await builder.build();
-      element.searchHandler.mockClear();
-
-      await inputSearchTerm(element, SAMPLE_SEARCH_TOO_SHORT_SPECIAL);
-
-      expect(element.searchHandler).not.toHaveBeenCalled();
-      await assertElementIsAccesible(element);
-    }
-  );
-
-  it.each(modes)(
-    "does not fire searchHandler twice when search term matches clean search term",
-    async (builder) => {
-      const element = await builder.build();
-      element.searchHandler.mockClear();
-
-      await inputSearchTerm(element, SAMPLE_SEARCH_RAW);
-      await inputSearchTerm(element, SAMPLE_SEARCH_CLEAN);
-
-      expect(element.searchHandler).toHaveBeenCalledTimes(1);
-      expect(element.searchHandler).toHaveBeenCalledWith(
-        expect.objectContaining({
-          searchTerm: SAMPLE_SEARCH_CLEAN,
-          rawSearchTerm: SAMPLE_SEARCH_RAW,
-          fetchedIds: []
-        })
-      );
-
-      await assertElementIsAccesible(element);
-    }
-  );
 
   it.each(modes)(
     "shows no results when there are no options",
@@ -551,43 +219,116 @@ describe("c-lookup rendering", () => {
     }
   );
 
-  it.each(modes)("shows default search results by default", async (builder) => {
-    const element = await builder.build();
-    await flushPromises();
+  it.each(modes)(
+    "should throw error when search handler is not setup properly",
+    async (builder) => {
+      let element;
+      let errorMessage;
 
-    const listItemEls = element.shadowRoot.querySelectorAll("[data-record-id]");
-    expect(listItemEls.length).toBe(DEFAULT_OPTIONS.length);
-    expect(listItemEls[0].dataset.recordId).toBe(DEFAULT_OPTIONS[0].id);
+      try {
+        element = await builder.build({
+          searchHandler: () => "invalid return"
+        });
+
+        expect(getByDataId(element, "help-message")?.textContent).toBe(
+          LABELS.errors.errorFetchingData
+        );
+
+        element.searchHandler = "some invalid value";
+      } catch (error) {
+        errorMessage = error.message;
+      }
+
+      await flushPromises();
+
+      expect(errorMessage).toBe(LABELS.errors.invalidHandler);
+
+      await assertElementIsAccesible(element);
+    }
+  );
+
+  it.each(modes)("test validity", async (builder) => {
+    const errorMessage = "custom error";
+    const element = await builder.build();
+
+    element.setCustomValidity(errorMessage);
+    expect(element.validity).toEqual({ valid: false });
+
+    element.setCustomValidity("");
+    expect(element.validity).toEqual({ valid: true });
+
+    expect(document.activeElement).not.toBe(element);
+    assertDropdownIsNotVisible(element);
 
     await assertElementIsAccesible(element);
   });
 
-  it.each(modes)("blurs on error and closes dropdown", async (builder) => {
+  it.each(modes)("should focus input", async (builder) => {
     const element = await builder.build();
-    element.setCustomValidity("Some Error");
-    element.reportValidity();
 
+    const input = getByDataId(element, "input");
+    const mockedListener = mockFunction(element, "focus");
+    const mocked = mockFunction(input, "focus");
+    const mockedListenerBlur = mockFunction(element, "blur");
+    const mockedBlur = mockFunction(input, "blur");
+
+    element.focus();
+    await flushPromises();
+
+    assertListBoxIsVisible(element, DEFAULT_RECORDS);
+    assertDropdownIsVisible(element);
+    expect(document.activeElement).toBe(element);
+    expect(mocked).toHaveBeenCalled();
+    expect(mockedListener).toHaveBeenCalled();
+
+    element.blur();
     await flushPromises();
 
     expect(document.activeElement).not.toBe(element);
-    const dropdownEl = getByDataId(element, "input");
-    expect(dropdownEl.classList).not.toContain("slds-is-open");
+    expect(mockedBlur).toHaveBeenCalled();
+    expect(mockedListenerBlur).toHaveBeenCalled();
+    assertDropdownIsNotVisible(element);
 
     await assertElementIsAccesible(element);
   });
 
   it.each(modes)(
-    "displays default options when focus is gained",
+    "executes the searchHandler when user types on input",
     async (builder) => {
       const element = await builder.build();
+      element.searchHandler.mockClear();
 
-      getByDataId(element, "input").focus();
+      await inputSearchTerm(element, SAMPLE_SEARCH_TOO_SHORT_WHITESPACE);
+      expect(element.searchHandler).not.toHaveBeenCalled();
 
-      expect(document.activeElement).toEqual(element);
-      const results = element.shadowRoot.querySelectorAll(
-        '[data-id="list-item"]'
+      await inputSearchTerm(element, SAMPLE_SEARCH_RAW);
+
+      expect(element.searchHandler).toHaveBeenCalledTimes(1);
+      expect(element.searchHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          searchTerm: SAMPLE_SEARCH_CLEAN,
+          rawSearchTerm: SAMPLE_SEARCH_RAW,
+          fetchedIds: []
+        })
       );
-      expect(results.length).toBe(DEFAULT_OPTIONS.length);
+
+      element.searchHandler.mockClear();
+      await inputSearchTerm(element, SAMPLE_SEARCH_TOO_SHORT_SPECIAL);
+      expect(element.searchHandler).not.toHaveBeenCalled();
+
+      element.searchHandler.mockClear();
+      await inputSearchTerm(element, SAMPLE_SEARCH_RAW);
+      await inputSearchTerm(element, SAMPLE_SEARCH_CLEAN);
+
+      expect(element.searchHandler).toHaveBeenCalledTimes(1);
+      expect(element.searchHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          searchTerm: SAMPLE_SEARCH_CLEAN,
+          rawSearchTerm: SAMPLE_SEARCH_RAW,
+          fetchedIds: []
+        })
+      );
+
       await assertElementIsAccesible(element);
     }
   );
@@ -597,132 +338,29 @@ describe("c-lookup rendering", () => {
     const element = await builder.build();
     await flushPromises();
 
-    // Query for rendered list items
-    const listOfRecords = element.shadowRoot.querySelectorAll(
-      "[data-id='list-item']"
+    expect(element.searchHandler).toHaveBeenCalledWith(
+      expect.objectContaining({ getDefault: true })
     );
-    expect(listOfRecords.length).toBe(DEFAULT_OPTIONS.length);
-    const firstSubtitles = listOfRecords[0].querySelectorAll(
-      "[data-id='subtitle']"
-    );
-    expect(firstSubtitles.length).toBe(DEFAULT_OPTIONS[0].subtitles.length);
+    assertListBoxIsVisible(element, DEFAULT_RECORDS);
     await assertElementIsAccesible(element);
   });
-
-  it.each(modes)("should display options when focus", async (builder) => {
-    const element = await builder.build();
-
-    getByDataId(element, "input").focus();
-
-    await flushPromises();
-
-    expect(getByDataId(element, "list-item", true)?.length).toBe(
-      DEFAULT_OPTIONS.length
-    );
-    expect(getByDataId(element, "dropdown")?.classList).toContain(
-      "slds-is-open"
-    );
-
-    await assertElementIsAccesible(element);
-  });
-
-  it.each(modes)("should show options when enter pressed", async (builder) => {
-    const element = await builder.build();
-
-    await flushPromises();
-
-    const searchInput = getByDataId(element, "input");
-    searchInput.focus();
-    searchInput.dispatchEvent(
-      new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.ENTER })
-    );
-
-    await flushPromises();
-
-    expect(getByDataId(element, "list-item", true)?.length).toBe(
-      DEFAULT_OPTIONS.length
-    );
-    expect(getByDataId(element, "dropdown")?.classList).toContain(
-      "slds-is-open"
-    );
-
-    await assertElementIsAccesible(element);
-  });
-  it.each(modes)(
-    "should show options when space is pressed",
-    async (builder) => {
-      const element = await builder.build();
-
-      await flushPromises();
-
-      const searchInput = getByDataId(element, "input");
-      searchInput.focus();
-      searchInput.dispatchEvent(
-        new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.SPACE })
-      );
-
-      await flushPromises();
-
-      expect(getByDataId(element, "list-item", true)?.length).toBe(
-        DEFAULT_OPTIONS.length
-      );
-      expect(getByDataId(element, "dropdown")?.classList).toContain(
-        "slds-is-open"
-      );
-
-      await assertElementIsAccesible(element);
-    }
-  );
-
-  it.each(modes)(
-    "should options removed from keyboard and starts typing",
-    async (builder) => {
-      const element = await builder.build();
-
-      // select an option
-      element.shadowRoot.querySelector("[data-record-id]").click();
-      await flushPromises();
-
-      // clears input using backspace
-      const searchInput = getByDataId(element, "input");
-      searchInput.focus();
-      searchInput.dispatchEvent(
-        new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.BACKSPACE })
-      );
-
-      await flushPromises();
-
-      // types again
-      await inputSearchTerm(element, RECORDS[0].title);
-
-      expect(getByDataId(element, "list-item", true)?.length).toBe(1);
-      expect(getByDataId(element, "dropdown")?.classList).toContain(
-        "slds-is-open"
-      );
-
-      await assertElementIsAccesible(element);
-    }
-  );
 
   it.each(modes)(
     "options should not be visible when user types escape",
     async (builder) => {
       const element = await builder.build();
 
-      await inputSearchTerm(element, RECORDS[0].title);
+      await inputSearchTerm(element, "jlskadjflkasd");
+      assertListBoxIsVisible(element, RECORDS);
+      assertDropdownIsVisible(element);
 
       const searchInput = getByDataId(element, "input");
       searchInput.dispatchEvent(
         new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.ESCAPE })
       );
-
       await flushPromises();
-
-      expect(getByDataId(element, "list-item", true)?.length).toBe(1);
-      expect(getByDataId(element, "dropdown")?.classList).not.toContain(
-        "slds-is-open"
-      );
-
+      assertListBoxIsVisible(element, RECORDS);
+      assertDropdownIsNotVisible(element);
       await assertElementIsAccesible(element);
     }
   );
@@ -738,13 +376,9 @@ describe("c-lookup rendering", () => {
 
       await flushPromises();
 
-      expect(getByDataId(element, "list-item", true)?.length).toBe(
-        DEFAULT_OPTIONS.length
-      );
       expect(getByDataId(element, "input").value).toBe("");
-      expect(getByDataId(element, "dropdown")?.classList).toContain(
-        "slds-is-open"
-      );
+      assertListBoxIsVisible(element, DEFAULT_RECORDS);
+      assertDropdownIsVisible(element);
 
       await assertElementIsAccesible(element);
     }

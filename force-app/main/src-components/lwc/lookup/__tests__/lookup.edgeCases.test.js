@@ -1,101 +1,195 @@
-// import {
-//   ElementBuilder,
-//   resetDOM,
-//   flushPromises,
-//   getByDataId,
-//   assertElementIsAccesible,
-//   assertElementIsNotAccesible,
-//   mockFunction
-// } from "test/utils";
-// import Lookup, { VARIANTS, LABELS, KEY_INPUTS } from "c/Lookup";
-// import RECORDS from "./data/records.json";
-// import { inputSearchTerm } from "./lookup.utils.js";
+import {
+  ElementBuilder,
+  resetDOM,
+  flushPromises,
+  getByDataId,
+  assertElementIsAccesible
+} from "test/utils";
+import Lookup, { LABELS, KEY_INPUTS } from "c/Lookup";
+import RECORDS from "./data/records.json";
+import {
+  inputSearchTerm,
+  searchHandler,
+  DEFAULT_RECORDS,
+  assertListBoxIsVisible,
+  assertDropdownIsNotVisible,
+  assertDropdownIsVisible
+} from "./lookup.utils.js";
 
-// const BASE_LABEL = "Lookup";
-// const SAMPLE_SEARCH_TOO_SHORT_WHITESPACE = "A ";
-// const SAMPLE_SEARCH_TOO_SHORT_SPECIAL = "a*";
-// const SAMPLE_SEARCH_RAW = "Sample search* ";
-// const SAMPLE_SEARCH_CLEAN = "Sample search?";
+const BASE_LABEL = "Lookup";
 
-// const DEFAULT_OPTIONS = RECORDS.filter((record) => record.recentlyViewed);
+const elementBuilder = new ElementBuilder(
+  "c-lookup",
+  Lookup
+).setDefaultApiProperties({
+  label: BASE_LABEL,
+  searchHandler
+});
 
-// const searchHandler = jest.fn((builder) => {
-//   const { getDefault, selection, rawSearchTerm, selectedIds } =
-//     builder;
-//   if (getDefault) {
-//     return DEFAULT_OPTIONS;
-//   } else if (selection) {
-//     return RECORDS.filter((record) => selectedIds.includes(record.id));
-//   }
+const modes = [
+  elementBuilder.setDefaultApiProperties({ isMultiEntry: true }),
+  elementBuilder.setDefaultApiProperties({ isMultiEntry: false })
+];
 
-//   return RECORDS.filter((record) =>
-//     record.title.toLowerCase().includes(rawSearchTerm.toLowerCase())
-//   );
-// });
+jest.mock("c/lightningFormattedDynamicOutput");
 
-// const elementBuilder = new ElementBuilder(
-//   "c-base-lookup",
-//   Lookup
-// ).setDefaultApiProperties({
-//   label: BASE_LABEL,
-//   searchHandler
-// });
-
-// const modes = [
-//   elementBuilder
-//     .setDefaultApiProperties({ isMultiEntry: true }),
-//   elementBuilder
-//     .setDefaultApiProperties({ isMultiEntry: false })
-// ];
-
-describe("c-base-lookup rendering", () => {
-  //   const elementBuilder = new ElementBuilder(
-  //     "c-base-lookup",
-  //     Lookup
-  //   ).setDefaultApiProperties({
-  //     label: "Lookup",
-  //     isMultiEntry: true,
-  //     searchHandler
-  //   });
-
-  //   beforeEach(() => {
-  //     jest.useFakeTimers();
-  //   });
-
-  //   afterEach(() => {
-  //     resetDOM();
-  //     jest.clearAllMocks();
-  //     jest.useRealTimers();
-  //   });
-
-  //   // it.each(modes)('should hide options when backspace or del is pressed', async (builder) => {
-  //   //   const element = await builder.build();
-
-  //   //   // select an option
-  //   //   element.shadowRoot.querySelector("[data-record-id]").click();
-
-  //   //   await flushPromises();
-
-  //   //   const results = element.shadowRoot.querySelectorAll(
-  //   //     '[data-id="list-item"]'
-  //   //   );
-
-  //   //   expect(results.length).toBe(DEFAULT_OPTIONS.length - 1);
-
-  //   //   // users clears option using backspace or delete
-  //   //   const searchInput = getByDataId(element, "input");
-  //   //   searchInput.dispatchEvent(
-  //   //     new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.BACKSPACE })
-  //   //   );
-
-  //   //   await flushPromises();
-
-  //   //   expect(results.length).toBe(DEFAULT_OPTIONS.length);
-
-  //   //   await assertElementIsAccesible();
-  //   // });
-
-  it("hell no", () => {
-    expect(1).toBe(1);
+describe("c-lookup rendering", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
   });
+
+  afterEach(() => {
+    resetDOM();
+    jest.clearAllMocks();
+    jest.useRealTimers();
+  });
+
+  it.each(modes)(
+    "(onblur) displays default message when is required and value is missing",
+    async (builder) => {
+      const element = await builder.build({ required: true });
+
+      const input = getByDataId(element, "input");
+      input.focus();
+      input.blur();
+
+      await flushPromises();
+
+      assertDropdownIsNotVisible(element);
+
+      expect(element?.classList).toContain("slds-has-error");
+      expect(getByDataId(element, "help-message")?.textContent).toBe(
+        LABELS.errors.completeThisField
+      );
+
+      await assertElementIsAccesible(element);
+    }
+  );
+
+  it.each(modes)(
+    "(onblur) displays custom message is required and value is missing",
+    async (builder) => {
+      const messageWhenValueMissing = "Please enter a value";
+      const element = await builder.build({
+        required: true,
+        messageWhenValueMissing
+      });
+
+      const input = getByDataId(element, "input");
+      input.focus();
+      input.blur();
+
+      await flushPromises();
+
+      expect(element?.classList).toContain("slds-has-error");
+      expect(getByDataId(element, "help-message")?.textContent).toBe(
+        messageWhenValueMissing
+      );
+
+      await assertElementIsAccesible(element);
+    }
+  );
+
+  it.each(modes)(
+    "search hanlder is called only when input is minSearchTermLength valid",
+    async (builder) => {
+      const element = await builder.build({
+        minSearchTermLength: 3
+      });
+      element.searchHandler.mockClear();
+
+      await inputSearchTerm(element, "ab");
+      expect(element.searchHandler).not.toHaveBeenCalled();
+
+      element.minSearchTermLength = 5;
+      await inputSearchTerm(element, "123456");
+      expect(element.searchHandler).toHaveBeenCalledTimes(1);
+
+      element.searchHandler.mockClear();
+      await inputSearchTerm(element, "1234*?");
+      expect(element.searchHandler).not.toHaveBeenCalled();
+
+      element.searchHandler.mockClear();
+      await inputSearchTerm(element, "123456*?");
+      expect(element.searchHandler).toHaveBeenCalledTimes(1);
+
+      await assertElementIsAccesible(element);
+    }
+  );
+
+  it.each(modes)(
+    "if options are not being displayed presing enter will make the list of records appear",
+    async (builder) => {
+      const element = await builder.build();
+
+      await flushPromises();
+
+      const searchInput = getByDataId(element, "input");
+      searchInput.focus();
+
+      assertDropdownIsNotVisible(element);
+      searchInput.dispatchEvent(
+        new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.ENTER })
+      );
+
+      await flushPromises();
+
+      assertListBoxIsVisible(element, DEFAULT_RECORDS);
+      assertDropdownIsVisible(element);
+
+      await assertElementIsAccesible(element);
+    }
+  );
+
+  it.each(modes)(
+    "if options are not being displayed presing enter will make the list of records appear",
+    async (builder) => {
+      const element = await builder.build();
+
+      await flushPromises();
+
+      const searchInput = getByDataId(element, "input");
+      searchInput.focus();
+
+      assertDropdownIsNotVisible(element);
+      searchInput.dispatchEvent(
+        new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.SPACE })
+      );
+
+      await flushPromises();
+
+      assertListBoxIsVisible(element, DEFAULT_RECORDS);
+      assertDropdownIsVisible(element);
+
+      await assertElementIsAccesible(element);
+    }
+  );
+
+  it.each(modes)(
+    "should options removed from keyboard and starts typing",
+    async (builder) => {
+      const element = await builder.build();
+
+      // select an option
+      element.shadowRoot.querySelector("[data-record-id]").click();
+      await flushPromises();
+
+      // clears input using backspace
+      const searchInput = getByDataId(element, "input");
+      searchInput.focus();
+      searchInput.dispatchEvent(
+        new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.BACKSPACE })
+      );
+
+      await flushPromises();
+
+      // types again
+      await inputSearchTerm(element, "anything");
+
+      assertListBoxIsVisible(element, RECORDS);
+      assertDropdownIsVisible(element);
+
+      await assertElementIsAccesible(element);
+    }
+  );
 });

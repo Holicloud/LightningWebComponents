@@ -163,6 +163,7 @@
                     <span class="slds-media__figure slds-listbox__option-icon">
                       <lightning-icon
                         size="small"
+                        data-id="record-icon"
                         icon-name="standard:default"
                         lwc:spread={item.icon}
                       ></lightning-icon>
@@ -172,6 +173,7 @@
                         class="slds-listbox__option-text slds-listbox__option-text_entity"
                       >
                         <lightning-formatted-rich-text
+                          data-id="title"
                           value={item.title}
                           disable-linkify
                         ></lightning-formatted-rich-text>
@@ -182,22 +184,25 @@
                         lwc:if={item.hasSubtitles}
                       >
                         <p
+                          data-id="subtitle"
                           key={subtitle.index}
                           class="slds-listbox__option-meta slds-listbox__option-meta_entity"
                         >
                           <lightning-formatted-rich-text
-                            data-id="subtitle"
+                            data-id="subtitle-label"
                             value={subtitle.label}
                             disable-linkify
                           ></lightning-formatted-rich-text>
                           <span>: </span>
                           <lightning-icon
                             lwc:if={subtitle.isLightningIconType}
+                            data-id="subtitle-icon"
                             icon-name="utility:check"
                             size="xx-small"
-                            lwc:spread={props}
+                            lwc:spread={subtitle.props}
                           ></lightning-icon>
                           <c-lightning-formatted-dynamic-output
+                            data-id="subtitle-value"
                             lwc:else
                             type={subtitle.type}
                             value={subtitle.value}

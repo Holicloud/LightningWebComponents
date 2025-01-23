@@ -7,23 +7,9 @@ import {
   mockFunction
 } from "test/utils";
 import Lookup, { KEY_INPUTS, LABELS } from "c/Lookup";
+import { searchHandler, DEFAULT_RECORDS } from "./lookup.utils.js";
+
 import RECORDS from "./data/records.json";
-
-const DEFAULT_OPTIONS = RECORDS.filter((record) => record.recentlyViewed);
-
-const searchHandler = jest.fn((config) => {
-  const { getDefault, getInitialSelection, rawSearchTerm, selectedIds } =
-    config;
-  if (getDefault) {
-    return DEFAULT_OPTIONS;
-  } else if (getInitialSelection) {
-    return RECORDS.filter((record) => selectedIds.includes(record.id));
-  }
-
-  return RECORDS.filter((record) =>
-    record.title.toLowerCase().includes(rawSearchTerm.toLowerCase())
-  );
-});
 
 describe("c-base-lookup rendering", () => {
   const elementBuilder = new ElementBuilder(
@@ -82,12 +68,12 @@ describe("c-base-lookup rendering", () => {
     await flushPromises();
 
     // Check selection
-    expect(element.value).toEqual([DEFAULT_OPTIONS[0].id]);
+    expect(element.value).toEqual([DEFAULT_RECORDS[0].id]);
     expect(changeFn).toHaveBeenCalledWith(
       expect.objectContaining({
         detail: {
-          value: [DEFAULT_OPTIONS[0].id],
-          info: [DEFAULT_OPTIONS[0]]
+          value: [DEFAULT_RECORDS[0].id],
+          info: [DEFAULT_RECORDS[0]]
         }
       })
     );
@@ -100,36 +86,15 @@ describe("c-base-lookup rendering", () => {
 
     element.shadowRoot.querySelectorAll("[data-record-id]")[0].click();
 
-    expect(element.value).toEqual([DEFAULT_OPTIONS[0].id]);
+    expect(element.value).toEqual([DEFAULT_RECORDS[0].id]);
     expect(changeFn).toHaveBeenCalledWith(
       expect.objectContaining({
         detail: {
-          value: [DEFAULT_OPTIONS[0].id],
-          info: [DEFAULT_OPTIONS[0]]
+          value: [DEFAULT_RECORDS[0].id],
+          info: [DEFAULT_RECORDS[0]]
         }
       })
     );
-    await assertElementIsAccesible(element);
-  });
-
-  it("can clear selection", async () => {
-    const element = await elementBuilder.build({
-      value: [RECORDS[0].id, RECORDS[1].id]
-    });
-
-    const changeFn = mockFunction(element, "change");
-
-    getByDataId(element, "pill").dispatchEvent(new CustomEvent("remove"));
-
-    expect(changeFn).toHaveBeenCalledWith(
-      expect.objectContaining({
-        detail: {
-          value: [RECORDS[1].id],
-          info: [RECORDS[1]]
-        }
-      })
-    );
-
     await assertElementIsAccesible(element);
   });
 
@@ -179,7 +144,7 @@ describe("c-base-lookup rendering", () => {
     await assertElementIsAccesible(element);
   });
 
-  it("renders title on selection in multi-select", async () => {
+  it("renders title on selection", async () => {
     const element = await elementBuilder.build({
       value: RECORDS.map((result) => result.id)
     });
@@ -192,7 +157,7 @@ describe("c-base-lookup rendering", () => {
     await assertElementIsAccesible(element);
   });
 
-  it("can clear selection when multi entry", async () => {
+  it("can clear selection", async () => {
     // Create lookup
     const element = await elementBuilder.build({
       value: RECORDS.map((result) => result.id)

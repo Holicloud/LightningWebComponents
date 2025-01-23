@@ -81,7 +81,6 @@ class ElementBuilder {
         await flushPromises();
       }
     }
-
     return element;
   }
 }
