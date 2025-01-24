@@ -7,18 +7,24 @@ import {
   mockFunction
 } from "test/utils";
 import Lookup, { KEY_INPUTS, LABELS } from "c/Lookup";
-import { searchHandler, DEFAULT_RECORDS } from "./lookup.utils.js";
+import {
+  searchHandler,
+  DEFAULT_RECORDS,
+  selectionHandler
+} from "./lookup.utils.js";
 
 import RECORDS from "./data/records.json";
 
-describe("c-base-lookup rendering", () => {
+describe("c-base-lookup multi entry", () => {
   const elementBuilder = new ElementBuilder(
     "c-base-lookup",
     Lookup
   ).setDefaultApiProperties({
     label: "Lookup",
     isMultiEntry: true,
-    searchHandler
+    defaultRecords: DEFAULT_RECORDS,
+    searchHandler,
+    selectionHandler
   });
 
   beforeEach(() => {
@@ -31,7 +37,7 @@ describe("c-base-lookup rendering", () => {
     jest.useRealTimers();
   });
 
-  it("should not set option when invalid", async () => {
+  it("when option is not retrieved by search handler it should not be set up", async () => {
     const value = "any";
     const element = await elementBuilder.build({
       searchHandler: () => {
@@ -40,7 +46,7 @@ describe("c-base-lookup rendering", () => {
       value
     });
 
-    expect(element.value).toEqual([value]);
+    expect(element.value).toEqual([]);
     await assertElementIsAccesible(element);
   });
 
@@ -144,15 +150,21 @@ describe("c-base-lookup rendering", () => {
     await assertElementIsAccesible(element);
   });
 
-  it("renders title on selection", async () => {
+  it("renders pills on selection", async () => {
     const element = await elementBuilder.build({
       value: RECORDS.map((result) => result.id)
     });
 
-    const selPills = element.shadowRoot.querySelectorAll('[data-id="pill"]');
-    expect(selPills.length).toBe(RECORDS.length);
-    expect(selPills[0].title).toBe(RECORDS[0].title);
-    expect(selPills[1].title).toBe(RECORDS[1].title);
+    const selPills = [
+      ...element.shadowRoot.querySelectorAll('[data-id="pill"]')
+    ];
+
+    RECORDS.forEach((record) => {
+      const pillEl = selPills.find(
+        (pill) => pill.name === record.id && pill.title === record.title
+      );
+      expect(pillEl).toBeTruthy();
+    });
 
     await assertElementIsAccesible(element);
   });

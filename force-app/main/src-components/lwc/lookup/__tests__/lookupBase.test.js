@@ -4,7 +4,6 @@ import {
   flushPromises,
   getByDataId,
   assertElementIsAccesible,
-  assertElementIsNotAccesible,
   mockFunction
 } from "test/utils";
 import Lookup, { VARIANTS, LABELS, SCROLL_AFTER_N, KEY_INPUTS } from "c/Lookup";
@@ -13,7 +12,8 @@ import {
   inputSearchTerm,
   searchHandler,
   DEFAULT_RECORDS,
-  assertListBoxIsVisible
+  assertListBoxIsVisible,
+  selectionHandler
 } from "./lookup.utils.js";
 
 const BASE_LABEL = "Lookup";
@@ -27,7 +27,9 @@ const elementBuilder = new ElementBuilder(
   Lookup
 ).setDefaultApiProperties({
   label: BASE_LABEL,
-  searchHandler
+  defaultRecords: DEFAULT_RECORDS,
+  searchHandler,
+  selectionHandler
 });
 
 const modes = [
@@ -47,7 +49,7 @@ function assertDropdownIsNotVisible(element) {
   );
 }
 
-describe("c-lookup rendering", () => {
+describe("c-lookup", () => {
   beforeEach(() => {
     jest.useFakeTimers();
   });
@@ -56,6 +58,13 @@ describe("c-lookup rendering", () => {
     resetDOM();
     jest.clearAllMocks();
     jest.useRealTimers();
+  });
+
+  it.each(modes)("renders default options and subtitles", async (builder) => {
+    // Create lookup
+    const element = await builder.build();
+    assertListBoxIsVisible(element, DEFAULT_RECORDS);
+    await assertElementIsAccesible(element);
   });
 
   it.each(modes)("displays the label", async (builder) => {
@@ -67,25 +76,6 @@ describe("c-lookup rendering", () => {
 
     await assertElementIsAccesible(element);
   });
-
-  it.each(modes)(
-    "label not render when label is not provided",
-    async (builder) => {
-      let errorMessage;
-      let element;
-      try {
-        element = await builder.build({
-          label: ""
-        });
-      } catch (error) {
-        errorMessage = error.message;
-      }
-
-      expect(errorMessage).toBe(LABELS.errors.labelRequired);
-
-      await assertElementIsNotAccesible(element);
-    }
-  );
 
   it.each(modes)(
     "input is disabled and user cannot remove items",
@@ -207,12 +197,15 @@ describe("c-lookup rendering", () => {
     "shows no results when there are no options",
     async (builder) => {
       const element = await builder.build({
+        defaultRecords: [],
         searchHandler: () => {
           return [];
-        }
+        },
+        value: [RECORDS[0].id, RECORDS[2].id]
       });
 
       const noResultsElement = getByDataId(element, "no-results");
+      expect(noResultsElement).toBeTruthy();
       expect(noResultsElement?.textContent).toBe(LABELS.noResults);
 
       await assertElementIsAccesible(element);
@@ -222,27 +215,14 @@ describe("c-lookup rendering", () => {
   it.each(modes)(
     "should throw error when search handler is not setup properly",
     async (builder) => {
-      let element;
-      let errorMessage;
+      const element = await builder.build({
+        selectionHandler: () => "invalid return",
+        value: RECORDS[0].id
+      });
 
-      try {
-        element = await builder.build({
-          searchHandler: () => "invalid return"
-        });
-
-        expect(getByDataId(element, "help-message")?.textContent).toBe(
-          LABELS.errors.errorFetchingData
-        );
-
-        element.searchHandler = "some invalid value";
-      } catch (error) {
-        errorMessage = error.message;
-      }
-
-      await flushPromises();
-
-      expect(errorMessage).toBe(LABELS.errors.invalidHandler);
-
+      expect(getByDataId(element, "help-message")?.textContent).toBe(
+        LABELS.errors.errorFetchingData
+      );
       await assertElementIsAccesible(element);
     }
   );
@@ -332,18 +312,6 @@ describe("c-lookup rendering", () => {
       await assertElementIsAccesible(element);
     }
   );
-
-  it.each(modes)("renders default options and subtitles", async (builder) => {
-    // Create lookup
-    const element = await builder.build();
-    await flushPromises();
-
-    expect(element.searchHandler).toHaveBeenCalledWith(
-      expect.objectContaining({ getDefault: true })
-    );
-    assertListBoxIsVisible(element, DEFAULT_RECORDS);
-    await assertElementIsAccesible(element);
-  });
 
   it.each(modes)(
     "options should not be visible when user types escape",

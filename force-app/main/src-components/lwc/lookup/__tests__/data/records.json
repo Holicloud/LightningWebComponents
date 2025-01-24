@@ -10,8 +10,7 @@
         "type": "lightning-icon",
         "props": { "iconName": "utility:info", "variant": "warning" }
       }
-    ],
-    "retrieveOnDefault": true
+    ]
   },
   {
     "id": "1",
@@ -65,13 +64,12 @@
       }
     ]
   },
-  { "id": "7", "title": "Billing Information", "retrieveOnDefault": true },
+  { "id": "7", "title": "Billing Information" },
   { "id": "8", "title": "Reports Center" },
   {
     "id": "9",
     "title": "System Health",
-    "icon": { "iconName": "utility:warning", "variant": "success" },
-    "retrieveOnDefault": true
+    "icon": { "iconName": "utility:warning", "variant": "success" }
   },
   {
     "id": "10",
@@ -120,8 +118,7 @@
   {
     "id": "18",
     "title": "Data Sync",
-    "icon": { "iconName": "utility:info", "variant": "success" },
-    "retrieveOnDefault": true
+    "icon": { "iconName": "utility:info", "variant": "success" }
   },
   {
     "id": "19",
@@ -154,8 +151,7 @@
   {
     "id": "24",
     "title": "Audit Logs",
-    "icon": { "iconName": "utility:info", "variant": "success" },
-    "retrieveOnDefault": true
+    "icon": { "iconName": "utility:info", "variant": "success" }
   },
   {
     "id": "25",

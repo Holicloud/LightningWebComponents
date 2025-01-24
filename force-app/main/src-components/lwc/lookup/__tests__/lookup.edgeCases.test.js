@@ -13,7 +13,8 @@ import {
   DEFAULT_RECORDS,
   assertListBoxIsVisible,
   assertDropdownIsNotVisible,
-  assertDropdownIsVisible
+  assertDropdownIsVisible,
+  selectionHandler
 } from "./lookup.utils.js";
 
 const BASE_LABEL = "Lookup";
@@ -23,7 +24,9 @@ const elementBuilder = new ElementBuilder(
   Lookup
 ).setDefaultApiProperties({
   label: BASE_LABEL,
-  searchHandler
+  searchHandler,
+  selectionHandler,
+  defaultRecords: DEFAULT_RECORDS
 });
 
 const modes = [

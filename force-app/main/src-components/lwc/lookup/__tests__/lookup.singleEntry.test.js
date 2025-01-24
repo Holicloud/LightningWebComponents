@@ -12,7 +12,8 @@ import {
   searchHandler,
   assertListBoxIsVisible,
   assertDropdownIsNotVisible,
-  DEFAULT_RECORDS
+  DEFAULT_RECORDS,
+  selectionHandler
 } from "./lookup.utils.js";
 
 describe("c-base-lookup single entry", () => {
@@ -21,7 +22,9 @@ describe("c-base-lookup single entry", () => {
     Lookup
   ).setDefaultApiProperties({
     label: "Lookup",
-    searchHandler
+    searchHandler,
+    selectionHandler,
+    defaultRecords: DEFAULT_RECORDS
   });
 
   beforeEach(() => {

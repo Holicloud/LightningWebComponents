@@ -11,8 +11,7 @@ const RECORDS = [
         type: "lightning-icon",
         props: { iconName: "utility:info", variant: "warning" }
       }
-    ],
-    retrieveOnDefault: true
+    ]
   },
   {
     id: "1",
@@ -62,13 +61,12 @@ const RECORDS = [
       { label: "Last Login", value: "2 Hours Ago", type: "lightning-icon" }
     ]
   },
-  { id: "7", title: "Billing Information", retrieveOnDefault: true },
+  { id: "7", title: "Billing Information" },
   { id: "8", title: "Reports Center" },
   {
     id: "9",
     title: "System Health",
-    icon: { iconName: "utility:warning", variant: "success" },
-    retrieveOnDefault: true
+    icon: { iconName: "utility:warning", variant: "success" }
   },
   {
     id: "10",
@@ -115,8 +113,7 @@ const RECORDS = [
   {
     id: "18",
     title: "Data Sync",
-    icon: { iconName: "utility:info", variant: "success" },
-    retrieveOnDefault: true
+    icon: { iconName: "utility:info", variant: "success" }
   },
   {
     id: "19",
@@ -145,8 +142,7 @@ const RECORDS = [
   {
     id: "24",
     title: "Audit Logs",
-    icon: { iconName: "utility:info", variant: "success" },
-    retrieveOnDefault: true
+    icon: { iconName: "utility:info", variant: "success" }
   },
   {
     id: "25",
@@ -162,17 +158,37 @@ const RECORDS = [
 ];
 
 export default class LookupWithResults extends LightningElement {
+  // initial multiselect selection
   value = ["6", "7"];
 
-  searchHandler(config) {
-    const { getDefault, getInitialSelection, selectedIds } = config;
-    if (getDefault) {
-      return RECORDS.filter((record) => record.retrieveOnDefault);
-    } else if (getInitialSelection) {
-      return RECORDS.filter((record) => selectedIds.includes(record.id));
-    }
+  // a small subset of your data typically first x elements or recently viewed records
+  defaultRecords = RECORDS.slice(0, 5);
 
-    // filter your records using rawSearchTerm or searchTerm
-    return RECORDS;
+  getMatching({ rawSearchTerm, searchTerm }) {
+    // fetch your records using rawSearchTerm or searchTerm
+    return RECORDS.filter((record) => {
+      if (
+        record.title.includes(rawSearchTerm) ||
+        record.title.includes(searchTerm)
+      ) {
+        return true;
+      }
+
+      const firstSubtitle = record.subtitles?.at(0)?.value;
+
+      if (firstSubtitle) {
+        return (
+          firstSubtitle.includes(rawSearchTerm) ||
+          firstSubtitle.includes(searchTerm)
+        );
+      }
+
+      return false;
+    });
+  }
+
+  getSelection({ selectedIds }) {
+    // fetch your data using the selectedIds
+    return RECORDS.filter((record) => selectedIds.includes(record.id));
   }
 }

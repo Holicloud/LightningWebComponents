@@ -47,7 +47,6 @@ const LABELS = {
   errors: {
     labelRequired: "label is required",
     completeThisField: "Complete this field.",
-    invalidHandler: "search handler has to be a function",
     errorFetchingData: "Error Fetching Data"
   }
 };
@@ -62,6 +61,8 @@ const SUBTITLE_TYPES = {
   ICON: "lightning-icon"
 };
 
+const DEFAULT_LABEL = "Select";
+
 export default class Lookup extends LightningElement {
   @api actions = [];
   @api disabled = false;
@@ -71,7 +72,8 @@ export default class Lookup extends LightningElement {
   @api placeholder = "";
   @api required = false;
 
-  _label = "";
+  _defaultRecords = [];
+  _label = DEFAULT_LABEL;
   _minSearchTermLength = MIN_SEARCH_TERM_LENGTH;
   _scrollAfterNItems = SCROLL_AFTER_N;
   _variant = VARIANTS.LABEL_STACKED;
@@ -106,8 +108,7 @@ export default class Lookup extends LightningElement {
     return this._label;
   }
   set label(value) {
-    assert(isNotBlank(value), LABELS.errors.labelRequired);
-    this._label = value;
+    this._label = isNotBlank(value) ? value : DEFAULT_LABEL;
   }
 
   @api
@@ -142,27 +143,26 @@ export default class Lookup extends LightningElement {
   }
 
   set value(value) {
+    let selectedIds = [];
+
     if (!this.isMultiEntry) {
-      assert(!Array.isArray(value), "value should not be an array");
+      selectedIds.push(value);
+    } else if (value instanceof Array && value.length) {
+      selectedIds = value;
     }
 
-    let selectedIds = Array.isArray(value)
-      ? value
-      : isNotBlank(value)
-        ? [value]
-        : [];
+    selectedIds = selectedIds.filter(
+      (recordId) => typeof recordId === "string" && isNotBlank(recordId)
+    );
 
     selectedIds.forEach((recordId) => {
-      assert(isNotBlank(recordId), "Id cannot be null");
       this.upsertRecord(recordId, {
-        record: { id: recordId, title: recordId },
         selected: true
       });
     });
 
-    if (!this.hasInit && selectedIds.length) {
+    if (selectedIds.length) {
       this.setValue(selectedIds);
-      this.updateDropdownOfRecords();
     }
   }
 
@@ -174,13 +174,52 @@ export default class Lookup extends LightningElement {
   }
 
   set searchHandler(value) {
-    assert(typeof value === "function", LABELS.errors.invalidHandler);
-    this._searchHandler = value;
+    this._searchHandler = typeof value === "function" ? value : () => [];
+  }
+
+  _selectionHandler = () => [];
+
+  @api
+  get selectionHandler() {
+    return this._selectionHandler;
+  }
+
+  set selectionHandler(value) {
+    this._selectionHandler = typeof value === "function" ? value : () => [];
   }
 
   @api
   get validity() {
     return { valid: !this.hasMissingValue && !this.helpMessage };
+  }
+
+  @api
+  get defaultRecords() {
+    return this._defaultRecords;
+  }
+  set defaultRecords(value) {
+    this._defaultRecords = value instanceof Array ? value : [];
+
+    for (const { isDefault, record } of Array.from(this.records.values())) {
+      if (isDefault) {
+        const isNowDefaulted = this._defaultRecords.find(
+          (defaultRecord) => defaultRecord.id === record.id
+        );
+
+        if (!isNowDefaulted) {
+          this.upsertRecord(record.id, {
+            isDefault: false
+          });
+        }
+      }
+    }
+
+    for (const record of this._defaultRecords) {
+      this.upsertRecord(record.id, {
+        record,
+        isDefault: true
+      });
+    }
   }
 
   @api
@@ -479,7 +518,24 @@ export default class Lookup extends LightningElement {
     try {
       const options = await Promise.resolve(this.searchHandler(input));
       assert(options instanceof Array);
-      return clone(options);
+      return clone(options).filter(
+        (record) => typeof record?.id === "string" && isNotBlank(record.id)
+      );
+    } catch (error) {
+      this.setCustomValidity(LABELS.errors.errorFetchingData);
+      this.reportValidity();
+    }
+
+    return [];
+  }
+
+  async executeGetSelectionHandler(input) {
+    try {
+      const options = await Promise.resolve(this.selectionHandler(input));
+      assert(options instanceof Array);
+      return clone(options).filter(
+        (record) => typeof record?.id === "string" && isNotBlank(record.id)
+      );
     } catch (error) {
       this.setCustomValidity(LABELS.errors.errorFetchingData);
       this.reportValidity();
@@ -569,12 +625,16 @@ export default class Lookup extends LightningElement {
           rawSearchTerm: newSearchTerm,
           fetchedIds: this.fetchedIds
         });
+
+        // update matching
         const matchingRecordIds = matchingRecords.map((record) => record.id);
-        this.records.forEach((record) => {
+
+        for (const { record } of Array.from(this.records.values())) {
           if (!matchingRecordIds.includes(record.id)) {
             this.upsertRecord(record.id, { matchesSearchTerm: false });
           }
-        });
+        }
+
         matchingRecords.forEach((record) =>
           this.upsertRecord(record.id, {
             record,
@@ -640,8 +700,15 @@ export default class Lookup extends LightningElement {
       this.hasFocus &&
       this.focusedResultIndex >= 0
     ) {
-      getFocusableElement(this.focusedResultIndex)?.click();
-      event.preventDefault();
+      if (!this.isMultiEntry) {
+        if (!this.hasSelection) {
+          getFocusableElement(this.focusedResultIndex)?.click();
+          event.preventDefault();
+        }
+      } else {
+        getFocusableElement(this.focusedResultIndex)?.click();
+        event.preventDefault();
+      }
     } else if (
       !this.hasSelection &&
       (event.keyCode === KEY_INPUTS.ENTER ||
@@ -724,57 +791,35 @@ export default class Lookup extends LightningElement {
     this.classList.add("slds-form-element");
     this.updateClassList();
     if (!this.hasInit) {
-      this.init();
+      this.updateDropdownOfRecords();
+      this.hasInit = true;
+      this.isLoading = false;
     }
-  }
-
-  async init() {
-    assert(isNotBlank(this.label), LABELS.errors.labelRequired);
-    assert(
-      typeof this.searchHandler === "function",
-      LABELS.errors.invalidHandler
-    );
-
-    if (this.hasSelection) {
-      await this.setValue(this.selectedRecords.map((record) => record.id));
-    }
-
-    await this.setDefaultRecords();
-    this.updateDropdownOfRecords();
-
-    this.hasInit = true;
-    this.isLoading = false;
   }
 
   async setValue(selectedIds) {
-    const config = {
-      getInitialSelection: true,
+    const selectedRecords = await this.executeGetSelectionHandler({
       selectedIds
-    };
-    const selectedRecords = await this.executeSearch(config);
+    });
 
     selectedRecords.forEach((record) => {
-      this.upsertRecord(record.id, {
-        record,
-        fetched: true
-      });
+      this.upsertRecord(record.id, { record });
     });
-  }
 
-  async setDefaultRecords() {
-    (await this.executeSearch({ getDefault: true })).forEach((record) => {
-      this.upsertRecord(record.id, {
-        record,
-        isDefault: true,
-        fetched: true
-      });
-    });
+    if (this.hasInit) {
+      this.updateDropdownOfRecords();
+    }
   }
 
   upsertRecord(recordId, config = {}) {
-    if (this.records.has(recordId)) {
+    assert(isNotBlank(recordId), "recordId is required");
+    const existingRecord = this.records.get(recordId);
+    if (existingRecord) {
       Object.assign(this.records.get(recordId), config);
     } else {
+      if (!config.record) {
+        config.record = { id: recordId, title: recordId };
+      }
       this.records.set(recordId, config);
     }
   }
