@@ -2,7 +2,7 @@ import { LightningElement, api } from "lwc";
 import { classSet } from "c/utils";
 
 export default class ExpandableSection extends LightningElement {
-  @api nonCollapsible = false;
+  @api isNonCollapsible = false;
   @api title;
 
   _isCollapsed = false;
@@ -22,7 +22,7 @@ export default class ExpandableSection extends LightningElement {
   }
 
   get isExpanded() {
-    return this.nonCollapsible || !this.isCollapsed;
+    return this.isNonCollapsible || !this.isCollapsed;
   }
 
   handleToggle() {

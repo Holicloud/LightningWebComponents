@@ -28,7 +28,7 @@ describe("c-expandable-section", () => {
 
   it("should show if it is nonCollapsed", () => {
     const element = createExpandableSection({
-      nonCollapsible: true,
+      isNonCollapsible: true,
       title: "Test title"
     });
 
