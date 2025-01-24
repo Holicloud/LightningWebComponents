@@ -77,6 +77,8 @@ export default class Lookup extends LightningElement {
   _minSearchTermLength = MIN_SEARCH_TERM_LENGTH;
   _scrollAfterNItems = SCROLL_AFTER_N;
   _variant = VARIANTS.LABEL_STACKED;
+  _searchHandler = () => [];
+  _selectionHandler = () => [];
 
   @track recordsDropdown = [];
   isLoading = true;
@@ -166,8 +168,6 @@ export default class Lookup extends LightningElement {
     }
   }
 
-  _searchHandler = () => [];
-
   @api
   get searchHandler() {
     return this._searchHandler;
@@ -176,8 +176,6 @@ export default class Lookup extends LightningElement {
   set searchHandler(value) {
     this._searchHandler = typeof value === "function" ? value : () => [];
   }
-
-  _selectionHandler = () => [];
 
   @api
   get selectionHandler() {
@@ -798,15 +796,14 @@ export default class Lookup extends LightningElement {
   }
 
   async setValue(selectedIds) {
-    const selectedRecords = await this.executeGetSelectionHandler({
-      selectedIds
-    });
-
-    selectedRecords.forEach((record) => {
-      this.upsertRecord(record.id, { record });
-    });
-
     if (this.hasInit) {
+      const selectedRecords = await this.executeGetSelectionHandler({
+        selectedIds
+      });
+  
+      selectedRecords.forEach((record) => {
+        this.upsertRecord(record.id, { record });
+      });
       this.updateDropdownOfRecords();
     }
   }

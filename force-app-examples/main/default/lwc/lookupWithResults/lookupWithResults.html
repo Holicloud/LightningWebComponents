@@ -6,9 +6,10 @@
 
     <div class="slds-p-around_medium lgc-bg">
       <c-lookup
+        search-handler={getMatching}
+        selection-handler={getSelection}
         default-records={defaultRecords}
         label="Account"
-        search-handler={searchHandler}
       ></c-lookup>
     </div>
   </div>
@@ -20,10 +21,12 @@
 
     <div class="slds-p-around_medium lgc-bg">
       <c-lookup
+        search-handler={getMatching}
+        selection-handler={getSelection}
+        default-records={defaultRecords}
         label="Account"
-        value="id1"
+        value="1"
         disabled
-        search-handler={searchHandler}
       ></c-lookup>
     </div>
   </div>
@@ -33,9 +36,11 @@
 
     <div class="slds-p-around_medium lgc-bg">
       <c-lookup
+        search-handler={getMatching}
+        selection-handler={getSelection}
+        default-records={defaultRecords}
         is-multi-entry
         label="Account"
-        search-handler={searchHandler}
       ></c-lookup>
     </div>
   </div>
@@ -47,10 +52,12 @@
 
     <div class="slds-p-around_medium lgc-bg">
       <c-lookup
+        selection-handler={getSelection}
+        search-handler={getMatching}
+        default-records={defaultRecords}
         is-multi-entry
         value={value}
         label="Account"
-        search-handler={searchHandler}
       ></c-lookup>
     </div>
   </div>
