@@ -65,24 +65,24 @@ const DEFAULT_LABEL = "Select";
 
 export default class Lookup extends LightningElement {
   @api actions = [];
+  @api defaultRecords = [];
   @api disabled = false;
   @api fieldLevelHelp = "";
   @api isMultiEntry = false;
   @api messageWhenValueMissing = LABELS.errors.completeThisField;
   @api placeholder = "";
   @api required = false;
+  @api scrollAfterNItems = SCROLL_AFTER_N;
+  @api searchHandler = () => [];
+  @api selectionHandler = () => [];
 
   _defaultRecords = [];
   _label = DEFAULT_LABEL;
   _minSearchTermLength = MIN_SEARCH_TERM_LENGTH;
   _scrollAfterNItems = SCROLL_AFTER_N;
   _variant = VARIANTS.LABEL_STACKED;
-  _searchHandler = () => [];
-  _selectionHandler = () => [];
 
   @track recordsDropdown = [];
-  isLoading = true;
-  records = new Map();
   cancelBlur = false;
   cleanSearchTerm;
   displayListBox = false;
@@ -91,19 +91,12 @@ export default class Lookup extends LightningElement {
   hasFocus = false;
   hasInit = false;
   helpMessage;
+  isLoading = true;
   labels = LABELS;
+  records = new Map();
   searchTerm = "";
   searchThrottlingTimeout;
   showHelpMessage = false;
-
-  @api
-  get scrollAfterNItems() {
-    return this._scrollAfterNItems;
-  }
-  set scrollAfterNItems(value) {
-    this._scrollAfterNItems =
-      value === "*" || Number.isInteger(value) ? value : SCROLL_AFTER_N;
-  }
 
   @api
   get label() {
@@ -141,83 +134,28 @@ export default class Lookup extends LightningElement {
   get value() {
     return this.isMultiEntry
       ? this.selectedRecords.map((record) => record.id)
-      : this.selectedRecord?.id;
+      : this.selectedRecords[0]?.id;
   }
 
   set value(value) {
-    let selectedIds = [];
+    let selectedIds = this.isSingleEntry
+      ? [value]
+      : Array.isArray(value) && value.length
+        ? value
+        : [];
 
-    if (!this.isMultiEntry) {
-      selectedIds.push(value);
-    } else if (value instanceof Array && value.length) {
-      selectedIds = value;
+    selectedIds
+      .filter((recordId) => isNotBlank(recordId))
+      .forEach((recordId) => this.upsertRecord(recordId, { selected: true }));
+
+    if (this.hasInit) {
+      this.updateValue();
     }
-
-    selectedIds = selectedIds.filter(
-      (recordId) => typeof recordId === "string" && isNotBlank(recordId)
-    );
-
-    selectedIds.forEach((recordId) => {
-      this.upsertRecord(recordId, {
-        selected: true
-      });
-    });
-
-    if (selectedIds.length) {
-      this.setValue(selectedIds);
-    }
-  }
-
-  @api
-  get searchHandler() {
-    return this._searchHandler;
-  }
-
-  set searchHandler(value) {
-    this._searchHandler = typeof value === "function" ? value : () => [];
-  }
-
-  @api
-  get selectionHandler() {
-    return this._selectionHandler;
-  }
-
-  set selectionHandler(value) {
-    this._selectionHandler = typeof value === "function" ? value : () => [];
   }
 
   @api
   get validity() {
-    return { valid: !this.hasMissingValue && !this.helpMessage };
-  }
-
-  @api
-  get defaultRecords() {
-    return this._defaultRecords;
-  }
-  set defaultRecords(value) {
-    this._defaultRecords = value instanceof Array ? value : [];
-
-    for (const { isDefault, record } of Array.from(this.records.values())) {
-      if (isDefault) {
-        const isNowDefaulted = this._defaultRecords.find(
-          (defaultRecord) => defaultRecord.id === record.id
-        );
-
-        if (!isNowDefaulted) {
-          this.upsertRecord(record.id, {
-            isDefault: false
-          });
-        }
-      }
-    }
-
-    for (const record of this._defaultRecords) {
-      this.upsertRecord(record.id, {
-        record,
-        isDefault: true
-      });
-    }
+    return { valid: Boolean(!this.hasMissingValue() && !this.helpMessage) };
   }
 
   @api
@@ -259,7 +197,7 @@ export default class Lookup extends LightningElement {
 
   @api
   reportValidity() {
-    if (this.hasMissingValue) {
+    if (this.hasMissingValue()) {
       this.helpMessage = this.messageWhenValueMissing;
     } else if (this.helpMessage === this.messageWhenValueMissing) {
       this.helpMessage = "";
@@ -284,17 +222,7 @@ export default class Lookup extends LightningElement {
     this.reportValidity();
   }
 
-  get hasSelection() {
-    return !!this.selectedRecords.length;
-  }
-
-  get isSingleEntry() {
-    return !this.isMultiEntry;
-  }
-
-  get doneLoading() {
-    return !this.isLoading;
-  }
+  // template getters
 
   get getContainerClass() {
     return classSet("slds-combobox_container")
@@ -305,9 +233,10 @@ export default class Lookup extends LightningElement {
   get getDropdownClass() {
     const isSearchTermValid =
       this.cleanSearchTerm?.length >= this.minSearchTermLength;
-    const openListOfRecords = !!(
+    const isSelectionAllowed = this.isMultiEntry || !this.hasSelection();
+    const shouldDisplayDropdown = !!(
       this.displayListBox &&
-      this.isSelectionAllowed &&
+      isSelectionAllowed &&
       (isSearchTermValid ||
         this.recordsDropdown?.length ||
         this.actions?.length)
@@ -316,7 +245,7 @@ export default class Lookup extends LightningElement {
     return classSet("slds-combobox")
       .add("slds-dropdown-trigger")
       .add("slds-dropdown-trigger_click")
-      .add({ "slds-is-open": openListOfRecords })
+      .add({ "slds-is-open": shouldDisplayDropdown })
       .toString();
   }
 
@@ -329,9 +258,9 @@ export default class Lookup extends LightningElement {
       })
       .add({ "has-custom-error": this.helpMessage });
 
-    if (!this.isMultiEntry) {
+    if (this.isSingleEntry) {
       css.add("slds-combobox__input-value");
-      css.add({ "has-custom-border": this.hasSelection });
+      css.add({ "has-custom-border": this.hasSelection() });
     }
 
     return css.toString();
@@ -339,7 +268,7 @@ export default class Lookup extends LightningElement {
 
   get getComboboxClass() {
     const iconClass =
-      this.isMultiEntry || !this.hasSelection
+      this.isMultiEntry || !this.hasSelection()
         ? "slds-input-has-icon_right"
         : "slds-input-has-icon_left-right";
 
@@ -352,7 +281,7 @@ export default class Lookup extends LightningElement {
   get getSearchIconClass() {
     return classSet("slds-input__icon")
       .add("slds-input__icon_right")
-      .add({ "slds-hide": !this.isMultiEntry && this.hasSelection })
+      .add({ "slds-hide": this.isSingleEntry && this.hasSelection() })
       .toString();
   }
 
@@ -361,63 +290,27 @@ export default class Lookup extends LightningElement {
       .add("slds-button_icon")
       .add("slds-input__icon")
       .add("slds-input__icon_right")
-      .add({ "slds-hide": !this.hasSelection })
+      .add({ "slds-hide": !this.hasSelection() })
       .toString();
-  }
-
-  get getSelectIconName() {
-    return this.hasSelection && this.selectedRecord.icon?.iconName
-      ? this.selectedRecord.icon.iconName
-      : "standard:default";
   }
 
   get getSelectIconClass() {
     return classSet("slds-combobox__input-entity-icon")
-      .add({ "slds-hide": !this.hasSelection })
+      .add({ "slds-hide": !this.hasSelection() })
       .toString();
-  }
-
-  get getInputValue() {
-    return this.isMultiEntry || !this.hasSelection
-      ? this.searchTerm
-      : this.selectedRecord.title;
-  }
-
-  get getInputTitle() {
-    return this.isMultiEntry || !this.hasSelection
-      ? ""
-      : this.selectedRecord.title;
   }
 
   get getListboxClass() {
-    const iconClass = `slds-dropdown_length-with-icon-${this.scrollAfterNItems}`;
+    const scrollAfterNItems =
+      this.scrollAfterNItems === SCROLL_AFTER_N ||
+      Number.isInteger(this.scrollAfterNItems)
+        ? this.scrollAfterNItems
+        : SCROLL_AFTER_N;
+    const iconClass = `slds-dropdown_length-with-icon-${scrollAfterNItems}`;
     return classSet("slds-dropdown")
-      .add({ [iconClass]: this.scrollAfterNItems })
+      .add({ [iconClass]: scrollAfterNItems })
       .add("slds-dropdown_fluid")
       .toString();
-  }
-
-  get isInputReadonly() {
-    return this.isMultiEntry ? false : this.hasSelection;
-  }
-
-  get showClearIcon() {
-    if (this.isMultiEntry) {
-      return this.searchTerm.length;
-    }
-    return this.searchTerm.length && !this.hasSelection;
-  }
-
-  get showSearchIcon() {
-    return !this.showClearIcon;
-  }
-
-  get isSelectionAllowed() {
-    return this.isMultiEntry || !this.hasSelection;
-  }
-
-  get displayHelpMessage() {
-    return this.showHelpMessage && this.helpMessage;
   }
 
   get computedLabelClass() {
@@ -426,47 +319,49 @@ export default class Lookup extends LightningElement {
       .toString();
   }
 
-  get hasMissingValue() {
-    return this.required && !this.disabled && !this.hasSelection;
+  get isSingleEntry() {
+    return !this.isMultiEntry;
   }
 
-  updateDropdownOfRecords() {
-    const result = [];
-    let regex;
-    if (this.displayMatching) {
-      const cleanSearchTerm = this.searchTerm
-        .replace(REGEX_SOSL_RESERVED, ".?")
-        .replace(REGEX_EXTRA_TRAP, "\\$1");
-      regex = new RegExp(`(${cleanSearchTerm})`, "gi");
+  get doneLoading() {
+    return !this.isLoading;
+  }
+
+  get getSelectIconName() {
+    return this.hasSelection() && this.selectedRecords[0].icon?.iconName
+      ? this.selectedRecords[0].icon.iconName
+      : "standard:default";
+  }
+
+  get getInputValue() {
+    return this.isMultiEntry || !this.hasSelection()
+      ? this.searchTerm
+      : this.selectedRecords[0].title;
+  }
+
+  get getInputTitle() {
+    return this.isMultiEntry || !this.hasSelection()
+      ? ""
+      : this.selectedRecords[0].title;
+  }
+
+  get isInputReadonly() {
+    return this.isMultiEntry ? false : this.hasSelection();
+  }
+
+  get showClearIcon() {
+    if (this.isMultiEntry) {
+      return this.searchTerm.length;
     }
+    return this.searchTerm.length && !this.hasSelection();
+  }
 
-    let index = 0;
-    for (const { selected, record, matchesSearchTerm, isDefault } of Array.from(
-      this.records.values()
-    )) {
-      if (selected || !record) {
-        continue;
-      }
+  get showSearchIcon() {
+    return !this.showClearIcon;
+  }
 
-      if (this.displayMatching && matchesSearchTerm) {
-        const singleResult = clone(record);
-        this.setDisplayableRecord(singleResult, index);
-        this.highlightTitle(singleResult, regex);
-
-        if (singleResult.hasSubtitles) {
-          this.updateSubtitles(singleResult, regex);
-        }
-        result.push(singleResult);
-        index++;
-      } else if (!this.displayMatching && isDefault) {
-        const singleResult = clone(record);
-        this.setDisplayableRecord(singleResult, index);
-        result.push(singleResult);
-        index++;
-      }
-    }
-
-    this.recordsDropdown = result;
+  get displayHelpMessage() {
+    return this.showHelpMessage && this.helpMessage;
   }
 
   get selectedRecords() {
@@ -479,103 +374,11 @@ export default class Lookup extends LightningElement {
     return result;
   }
 
-  get selectedRecord() {
-    return this.selectedRecords[0];
-  }
-
-  get fetchedIds() {
-    return Array.from(this.records.values())
-      .filter((record) => record.fetched)
-      .map((record) => record.id);
-  }
-
-  highlightTitle(result, regex) {
-    result.title =
-      this.searchTerm.length >= this.minSearchTermLength &&
-      isNotBlank(result.title)
-        ? result.title.replace(regex, BOLD_MATCHER_REGEX)
-        : result.title;
-  }
-
-  updateSubtitles(result, regex) {
-    result.subtitles.forEach((subtitle) => {
-      if (
-        this.searchTerm.length >= this.minSearchTermLength &&
-        subtitle.highlightSearchTerm &&
-        subtitle.type === FORMATTED_TEXT_TYPE
-      ) {
-        const formattedSubtitle = String(subtitle.value);
-        subtitle.value = isNotBlank(formattedSubtitle)
-          ? formattedSubtitle.replace(regex, BOLD_MATCHER_REGEX)
-          : formattedSubtitle;
-      }
-    });
-  }
-
-  async executeSearch(input) {
-    try {
-      const options = await Promise.resolve(this.searchHandler(input));
-      assert(options instanceof Array);
-      return clone(options).filter(
-        (record) => typeof record?.id === "string" && isNotBlank(record.id)
-      );
-    } catch (error) {
-      this.setCustomValidity(LABELS.errors.errorFetchingData);
-      this.reportValidity();
-    }
-
-    return [];
-  }
-
-  async executeGetSelectionHandler(input) {
-    try {
-      const options = await Promise.resolve(this.selectionHandler(input));
-      assert(options instanceof Array);
-      return clone(options).filter(
-        (record) => typeof record?.id === "string" && isNotBlank(record.id)
-      );
-    } catch (error) {
-      this.setCustomValidity(LABELS.errors.errorFetchingData);
-      this.reportValidity();
-    }
-
-    return [];
-  }
-
-  handleClearSearchTerm() {
-    this.cleanSearchTerm = "";
-    this.searchTerm = "";
-    this.displayMatching = false;
-    this.focus();
-  }
-
-  processSelectionUpdate(isUserInteraction) {
-    // Reset search
-    this.cleanSearchTerm = "";
-    this.searchTerm = "";
-    if (!this.isMultiEntry && this.hasSelection) {
-      this.displayMatching = false;
-      this.displayListBox = false;
-    }
-
-    // If selection was changed by user, notify parent components
-    if (isUserInteraction) {
-      this.dispatchEvent(
-        new CustomEvent("change", {
-          detail: {
-            value: this.value,
-            info: this.isMultiEntry ? this.selectedRecords : this.selectedRecord
-          }
-        })
-      );
-    }
-  }
-
-  // EVENT HANDLING
+  // event handlers
 
   handleInput(event) {
     // Prevent action if selection is not allowed
-    if (!this.isSelectionAllowed) {
+    if (!this.isMultiEntry && this.hasSelection()) {
       return;
     }
 
@@ -618,33 +421,53 @@ export default class Lookup extends LightningElement {
       if (this.cleanSearchTerm.length >= this.minSearchTermLength) {
         // Display spinner until results are returned
 
-        const matchingRecords = await this.executeSearch({
-          searchTerm: this.cleanSearchTerm,
-          rawSearchTerm: newSearchTerm,
-          fetchedIds: this.fetchedIds
-        });
+        try {
+          const searchHandler =
+            typeof this.searchHandler === "function"
+              ? this.searchHandler
+              : () => [];
+          let matchingRecords = await Promise.resolve(
+            searchHandler({
+              searchTerm: this.cleanSearchTerm,
+              rawSearchTerm: newSearchTerm
+            })
+          );
 
-        // update matching
-        const matchingRecordIds = matchingRecords.map((record) => record.id);
+          matchingRecords = (
+            matchingRecords instanceof Array ? matchingRecords : []
+          ).filter((record) => isNotBlank(record?.id));
 
-        for (const { record } of Array.from(this.records.values())) {
-          if (!matchingRecordIds.includes(record.id)) {
-            this.upsertRecord(record.id, { matchesSearchTerm: false });
+          if (matchingRecords.length) {
+            const matchingRecordIds = matchingRecords.map(
+              (record) => record.id
+            );
+
+            for (const { record } of Array.from(this.records.values())) {
+              if (!matchingRecordIds.includes(record.id)) {
+                this.upsertRecord(record.id, { matchesSearchTerm: false });
+              }
+            }
+
+            matchingRecords.forEach((record) =>
+              this.upsertRecord(record.id, {
+                record,
+                matchesSearchTerm: true
+              })
+            );
           }
-        }
 
-        matchingRecords.forEach((record) =>
-          this.upsertRecord(record.id, {
-            record,
-            matchesSearchTerm: true,
-            fetched: true
-          })
-        );
-        this.displayMatching = true;
-        this.isLoading = false;
-        this.displayListBox = true;
-        this.focusedResultIndex = null;
-        this.updateDropdownOfRecords();
+          this.displayMatching = true;
+          this.displayListBox = true;
+        } catch (error) {
+          this.setCustomValidity(LABELS.errors.errorFetchingData);
+          this.reportValidity();
+          this.displayMatching = false;
+          this.displayListBox = false;
+        } finally {
+          this.isLoading = false;
+          this.focusedResultIndex = null;
+          this.updateDropdownOfRecords();
+        }
       }
 
       this.searchThrottlingTimeout = null;
@@ -660,8 +483,8 @@ export default class Lookup extends LightningElement {
       this.template.querySelector(`[data-index="${[index]}"]`);
 
     if (
-      this.hasSelection &&
-      !this.isMultiEntry &&
+      this.hasSelection() &&
+      this.isSingleEntry &&
       (event.keyCode === KEY_INPUTS.BACKSPACE ||
         event.keyCode === KEY_INPUTS.DEL)
     ) {
@@ -698,8 +521,8 @@ export default class Lookup extends LightningElement {
       this.hasFocus &&
       this.focusedResultIndex >= 0
     ) {
-      if (!this.isMultiEntry) {
-        if (!this.hasSelection) {
+      if (this.isSingleEntry) {
+        if (!this.hasSelection()) {
           getFocusableElement(this.focusedResultIndex)?.click();
           event.preventDefault();
         }
@@ -708,7 +531,7 @@ export default class Lookup extends LightningElement {
         event.preventDefault();
       }
     } else if (
-      !this.hasSelection &&
+      !this.hasSelection() &&
       (event.keyCode === KEY_INPUTS.ENTER ||
         event.keyCode === KEY_INPUTS.SPACE) &&
       isBlank(this.searchTerm)
@@ -768,13 +591,13 @@ export default class Lookup extends LightningElement {
     this.updateDropdownOfRecords();
     this.processSelectionUpdate(true);
 
-    if (!this.hasSelection) {
+    if (!this.hasSelection()) {
       this.focus();
     }
   }
 
   handleRemoveSelectionSingleEntry() {
-    this.upsertRecord(this.selectedRecord.id, { selected: false });
+    this.upsertRecord(this.selectedRecords[0].id, { selected: false });
     this.updateDropdownOfRecords();
     this.processSelectionUpdate(true);
     this.focus();
@@ -785,26 +608,167 @@ export default class Lookup extends LightningElement {
     this.dispatchEvent(new CustomEvent("action", { detail: name }));
   }
 
-  connectedCallback() {
+  handleClearSearchTerm() {
+    this.cleanSearchTerm = "";
+    this.searchTerm = "";
+    this.displayMatching = false;
+    this.focus();
+  }
+
+  // hooks
+
+  async connectedCallback() {
     this.classList.add("slds-form-element");
     this.updateClassList();
     if (!this.hasInit) {
+      this.setDefaultRecords();
+      await this.setSelection();
       this.updateDropdownOfRecords();
       this.hasInit = true;
       this.isLoading = false;
     }
   }
 
-  async setValue(selectedIds) {
-    if (this.hasInit) {
-      const selectedRecords = await this.executeGetSelectionHandler({
-        selectedIds
-      });
-  
-      selectedRecords.forEach((record) => {
-        this.upsertRecord(record.id, { record });
-      });
-      this.updateDropdownOfRecords();
+  async updateValue() {
+    await this.setSelection();
+    this.updateDropdownOfRecords();
+  }
+
+  hasMissingValue() {
+    return this.required && !this.disabled && !this.hasSelection();
+  }
+
+  hasSelection() {
+    return !!this.selectedRecords.length;
+  }
+
+  updateDropdownOfRecords() {
+    const result = [];
+    let regex;
+    if (this.displayMatching) {
+      const cleanSearchTerm = this.searchTerm
+        .replace(REGEX_SOSL_RESERVED, ".?")
+        .replace(REGEX_EXTRA_TRAP, "\\$1");
+      regex = new RegExp(`(${cleanSearchTerm})`, "gi");
+    }
+
+    let index = 0;
+    for (const { selected, record, matchesSearchTerm, isDefault } of Array.from(
+      this.records.values()
+    )) {
+      if (selected || !record) {
+        continue;
+      }
+
+      if (this.displayMatching && matchesSearchTerm) {
+        const singleResult = clone(record);
+        this.setDisplayableRecord(singleResult, index);
+        this.highlightTitle(singleResult, regex);
+
+        if (singleResult.hasSubtitles) {
+          this.updateSubtitles(singleResult, regex);
+        }
+        result.push(singleResult);
+        index++;
+      } else if (!this.displayMatching && isDefault) {
+        const singleResult = clone(record);
+        this.setDisplayableRecord(singleResult, index);
+        result.push(singleResult);
+        index++;
+      }
+    }
+
+    this.recordsDropdown = result;
+  }
+
+  highlightTitle(result, regex) {
+    result.title =
+      this.searchTerm.length >= this.minSearchTermLength &&
+      isNotBlank(result.title)
+        ? result.title.replace(regex, BOLD_MATCHER_REGEX)
+        : result.title;
+  }
+
+  updateSubtitles(result, regex) {
+    result.subtitles.forEach((subtitle) => {
+      if (
+        this.searchTerm.length >= this.minSearchTermLength &&
+        subtitle.highlightSearchTerm &&
+        subtitle.type === FORMATTED_TEXT_TYPE
+      ) {
+        const formattedSubtitle = String(subtitle.value);
+        subtitle.value = isNotBlank(formattedSubtitle)
+          ? formattedSubtitle.replace(regex, BOLD_MATCHER_REGEX)
+          : formattedSubtitle;
+      }
+    });
+  }
+
+  processSelectionUpdate(isUserInteraction) {
+    // Reset search
+    this.cleanSearchTerm = "";
+    this.searchTerm = "";
+    if (this.isSingleEntry && this.hasSelection()) {
+      this.displayMatching = false;
+      this.displayListBox = false;
+    }
+
+    if (isUserInteraction) {
+      this.dispatchEvent(
+        new CustomEvent("change", {
+          detail: {
+            value: this.value,
+            info: this.isMultiEntry
+              ? this.selectedRecords
+              : this.selectedRecords[0]
+          }
+        })
+      );
+    }
+  }
+
+  setDefaultRecords() {
+    let defaultRecords =
+      this.defaultRecords instanceof Array && this.defaultRecords?.length
+        ? this.defaultRecords
+        : [];
+
+    for (const record of clone(defaultRecords)) {
+      if (isNotBlank(record.id)) {
+        this.upsertRecord(record.id, {
+          record,
+          isDefault: true
+        });
+      }
+    }
+  }
+
+  async setSelection() {
+    try {
+      const selectedIds = this.selectedRecords.map((record) => record.id);
+
+      if (selectedIds.length) {
+        const selectionHandler =
+          typeof this.selectionHandler === "function"
+            ? this.selectionHandler
+            : () => [];
+        let records = await Promise.resolve(
+          selectionHandler({
+            selectedIds
+          })
+        );
+
+        if (records?.length) {
+          clone(records).forEach((record) => {
+            if (isNotBlank(record.id)) {
+              this.upsertRecord(record.id, { record });
+            }
+          });
+        }
+      }
+    } catch (error) {
+      this.setCustomValidity(LABELS.errors.errorFetchingData);
+      this.reportValidity();
     }
   }
 

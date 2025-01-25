@@ -287,8 +287,7 @@ describe("c-lookup", () => {
       expect(element.searchHandler).toHaveBeenCalledWith(
         expect.objectContaining({
           searchTerm: SAMPLE_SEARCH_CLEAN,
-          rawSearchTerm: SAMPLE_SEARCH_RAW,
-          fetchedIds: []
+          rawSearchTerm: SAMPLE_SEARCH_RAW
         })
       );
 
@@ -304,8 +303,7 @@ describe("c-lookup", () => {
       expect(element.searchHandler).toHaveBeenCalledWith(
         expect.objectContaining({
           searchTerm: SAMPLE_SEARCH_CLEAN,
-          rawSearchTerm: SAMPLE_SEARCH_RAW,
-          fetchedIds: []
+          rawSearchTerm: SAMPLE_SEARCH_RAW
         })
       );
 

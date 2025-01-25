@@ -2,9 +2,11 @@ function clone(any) {
   return JSON.parse(JSON.stringify(any));
 }
 
-function isBlank(value) {
-  return !value || value.trim() === "";
-}
+const isBlank = (value) =>
+  value === undefined ||
+  value === null ||
+  typeof value !== "string" ||
+  !value?.trim();
 
 function isNotBlank(value) {
   return !isBlank(value);
