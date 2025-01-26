@@ -16,6 +16,8 @@ import {
   selectionHandler
 } from "./lookup.utils.js";
 
+jest.mock("c/lookupSubtitle");
+
 describe("c-base-lookup single entry", () => {
   const elementBuilder = new ElementBuilder(
     "c-base-lookup",

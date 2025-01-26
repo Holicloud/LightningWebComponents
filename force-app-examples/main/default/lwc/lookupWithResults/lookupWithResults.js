@@ -7,9 +7,12 @@ const RECORDS = [
     subtitles: [
       {
         label: "Status",
-        value: "Not Connected",
         type: "lightning-icon",
-        props: { iconName: "utility:info", variant: "warning" }
+        props: {
+          title: "Not Connected",
+          iconName: "utility:info",
+          variant: "warning"
+        }
       }
     ]
   },
@@ -26,8 +29,8 @@ const RECORDS = [
       },
       {
         label: "Low Priority",
-        value: "2 Alerts",
-        type: "lightning-icon"
+        type: "lightning-icon",
+        props: { title: "2 Alerts", variant: "warning" }
       }
     ]
   },

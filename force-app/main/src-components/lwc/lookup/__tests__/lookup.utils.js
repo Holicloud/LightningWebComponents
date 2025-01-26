@@ -70,30 +70,18 @@ function assertListBoxIsVisible(element, recordsToValidate) {
         expect(subtitleLabelEl).toBeTruthy();
         expect(subtitleLabelEl.value).toBe(subtitle.label);
 
-        if (subtitle.type === "lightning-icon") {
-          const subtitleIconEl = subtitleContainer.querySelector(
-            '[data-id="subtitle-icon"]'
-          );
-          expect(subtitleIconEl).toBeTruthy();
-          if (subtitle.icon) {
-            for (const iconProp of Object.keys(subtitle.icon)) {
-              expect(subtitleIconEl[iconProp]).toBe(subtitle.icon[iconProp]);
-            }
-          }
-        } else {
-          const subtitleValueEl = subtitleContainer.querySelector(
-            `[data-id="subtitle-value"]`
-          );
-          expect(subtitleValueEl).toBeTruthy();
-          if (subtitle.type) {
-            expect(subtitleValueEl.type).toBe(subtitle.type);
-          }
-          if (subtitle.value) {
-            expect(subtitleValueEl.value).toBe(subtitle.value);
-          }
-          if (subtitle.props) {
-            expect(subtitleValueEl.props).toEqual(subtitle.props);
-          }
+        const subtitleValueEl = subtitleContainer.querySelector(
+          `[data-id="subtitle-value"]`
+        );
+        expect(subtitleValueEl).toBeTruthy();
+        if (subtitle.type) {
+          expect(subtitleValueEl.type).toBe(subtitle.type);
+        }
+        if (subtitle.value) {
+          expect(subtitleValueEl.value).toBe(subtitle.value);
+        }
+        if (subtitle.props) {
+          expect(subtitleValueEl.props).toEqual(subtitle.props);
         }
       });
     }

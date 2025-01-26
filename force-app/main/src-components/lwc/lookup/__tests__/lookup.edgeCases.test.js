@@ -34,7 +34,7 @@ const modes = [
   elementBuilder.setDefaultApiProperties({ isMultiEntry: false })
 ];
 
-jest.mock("c/lightningFormattedDynamicOutput");
+jest.mock("c/lookupSubtitle");
 
 describe("c-lookup rendering", () => {
   beforeEach(() => {

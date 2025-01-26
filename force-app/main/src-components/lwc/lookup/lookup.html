@@ -194,21 +194,12 @@
                             disable-linkify
                           ></lightning-formatted-rich-text>
                           <span>: </span>
-                          <lightning-icon
-                            lwc:if={subtitle.isLightningIconType}
-                            data-id="subtitle-icon"
-                            icon-name="utility:check"
-                            title={subtitle.value}
-                            size="xx-small"
-                            lwc:spread={subtitle.props}
-                          ></lightning-icon>
-                          <c-lightning-formatted-dynamic-output
+                          <c-lookup-subtitle
                             data-id="subtitle-value"
-                            lwc:else
                             type={subtitle.type}
                             value={subtitle.value}
                             props={subtitle.props}
-                          ></c-lightning-formatted-dynamic-output>
+                          ></c-lookup-subtitle>
                         </p>
                       </template>
                     </span>

@@ -37,7 +37,7 @@ const modes = [
   elementBuilder.setDefaultApiProperties({ isMultiEntry: false })
 ];
 
-jest.mock("c/lightningFormattedDynamicOutput");
+jest.mock("c/lookupSubtitle");
 
 function assertDropdownIsVisible(element) {
   expect(getByDataId(element, "dropdown")?.classList).toContain("slds-is-open");

@@ -15,6 +15,8 @@ import {
 
 import RECORDS from "./data/records.json";
 
+jest.mock("c/lookupSubtitle");
+
 describe("c-base-lookup multi entry", () => {
   const elementBuilder = new ElementBuilder(
     "c-base-lookup",

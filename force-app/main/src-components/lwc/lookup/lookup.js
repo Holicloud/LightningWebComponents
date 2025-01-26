@@ -9,6 +9,8 @@ import {
   executeAfterRender
 } from "c/utils";
 
+import { COMPONENTS } from "c/lookupSubtitle";
+
 const INPUT_SEARCH_DELAY = 300;
 
 const KEY_INPUTS = {
@@ -48,14 +50,8 @@ const LABELS = {
   }
 };
 
-const FORMATTED_TEXT_TYPE = "lightning-formatted-rich-text";
-
 const MIN_SEARCH_TERM_LENGTH = 2;
 const SCROLL_AFTER_N = "*";
-
-const SUBTITLE_TYPES = {
-  ICON: "lightning-icon"
-};
 
 const DEFAULT_LABEL = "Select";
 
@@ -690,7 +686,7 @@ export default class Lookup extends LightningElement {
       if (
         this.searchTerm.length >= this.minSearchTermLength &&
         subtitle.highlightSearchTerm &&
-        subtitle.type === FORMATTED_TEXT_TYPE
+        subtitle.type === COMPONENTS.RICH_TEXT.name
       ) {
         const formattedSubtitle = String(subtitle.value);
         subtitle.value = isNotBlank(formattedSubtitle)
@@ -789,8 +785,6 @@ export default class Lookup extends LightningElement {
     if (record.hasSubtitles) {
       record.subtitles.forEach((subtitle, index) => {
         subtitle.index = index;
-        subtitle.isLightningIconType = subtitle.type === SUBTITLE_TYPES.ICON;
-        subtitle.type = subtitle.type || FORMATTED_TEXT_TYPE;
       });
     }
 
