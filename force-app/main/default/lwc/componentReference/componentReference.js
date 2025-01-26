@@ -70,7 +70,14 @@ export const EXAMPLES = {
       constructor: () => import("c/alertBasic")
     }
   ],
-  [COMPONENTS.C_MESSAGE_CHANNEL_MIXIN.descriptor]: [],
+  [COMPONENTS.C_MESSAGE_CHANNEL_MIXIN.descriptor]: [
+    {
+      title: "Basic",
+      description: "this is some sample",
+      git: GIT_EXAMPLES + "messageChannelMixinBasic",
+      constructor: () => import("c/messageChannelMixinBasic")
+    },
+  ],
   [COMPONENTS.C_LOOKUP.descriptor]: [
     {
       title: "Basic",
