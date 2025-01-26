@@ -43,8 +43,8 @@ const MessageChannelMixin = (Base) => {
         throw new Error(MISSING_CHANNEL);
       }
 
-      if (!listener) {
-        throw new Error("Missing parameter: listener is required");
+      if (typeof listener !== "function") {
+        throw new Error("Invalid listener");
       }
 
       if (!subscriptions.has(channel)) {
