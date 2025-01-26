@@ -1,64 +1,42 @@
 <template>
-  <div class="slds-m-top_medium slds-m-bottom_x-large">
-    <h2 class="slds-text-heading_medium slds-m-bottom_medium">
-      With Default Search Results
-    </h2>
+  <c-component-example title="With Default Search Results">
+    <c-lookup
+      search-handler={getMatching}
+      selection-handler={getSelection}
+      default-records={defaultRecords}
+      label="Account"
+    ></c-lookup>
+  </c-component-example>
 
-    <div class="slds-p-around_medium lgc-bg">
-      <c-lookup
-        search-handler={getMatching}
-        selection-handler={getSelection}
-        default-records={defaultRecords}
-        label="Account"
-      ></c-lookup>
-    </div>
-  </div>
+  <c-component-example title="With Initial Selection">
+    <c-lookup
+      search-handler={getMatching}
+      selection-handler={getSelection}
+      default-records={defaultRecords}
+      label="Account"
+      value="1"
+      disabled
+    ></c-lookup>
+  </c-component-example>
 
-  <div class="slds-m-top_medium slds-m-bottom_x-large">
-    <h2 class="slds-text-heading_medium slds-m-bottom_medium">
-      With initial selection
-    </h2>
+  <c-component-example title="Multi Entry">
+    <c-lookup
+      search-handler={getMatching}
+      selection-handler={getSelection}
+      default-records={defaultRecords}
+      is-multi-entry
+      label="Account"
+    ></c-lookup>
+  </c-component-example>
 
-    <div class="slds-p-around_medium lgc-bg">
-      <c-lookup
-        search-handler={getMatching}
-        selection-handler={getSelection}
-        default-records={defaultRecords}
-        label="Account"
-        value="1"
-        disabled
-      ></c-lookup>
-    </div>
-  </div>
-
-  <div class="slds-m-top_medium slds-m-bottom_x-large">
-    <h2 class="slds-text-heading_medium slds-m-bottom_medium">Multi Entry</h2>
-
-    <div class="slds-p-around_medium lgc-bg">
-      <c-lookup
-        search-handler={getMatching}
-        selection-handler={getSelection}
-        default-records={defaultRecords}
-        is-multi-entry
-        label="Account"
-      ></c-lookup>
-    </div>
-  </div>
-
-  <div class="slds-m-top_medium slds-m-bottom_x-large">
-    <h2 class="slds-text-heading_medium slds-m-bottom_medium">
-      Multi Entry with selection
-    </h2>
-
-    <div class="slds-p-around_medium lgc-bg">
-      <c-lookup
-        selection-handler={getSelection}
-        search-handler={getMatching}
-        default-records={defaultRecords}
-        is-multi-entry
-        value={value}
-        label="Account"
-      ></c-lookup>
-    </div>
-  </div>
+  <c-component-example title="Multi Entry with Selection">
+    <c-lookup
+      selection-handler={getSelection}
+      search-handler={getMatching}
+      default-records={defaultRecords}
+      is-multi-entry
+      value={value}
+      label="Account"
+    ></c-lookup>
+  </c-component-example>
 </template>

@@ -1,9 +1,17 @@
 <template>
-  <c-expandable-section title="Default"> content </c-expandable-section>
-  <c-expandable-section title="Is Collapsed" is-collapsed>
-    content
-  </c-expandable-section>
-  <c-expandable-section title="Non Collapsible" non-collapsible>
-    content
-  </c-expandable-section>
+  <c-component-example variant="inverse" title="Default">
+    <c-expandable-section title="Your title">content</c-expandable-section>
+  </c-component-example>
+
+  <c-component-example variant="inverse" title="Is Collapsed">
+    <c-expandable-section title="Your title" is-collapsed>
+      content
+    </c-expandable-section>
+  </c-component-example>
+
+  <c-component-example variant="inverse" title="Non Collapsible">
+    <c-expandable-section title="Your title" non-collapsible>
+      content
+    </c-expandable-section>
+  </c-component-example>
 </template>
