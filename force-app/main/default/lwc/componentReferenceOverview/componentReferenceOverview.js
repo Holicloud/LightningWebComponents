@@ -2,16 +2,17 @@ import { LightningElement } from "lwc";
 import { COMPONENTS, EXAMPLES } from "c/componentReference";
 import componentReference from "@salesforce/messageChannel/ComponentReference__c";
 import { MessageChannelMixin } from "c/messageChannelMixin";
+import { applyMixings } from "c/utils";
+import { NavigationMixin } from "lightning/navigation";
 
-export default class ComponentReferenceOverview extends MessageChannelMixin(
-  LightningElement
+export default class ComponentReferenceOverview extends applyMixings(
+  LightningElement,
+  MessageChannelMixin,
+  NavigationMixin
 ) {
-  viewCode = false;
   selectedExample;
   componentConstructor;
   examples = [];
-  activeTab = "Example";
-  documentation;
 
   get hasExamples() {
     return this.examples?.length;
@@ -19,14 +20,6 @@ export default class ComponentReferenceOverview extends MessageChannelMixin(
 
   handleChangeComponent = async (message) => {
     this.examples = EXAMPLES[message.descriptor].examples;
-    this.documentation = EXAMPLES[message.descriptor].documentation;
-    this.viewCode = false;
-
-    if (!this.examples?.length) {
-      this.activeTab = "Documentation";
-      return;
-    }
-
     this.setSelectedExample();
   };
 
@@ -38,13 +31,6 @@ export default class ComponentReferenceOverview extends MessageChannelMixin(
 
     const descriptor = Object.values(COMPONENTS)[0].descriptor;
     this.examples = EXAMPLES[descriptor].examples;
-    this.documentation = EXAMPLES[descriptor].documentation;
-
-    if (!this.examples?.length) {
-      this.activeTab = "Documentation";
-      return;
-    }
-
     this.setSelectedExample();
   }
 
@@ -54,11 +40,10 @@ export default class ComponentReferenceOverview extends MessageChannelMixin(
       : this.examples[0];
     const { default: ctor } = await this.selectedExample.constructor();
     this.componentConstructor = ctor;
-    this.activeTab = "Example";
   }
 
   get exampleOptions() {
-    return this.examples.map((example) => ({
+    return this.examples?.map((example) => ({
       label: example.title,
       value: example.title
     }));
@@ -70,7 +55,12 @@ export default class ComponentReferenceOverview extends MessageChannelMixin(
     );
   }
 
-  handleViewCode() {
-    this.viewCode = !this.viewCode;
+  handleViewInGit() {
+    this[NavigationMixin.Navigate]({
+      type: "standard__webPage",
+      attributes: {
+        url: this.selectedExample.git
+      }
+    });
   }
 }

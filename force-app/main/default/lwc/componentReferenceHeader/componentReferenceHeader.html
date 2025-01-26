@@ -19,6 +19,15 @@
                 </span>
               </h2>
             </div>
+            <div class="slds-col slds-no-flex">
+              <lightning-button
+                lwc:if={git}
+                onclick={handleViewInGit}
+                label="View in Git"
+                title="View in Git"
+                icon-name="utility:insert_tag_field"
+              ></lightning-button>
+            </div>
           </header>
         </div>
       </div>

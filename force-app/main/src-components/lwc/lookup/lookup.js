@@ -9,10 +9,8 @@ import {
   executeAfterRender
 } from "c/utils";
 
-// Delay for search execution after user input (in milliseconds)
-const SEARCH_DELAY = 300;
+const INPUT_SEARCH_DELAY = 300;
 
-// Key codes for input handling
 const KEY_INPUTS = {
   ESCAPE: 27,
   ARROW_UP: 38,
@@ -28,9 +26,9 @@ const BOLD_MATCHER_REGEX = "<strong>$1</strong>";
 
 // Variants for label styling
 const VARIANTS = {
-  LABEL_STACKED: "label-stacked", // Label above the input
-  LABEL_INLINE: "label-inline", // Label next to the input
-  LABEL_HIDDEN: "label-hidden" // Label hidden from view
+  LABEL_STACKED: "label-stacked",
+  LABEL_INLINE: "label-inline",
+  LABEL_HIDDEN: "label-hidden"
 };
 
 // Regex for filtering out special SOSL characters
@@ -38,7 +36,6 @@ const REGEX_SOSL_RESERVED =
   /(\?|&|\||!|\{|\}|\[|\]|\(|\)|\^|~|\*|:|"|\+|-|\\)/g;
 const REGEX_EXTRA_TRAP = /(\$|\\)/g;
 
-// Default labels for component states
 const LABELS = {
   noResults: "No results.",
   loading: "Loading...",
@@ -53,7 +50,6 @@ const LABELS = {
 
 const FORMATTED_TEXT_TYPE = "lightning-formatted-rich-text";
 
-// Minimum required characters for triggering a search
 const MIN_SEARCH_TERM_LENGTH = 2;
 const SCROLL_AFTER_N = "*";
 
@@ -471,7 +467,7 @@ export default class Lookup extends LightningElement {
       }
 
       this.searchThrottlingTimeout = null;
-    }, SEARCH_DELAY);
+    }, INPUT_SEARCH_DELAY);
   }
 
   handleKeyDown(event) {

@@ -1,7 +1,9 @@
-const GIT_HUB =
-  "https://raw.githubusercontent.com/santiagoparradev/LWC-RECIPES-SANTIAGO/refs/heads/main/force-app/main";
-const GIT_HUB_SOURCE_COMPONENTS = `${GIT_HUB}/src-components/lwc/{0}/README.md`;
-const EXAMPLES_GIT_HUB_SOURCE = `${GIT_HUB}/src-components-examples/lwc/{0}/README.md`;
+const GIT_HUB_START =
+  "https://github.com/santiagoparradev/LWC-RECIPES-SANTIAGO/tree/main";
+const GIT_SOURCE_COMPONENTS =
+  GIT_HUB_START + "/force-app/main/src-components/lwc/";
+const GIT_EXAMPLES = GIT_HUB_START + "/force-app-examples/main/default/lwc/";
+
 const TARGETS = Object.freeze({
   LIGHTNING_EXPERIENCE: "Lightning Experience",
   EXPERIENCE_BUILDER_SITES: "Experience Builder Sites",
@@ -18,90 +20,75 @@ export const COMPONENT_TYPES = {
 export const COMPONENTS = {
   C_EXPANDABLE_SECTION: {
     type: COMPONENT_TYPES.COMPONENT,
-    descriptor: "c-expandable-section",
+    descriptor: "c/expandableSection",
     label: "Expandable Section"
   },
   C_WIZARD: {
     type: COMPONENT_TYPES.COMPONENT,
-    descriptor: "c-wizard",
+    descriptor: "c/wizard",
     label: "Wizard"
   },
   C_MESSAGE_CHANNEL_MIXIN: {
     type: COMPONENT_TYPES.MIXIN,
-    descriptor: "MessageChannelMixin",
+    descriptor: "c/messageChannelMixin",
     label: "Message Channel"
   },
   C_ALERT: {
     type: COMPONENT_TYPES.COMPONENT,
-    descriptor: "c-alert",
+    descriptor: "c/alert",
     label: "Alert"
   },
   C_LOOKUP: {
     type: COMPONENT_TYPES.COMPONENT,
-    descriptor: "c-lookup",
+    descriptor: "c/lookup",
     label: "Lookup"
   }
 };
 
 export const EXAMPLES = {
   [COMPONENTS.C_EXPANDABLE_SECTION.descriptor]: {
-    documentation: GIT_HUB_SOURCE_COMPONENTS.replace(
-      "{0}",
-      "expandableSection"
-    ),
     examples: [
       {
         title: "Basic",
         description: "this is some sample",
-        codeBase: EXAMPLES_GIT_HUB_SOURCE.replace(
-          "{0}",
-          "expandableSectionBasic"
-        ),
+        git: GIT_EXAMPLES + "expandableSectionBasic",
         constructor: () => import("c/expandableSectionBasic")
       }
     ]
   },
   [COMPONENTS.C_WIZARD.descriptor]: {
-    documentation: GIT_HUB_SOURCE_COMPONENTS.replace("{0}", "wizard"),
     examples: [
       {
         title: "Basic",
         description: "this is some sample",
-        codeBase: EXAMPLES_GIT_HUB_SOURCE.replace("{0}", "wizardBasic"),
+        git: GIT_EXAMPLES + "wizardBasic",
         constructor: () => import("c/wizardBasic")
       }
     ]
   },
   [COMPONENTS.C_ALERT.descriptor]: {
-    documentation: GIT_HUB_SOURCE_COMPONENTS.replace("{0}", "alert"),
     examples: [
       {
         title: "Basic",
         description: "this is some sample",
-        codeBase: EXAMPLES_GIT_HUB_SOURCE.replace("{0}", "alertBasic"),
+        git: GIT_EXAMPLES + "alertBasic",
         constructor: () => import("c/alertBasic")
       }
     ]
   },
-  [COMPONENTS.C_MESSAGE_CHANNEL_MIXIN.descriptor]: {
-    documentation: GIT_HUB_SOURCE_COMPONENTS.replace(
-      "{0}",
-      "messageChannelMixin"
-    )
-  },
+  [COMPONENTS.C_MESSAGE_CHANNEL_MIXIN.descriptor]: {},
   [COMPONENTS.C_LOOKUP.descriptor]: {
-    documentation: GIT_HUB_SOURCE_COMPONENTS.replace("{0}", "lookup"),
     examples: [
       {
         title: "Basic",
         description: "this is some sample",
-        codeBase: EXAMPLES_GIT_HUB_SOURCE.replace("{0}", "lookupBasic"),
+        git: GIT_EXAMPLES + "lookupBasic",
         constructor: () => import("c/lookupBasic")
       },
       {
         title: "With Results",
         description: "this is some sample",
-        codeBase: EXAMPLES_GIT_HUB_SOURCE.replace("{0}", "lookupWithResults"),
+        git: GIT_EXAMPLES + "lookupWithResults",
         constructor: () => import("c/lookupWithResults")
       }
     ]
@@ -110,6 +97,7 @@ export const EXAMPLES = {
 
 export const HEADER_INFO = {
   [COMPONENTS.C_EXPANDABLE_SECTION.descriptor]: {
+    git: GIT_SOURCE_COMPONENTS + "expandableSection",
     title: COMPONENTS.C_EXPANDABLE_SECTION.label,
     description:
       "Component that mimics behaviour of Expandable Section from slds",
@@ -123,39 +111,31 @@ export const HEADER_INFO = {
     ]
   },
   [COMPONENTS.C_WIZARD.descriptor]: {
+    git: GIT_SOURCE_COMPONENTS + "wizard",
     title: COMPONENTS.C_WIZARD.label,
     description: "Its a wizard",
     descriptor: COMPONENTS.C_WIZARD.descriptor,
-    targets: [
-      TARGETS.LIGHTNING_EXPERIENCE,
-      TARGETS.EXPERIENCE_BUILDER_SITES,
-      TARGETS.SALESFORCE_MOBILE_APP
-    ]
+    targets: [TARGETS.LIGHTNING_EXPERIENCE]
   },
   [COMPONENTS.C_ALERT.descriptor]: {
+    git: GIT_SOURCE_COMPONENTS + "alert",
     title: COMPONENTS.C_ALERT.label,
     description: "Its a C_ALERT",
     descriptor: COMPONENTS.C_ALERT.descriptor,
-    targets: [
-      TARGETS.LIGHTNING_EXPERIENCE,
-      TARGETS.EXPERIENCE_BUILDER_SITES,
-      TARGETS.SALESFORCE_MOBILE_APP
-    ]
+    targets: [TARGETS.LIGHTNING_EXPERIENCE]
   },
   [COMPONENTS.C_LOOKUP.descriptor]: {
+    git: GIT_SOURCE_COMPONENTS + "lookup",
     title: COMPONENTS.C_LOOKUP.label,
     description: "Its a C_LOOKUP",
     descriptor: COMPONENTS.C_LOOKUP.descriptor,
-    targets: [
-      TARGETS.LIGHTNING_EXPERIENCE,
-      TARGETS.EXPERIENCE_BUILDER_SITES,
-      TARGETS.SALESFORCE_MOBILE_APP
-    ]
+    targets: [TARGETS.LIGHTNING_EXPERIENCE]
   },
   [COMPONENTS.C_MESSAGE_CHANNEL_MIXIN.descriptor]: {
+    git: GIT_SOURCE_COMPONENTS + "messageChannelMixin",
     title: COMPONENTS.C_MESSAGE_CHANNEL_MIXIN.label,
     description: "Message channel mixing descriptions",
     descriptor: COMPONENTS.C_MESSAGE_CHANNEL_MIXIN.descriptor,
-    targets: [TARGETS.LIGHTNING_EXPERIENCE, TARGETS.EXPERIENCE_BUILDER_SITES]
+    targets: [TARGETS.LIGHTNING_EXPERIENCE]
   }
 };

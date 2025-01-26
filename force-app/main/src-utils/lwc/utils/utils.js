@@ -37,6 +37,13 @@ function isArrayLike(input) {
   return false;
 }
 
-export { isBlank, clone, isNotBlank, assert, executeAfterRender, isArrayLike };
+function applyMixings(baseClass, ...mixins) {
+  for (const mixin of mixins) {
+    baseClass = mixin(baseClass);
+  }
+  return baseClass;
+}
+
+export { isBlank, clone, isNotBlank, assert, executeAfterRender, isArrayLike, applyMixings };
 export { classSet } from "./classSet";
 export { classListMutation } from "./classListMutation";
