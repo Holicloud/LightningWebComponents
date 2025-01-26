@@ -27,7 +27,7 @@
 ### Non-Collapsible Section
 
 ```html
-<c-expandable-section title="Your title" non-collapsible>
+<c-expandable-section title="Your title" is-non-collapsible>
   content
 </c-expandable-section>
 ```
