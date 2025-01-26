@@ -8,7 +8,7 @@ const sections = Object.freeze([
     items: Object.values(COMPONENTS)
       .filter((component) => component.type === COMPONENT_TYPES.COMPONENT)
       .map((component) => ({
-        label: component.label,
+        label: component.descriptor,
         name: component.descriptor
       }))
   },
@@ -17,7 +17,7 @@ const sections = Object.freeze([
     items: Object.values(COMPONENTS)
       .filter((component) => component.type === COMPONENT_TYPES.MIXIN)
       .map((component) => ({
-        label: component.label,
+        label: component.descriptor,
         name: component.descriptor
       }))
   }
