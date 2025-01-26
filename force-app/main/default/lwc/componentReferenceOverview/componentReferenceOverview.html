@@ -1,5 +1,12 @@
 <template>
-  <div class="slds-card" lwc:if={hasExamples}>
+  <div
+    class="spinner-container-outer slds-is-relative"
+    style="max-height: 17rem; min-height: 17rem"
+    lwc:if={isLoading}
+  >
+    <lightning-spinner alternative-text="Loading"></lightning-spinner>
+  </div>
+  <div class="slds-card" lwc:elseif={hasExamples}>
     <div class="slds-p-horizontal_small">
       <div
         class="slds-border_bottom slds-grid slds-wrap slds-grid_vertical-align-end slds-gutters slds-gutters_x-small slds-grid_pull-padded-x-small slds-p-bottom_medium"
@@ -33,8 +40,8 @@
         </div>
       </div>
       <div
-        class="slds-p-around_small slds-scrollable_y"
-        style="max-height: 17rem"
+        class="slds-scrollable_y"
+        style="max-height: 17rem; min-height: 17rem"
       >
         <lwc:component lwc:is={componentConstructor}></lwc:component>
       </div>

@@ -46,53 +46,45 @@ export const COMPONENTS = {
 };
 
 export const EXAMPLES = {
-  [COMPONENTS.C_EXPANDABLE_SECTION.descriptor]: {
-    examples: [
-      {
-        title: "Basic",
-        description: "this is some sample",
-        git: GIT_EXAMPLES + "expandableSectionBasic",
-        constructor: () => import("c/expandableSectionBasic")
-      }
-    ]
-  },
-  [COMPONENTS.C_WIZARD.descriptor]: {
-    examples: [
-      {
-        title: "Basic",
-        description: "this is some sample",
-        git: GIT_EXAMPLES + "wizardBasic",
-        constructor: () => import("c/wizardBasic")
-      }
-    ]
-  },
-  [COMPONENTS.C_ALERT.descriptor]: {
-    examples: [
-      {
-        title: "Basic",
-        description: "this is some sample",
-        git: GIT_EXAMPLES + "alertBasic",
-        constructor: () => import("c/alertBasic")
-      }
-    ]
-  },
-  [COMPONENTS.C_MESSAGE_CHANNEL_MIXIN.descriptor]: {},
-  [COMPONENTS.C_LOOKUP.descriptor]: {
-    examples: [
-      {
-        title: "Basic",
-        description: "this is some sample",
-        git: GIT_EXAMPLES + "lookupBasic",
-        constructor: () => import("c/lookupBasic")
-      },
-      {
-        title: "With Results",
-        description: "this is some sample",
-        git: GIT_EXAMPLES + "lookupWithResults",
-        constructor: () => import("c/lookupWithResults")
-      }
-    ]
-  }
+  [COMPONENTS.C_EXPANDABLE_SECTION.descriptor]: [
+    {
+      title: "Basic",
+      description: "this is some sample",
+      git: GIT_EXAMPLES + "expandableSectionBasic",
+      constructor: () => import("c/expandableSectionBasic")
+    }
+  ],
+  [COMPONENTS.C_WIZARD.descriptor]: [
+    {
+      title: "Basic",
+      description: "this is some sample",
+      git: GIT_EXAMPLES + "wizardBasic",
+      constructor: () => import("c/wizardBasic")
+    }
+  ],
+  [COMPONENTS.C_ALERT.descriptor]: [
+    {
+      title: "Basic",
+      description: "this is some sample",
+      git: GIT_EXAMPLES + "alertBasic",
+      constructor: () => import("c/alertBasic")
+    }
+  ],
+  [COMPONENTS.C_MESSAGE_CHANNEL_MIXIN.descriptor]: [],
+  [COMPONENTS.C_LOOKUP.descriptor]: [
+    {
+      title: "Basic",
+      description: "this is some sample",
+      git: GIT_EXAMPLES + "lookupBasic",
+      constructor: () => import("c/lookupBasic")
+    },
+    {
+      title: "With Results",
+      description: "this is some sample",
+      git: GIT_EXAMPLES + "lookupWithResults",
+      constructor: () => import("c/lookupWithResults")
+    }
+  ]
 };
 
 export const HEADER_INFO = {

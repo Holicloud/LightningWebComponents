@@ -13,13 +13,15 @@ export default class ComponentReferenceOverview extends applyMixings(
   selectedExample;
   componentConstructor;
   examples = [];
+  isLoading = true;
 
   get hasExamples() {
     return this.examples?.length;
   }
 
   handleChangeComponent = async (message) => {
-    this.examples = EXAMPLES[message.descriptor].examples;
+    this.isLoading = true;
+    this.examples = EXAMPLES[message.descriptor];
     this.setSelectedExample();
   };
 
@@ -30,7 +32,7 @@ export default class ComponentReferenceOverview extends applyMixings(
     });
 
     const descriptor = Object.values(COMPONENTS)[0].descriptor;
-    this.examples = EXAMPLES[descriptor].examples;
+    this.examples = EXAMPLES[descriptor];
     this.setSelectedExample();
   }
 
@@ -40,6 +42,7 @@ export default class ComponentReferenceOverview extends applyMixings(
       : this.examples[0];
     const { default: ctor } = await this.selectedExample.constructor();
     this.componentConstructor = ctor;
+    this.isLoading = false;
   }
 
   get exampleOptions() {
