@@ -31,7 +31,7 @@ export default class ComponentReferenceList extends MessageChannelMixin(
     if (value?.length > 2) {
       this.navigationData = structuredClone(sections).filter((section) => {
         const filteredComponents = section.items.filter((component) =>
-          component.label.includes(event.detail.value)
+          component.label.toLowerCase().includes(value.toLowerCase())
         );
 
         if (filteredComponents.length) {
