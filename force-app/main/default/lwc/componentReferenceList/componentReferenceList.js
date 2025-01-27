@@ -1,27 +1,14 @@
-import { COMPONENTS, COMPONENT_TYPES } from "c/componentReference";
+import { COMPONENTS } from "c/componentReference";
 import { LightningElement, track } from "lwc";
 import { MessageChannelMixin } from "c/messageChannelMixin";
 import componentReferenceChannel from "@salesforce/messageChannel/ComponentReference__c";
-const sections = Object.freeze([
-  {
-    label: "Based On SLDS",
-    items: Object.values(COMPONENTS)
-      .filter((component) => component.type === COMPONENT_TYPES.COMPONENT)
-      .map((component) => ({
-        label: component.descriptor,
-        name: component.descriptor
-      }))
-  },
-  {
-    label: "Mixin",
-    items: Object.values(COMPONENTS)
-      .filter((component) => component.type === COMPONENT_TYPES.MIXIN)
-      .map((component) => ({
-        label: component.descriptor,
-        name: component.descriptor
-      }))
-  }
-]);
+const sections = Object.freeze(
+  Object.values(COMPONENTS).reduce((acc, component) => {
+    const group = acc.find((g) => g.label === component.type) || acc[acc.push({ label: component.type, items: [] }) - 1];
+    group.items.push({ label: component.descriptor, name: component.descriptor });
+    return acc;
+  }, [])
+);
 
 export default class ComponentReferenceList extends MessageChannelMixin(
   LightningElement
