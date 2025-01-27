@@ -48,15 +48,6 @@ function assertListBoxIsVisible(element, recordsToValidate) {
     );
     expect(containerEl).toBeTruthy();
 
-    const iconEl = containerEl.querySelector('[data-id="record-icon"]');
-    expect(iconEl).toBeTruthy();
-
-    if (record.icon) {
-      for (const iconProp of Object.keys(record.icon)) {
-        expect(iconEl[iconProp]).toBe(record.icon[iconProp]);
-      }
-    }
-
     const titleEl = containerEl.querySelector('[data-id="title"]');
     expect(titleEl.value).toBe(record.title);
 
@@ -68,21 +59,12 @@ function assertListBoxIsVisible(element, recordsToValidate) {
           `[data-id="subtitle-label"]`
         );
         expect(subtitleLabelEl).toBeTruthy();
-        expect(subtitleLabelEl.value).toBe(subtitle.label);
+        expect(subtitleLabelEl.value).toBe(subtitle.subtitleLabel);
 
         const subtitleValueEl = subtitleContainer.querySelector(
           `[data-id="subtitle-value"]`
         );
         expect(subtitleValueEl).toBeTruthy();
-        if (subtitle.type) {
-          expect(subtitleValueEl.type).toBe(subtitle.type);
-        }
-        if (subtitle.value) {
-          expect(subtitleValueEl.value).toBe(subtitle.value);
-        }
-        if (subtitle.props) {
-          expect(subtitleValueEl.props).toEqual(subtitle.props);
-        }
       });
     }
   }

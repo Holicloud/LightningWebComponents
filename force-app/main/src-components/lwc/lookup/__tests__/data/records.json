@@ -1,166 +1,542 @@
 [
   {
     "id": "0",
-    "title": "Home Dashboard",
-    "icon": { "iconName": "utility:home", "variant": "error" },
+    "title": "Sales Dashboard Overview",
+    "icon": {
+      "iconName": "custom:custom1",
+      "variant": "warning"
+    },
     "subtitles": [
       {
-        "label": "Status",
-        "value": "Not Connected",
-        "type": "lightning-icon",
-        "props": { "iconName": "utility:info", "variant": "warning" }
+        "subtitleLabel": "Description",
+        "subtitleType": "lightning/formattedRichText",
+        "value": "This <em>is</em> some simple rich text. <strong>Hello!</strong>"
+      },
+      {
+        "subtitleLabel": "Name",
+        "subtitleType": "lightning/formattedName",
+        "firstName": "John",
+        "lastName": "Doe",
+        "salutation": "Mr."
       }
     ]
   },
   {
     "id": "1",
-    "title": "System Alerts",
-    "icon": { "iconName": "utility:warning", "variant": "success" },
+    "title": "Marketing Campaign Analysis",
+    "icon": {
+      "iconName": "standard:account",
+      "variant": "error"
+    },
     "subtitles": [
       {
-        "label": "High Priority",
-        "value": "5 Alerts",
-        "type": "custom-type",
-        "props": { "key1": "value1" }
+        "subtitleLabel": "Text Example",
+        "subtitleType": "lightning/formattedText",
+        "value": "Email info@salesforce.com",
+        "linkify": true
       },
       {
-        "label": "Low Priority",
-        "value": "2 Alerts",
-        "type": "lightning-icon"
+        "subtitleLabel": "Contact Phone",
+        "subtitleType": "lightning/formattedPhone",
+        "value": "18005551212"
       }
     ]
   },
   {
     "id": "2",
-    "title": "User Info",
-    "icon": { "iconName": "utility:info", "variant": "warning" }
+    "title": "Customer Support Metrics",
+    "icon": {
+      "iconName": "doctype:pdf",
+      "variant": "success"
+    },
+    "subtitles": [
+      {
+        "subtitleLabel": "Description",
+        "subtitleType": "lightning/formattedRichText",
+        "value": "This <em>is</em> some simple rich text. <strong>Hello!</strong>"
+      },
+      {
+        "subtitleLabel": "Approval Status",
+        "subtitleType": "lightning/icon",
+        "iconName": "action:approval",
+        "title": "Approved"
+      }
+    ]
   },
   {
     "id": "3",
-    "title": "Settings Panel",
-    "icon": { "iconName": "utility:home", "variant": "success" }
-  },
-  { "id": "4", "title": "Support Center" },
-  {
-    "id": "5",
-    "title": "Notifications",
+    "title": "Product Performance Report",
+    "icon": {
+      "iconName": "action:approval",
+      "variant": "info"
+    },
     "subtitles": [
       {
-        "label": "Unread Messages",
-        "value": "3 New Messages",
-        "type": "lightning-icon",
-        "props": { "iconName": "utility:info", "variant": "warning" }
+        "subtitleLabel": "Address",
+        "subtitleType": "lightning/formattedAddress",
+        "street": "121 Spear St.",
+        "city": "San Francisco"
+      },
+      {
+        "subtitleLabel": "Contact Email",
+        "subtitleType": "lightning/formattedEmail",
+        "value": "email@example.com"
+      }
+    ]
+  },
+  {
+    "id": "4",
+    "title": "Sales Team Goals",
+    "icon": {
+      "iconName": "utility:search",
+      "variant": "inverse"
+    },
+    "subtitles": [
+      {
+        "subtitleLabel": "URL",
+        "subtitleType": "lightning/formattedUrl",
+        "value": "www.salesforce.com",
+        "tooltip": "Use full domain name",
+        "target": "_blank"
+      },
+      {
+        "subtitleLabel": "Name",
+        "subtitleType": "lightning/formattedName",
+        "firstName": "John",
+        "lastName": "Doe",
+        "salutation": "Mr."
+      }
+    ]
+  },
+  {
+    "id": "5",
+    "title": "Marketing Strategy Plan",
+    "icon": {
+      "iconName": "custom:custom2",
+      "variant": "success"
+    },
+    "subtitles": [
+      {
+        "subtitleLabel": "URL",
+        "subtitleType": "lightning/formattedUrl",
+        "value": "www.salesforce.com",
+        "tooltip": "Use full domain name",
+        "target": "_blank"
+      },
+      {
+        "subtitleLabel": "Contact Phone",
+        "subtitleType": "lightning/formattedPhone",
+        "value": "18005551212"
       }
     ]
   },
   {
     "id": "6",
-    "title": "Activity Logs",
+    "title": "Customer Feedback Summary",
+    "icon": {
+      "iconName": "standard:contact",
+      "variant": "warning"
+    },
     "subtitles": [
       {
-        "label": "Last Login",
-        "value": "2 Hours Ago",
-        "type": "lightning-icon"
+        "subtitleLabel": "Contact Phone",
+        "subtitleType": "lightning/formattedPhone",
+        "value": "18005551212"
+      },
+      {
+        "subtitleLabel": "Approval Status",
+        "subtitleType": "lightning/icon",
+        "iconName": "action:approval",
+        "title": "Approved"
       }
     ]
   },
-  { "id": "7", "title": "Billing Information" },
-  { "id": "8", "title": "Reports Center" },
+  {
+    "id": "7",
+    "title": "Product Launch Details",
+    "icon": {
+      "iconName": "doctype:image",
+      "variant": "error"
+    },
+    "subtitles": [
+      {
+        "subtitleLabel": "Description",
+        "subtitleType": "lightning/formattedRichText",
+        "value": "This <em>is</em> some simple rich text. <strong>Hello!</strong>"
+      },
+      {
+        "subtitleLabel": "Location",
+        "subtitleType": "lightning/formattedLocation",
+        "latitude": "22",
+        "longitude": "122.2222"
+      }
+    ]
+  },
+  {
+    "id": "8",
+    "title": "Sales Performance Metrics",
+    "icon": {
+      "iconName": "action:call",
+      "variant": "info"
+    },
+    "subtitles": [
+      {
+        "subtitleLabel": "Name",
+        "subtitleType": "lightning/formattedName",
+        "firstName": "John",
+        "lastName": "Doe",
+        "salutation": "Mr."
+      },
+      {
+        "subtitleLabel": "Subscription Days",
+        "subtitleType": "lightning/formattedNumber",
+        "value": "1234.56",
+        "maximumFractionDigits": "2"
+      }
+    ]
+  },
   {
     "id": "9",
-    "title": "System Health",
-    "icon": { "iconName": "utility:warning", "variant": "success" }
+    "title": "Marketing Campaign Results",
+    "icon": {
+      "iconName": "utility:clock",
+      "variant": "inverse"
+    },
+    "subtitles": [
+      {
+        "subtitleLabel": "Hour",
+        "subtitleType": "lightning/formattedTime",
+        "value": "22:12:30.999"
+      },
+      {
+        "subtitleLabel": "Name",
+        "subtitleType": "lightning/formattedName",
+        "firstName": "John",
+        "lastName": "Doe",
+        "salutation": "Mr."
+      }
+    ]
   },
   {
     "id": "10",
-    "title": "Admin Dashboard",
-    "icon": { "iconName": "utility:info", "variant": "success" },
+    "title": "Customer Support Overview",
+    "icon": {
+      "iconName": "custom:custom3",
+      "variant": "success"
+    },
     "subtitles": [
       {
-        "label": "Admin Tools",
-        "value": "Enabled",
-        "type": "custom-type",
-        "props": { "key2": "value1" },
-        "icon": { "iconName": "utility:warning", "variant": "warning" }
+        "subtitleLabel": "Contact Phone",
+        "subtitleType": "lightning/formattedPhone",
+        "value": "18005551212"
+      },
+      {
+        "subtitleLabel": "Text Example",
+        "subtitleType": "lightning/formattedText",
+        "value": "Email info@salesforce.com",
+        "linkify": true
       }
     ]
   },
   {
     "id": "11",
-    "title": "Network Status",
-    "icon": { "iconName": "utility:info", "variant": "inverse" }
+    "title": "Product Sales Analysis",
+    "icon": {
+      "iconName": "standard:case",
+      "variant": "warning"
+    },
+    "subtitles": [
+      {
+        "subtitleLabel": "Contact Email",
+        "subtitleType": "lightning/formattedEmail",
+        "value": "email@example.com"
+      },
+      {
+        "subtitleLabel": "Description",
+        "subtitleType": "lightning/formattedRichText",
+        "value": "This <em>is</em> some simple rich text. <strong>Hello!</strong>"
+      }
+    ]
   },
   {
     "id": "12",
-    "title": "Email Settings",
-    "icon": { "iconName": "utility:info", "variant": "error" }
+    "title": "Marketing Strategy Overview",
+    "icon": {
+      "iconName": "doctype:excel",
+      "variant": "error"
+    },
+    "subtitles": [
+      {
+        "subtitleLabel": "Description",
+        "subtitleType": "lightning/formattedRichText",
+        "value": "This <em>is</em> some simple rich text. <strong>Hello!</strong>"
+      },
+      {
+        "subtitleLabel": "Location",
+        "subtitleType": "lightning/formattedLocation",
+        "latitude": "22",
+        "longitude": "122.2222"
+      }
+    ]
   },
   {
     "id": "13",
-    "title": "Security Dashboard",
-    "icon": { "iconName": "utility:info", "variant": "warning" }
+    "title": "Customer Feedback Report",
+    "icon": {
+      "iconName": "action:email",
+      "variant": "info"
+    },
+    "subtitles": [
+      {
+        "subtitleLabel": "Location",
+        "subtitleType": "lightning/formattedLocation",
+        "latitude": "22",
+        "longitude": "122.2222"
+      },
+      {
+        "subtitleLabel": "Description",
+        "subtitleType": "lightning/formattedRichText",
+        "value": "This <em>is</em> some simple rich text. <strong>Hello!</strong>"
+      }
+    ]
   },
   {
     "id": "14",
-    "title": "Email Notifications",
-    "icon": { "iconName": "utility:email", "variant": "error" },
+    "title": "Sales Team Performance",
+    "icon": {
+      "iconName": "utility:notification",
+      "variant": "inverse"
+    },
     "subtitles": [
-      { "label": "Unread Emails", "value": "10", "type": "lightning-icon" }
+      {
+        "subtitleLabel": "Date of Birth",
+        "subtitleType": "lightning/formattedDateTime",
+        "value": "1547250828000",
+        "year": "2-digit"
+      },
+      {
+        "subtitleLabel": "Address",
+        "subtitleType": "lightning/formattedAddress",
+        "street": "121 Spear St.",
+        "city": "San Francisco"
+      }
     ]
   },
   {
     "id": "15",
-    "title": "Risk Analysis",
-    "icon": { "iconName": "utility:warning", "variant": "inverse" }
+    "title": "Product Launch Metrics",
+    "icon": {
+      "iconName": "custom:custom4",
+      "variant": "success"
+    },
+    "subtitles": [
+      {
+        "subtitleLabel": "Date of Birth",
+        "subtitleType": "lightning/formattedDateTime",
+        "value": "1547250828000",
+        "year": "2-digit"
+      },
+      {
+        "subtitleLabel": "URL",
+        "subtitleType": "lightning/formattedUrl",
+        "value": "www.salesforce.com",
+        "tooltip": "Use full domain name",
+        "target": "_blank"
+      }
+    ]
   },
-  { "id": "16", "title": "Backup Settings" },
-  { "id": "17", "title": "Error Logs" },
+  {
+    "id": "16",
+    "title": "Marketing Campaign Goals",
+    "icon": {
+      "iconName": "standard:opportunity",
+      "variant": "warning"
+    },
+    "subtitles": [
+      {
+        "subtitleLabel": "Approval Status",
+        "subtitleType": "lightning/icon",
+        "iconName": "action:approval",
+        "title": "Approved"
+      },
+      {
+        "subtitleLabel": "Description",
+        "subtitleType": "lightning/formattedRichText",
+        "value": "This <em>is</em> some simple rich text. <strong>Hello!</strong>"
+      }
+    ]
+  },
+  {
+    "id": "17",
+    "title": "Customer Support Plan",
+    "icon": {
+      "iconName": "doctype:word",
+      "variant": "error"
+    },
+    "subtitles": [
+      {
+        "subtitleLabel": "Date of Birth",
+        "subtitleType": "lightning/formattedDateTime",
+        "value": "1547250828000",
+        "year": "2-digit"
+      },
+      {
+        "subtitleLabel": "Contact Phone",
+        "subtitleType": "lightning/formattedPhone",
+        "value": "18005551212"
+      }
+    ]
+  },
   {
     "id": "18",
-    "title": "Data Sync",
-    "icon": { "iconName": "utility:info", "variant": "success" }
+    "title": "Sales Strategy Report",
+    "icon": {
+      "iconName": "action:refresh",
+      "variant": "info"
+    },
+    "subtitles": [
+      {
+        "subtitleLabel": "URL",
+        "subtitleType": "lightning/formattedUrl",
+        "value": "www.salesforce.com",
+        "tooltip": "Use full domain name",
+        "target": "_blank"
+      },
+      {
+        "subtitleLabel": "Text Example",
+        "subtitleType": "lightning/formattedText",
+        "value": "Email info@salesforce.com",
+        "linkify": true
+      }
+    ]
   },
   {
     "id": "19",
-    "title": "File Manager",
+    "title": "Marketing Team Overview",
+    "icon": {
+      "iconName": "utility:save",
+      "variant": "inverse"
+    },
     "subtitles": [
       {
-        "label": "Total Files",
-        "value": "120 Files",
-        "type": "lightning-icon"
+        "subtitleLabel": "Contact Email",
+        "subtitleType": "lightning/formattedEmail",
+        "value": "email@example.com"
       },
-      { "label": "Free Space", "value": "10 GB", "type": "custom-type" }
+      {
+        "subtitleLabel": "Approval Status",
+        "subtitleType": "lightning/icon",
+        "iconName": "action:approval",
+        "title": "Approved"
+      }
     ]
   },
   {
     "id": "20",
-    "title": "Help Center",
-    "icon": { "iconName": "utility:home", "variant": "error" }
+    "title": "Customer Feedback Analysis",
+    "icon": {
+      "iconName": "custom:custom5",
+      "variant": "success"
+    },
+    "subtitles": [
+      {
+        "subtitleLabel": "Address",
+        "subtitleType": "lightning/formattedAddress",
+        "street": "121 Spear St.",
+        "city": "San Francisco"
+      },
+      {
+        "subtitleLabel": "Text Example",
+        "subtitleType": "lightning/formattedText",
+        "value": "Email info@salesforce.com",
+        "linkify": true
+      }
+    ]
   },
   {
     "id": "21",
-    "title": "Integration Tools",
-    "icon": { "iconName": "utility:info", "variant": "warning" }
+    "title": "Product Sales Goals",
+    "icon": {
+      "iconName": "standard:lead",
+      "variant": "warning"
+    },
+    "subtitles": [
+      {
+        "subtitleLabel": "Name",
+        "subtitleType": "lightning/formattedName",
+        "firstName": "John",
+        "lastName": "Doe",
+        "salutation": "Mr."
+      },
+      {
+        "subtitleLabel": "Address",
+        "subtitleType": "lightning/formattedAddress",
+        "street": "121 Spear St.",
+        "city": "San Francisco"
+      }
+    ]
   },
   {
     "id": "22",
-    "title": "Performance Reports",
-    "icon": { "iconName": "utility:info", "variant": "error" }
-  },
-  { "id": "23", "title": "Usage Metrics" },
-  {
-    "id": "24",
-    "title": "Audit Logs",
-    "icon": { "iconName": "utility:info", "variant": "success" }
-  },
-  {
-    "id": "25",
-    "title": "System Summary",
+    "title": "Sales Team Report",
+    "icon": {
+      "iconName": "doctype:powerpoint",
+      "variant": "error"
+    },
     "subtitles": [
       {
-        "label": "Users Online",
-        "value": "25",
-        "type": "lightning-icon"
+        "subtitleLabel": "Contact Email",
+        "subtitleType": "lightning/formattedEmail",
+        "value": "email@example.com"
+      },
+      {
+        "subtitleLabel": "Approval Status",
+        "subtitleType": "lightning/icon",
+        "iconName": "action:approval",
+        "title": "Approved"
+      }
+    ]
+  },
+  {
+    "id": "23",
+    "title": "Marketing Strategy Plan",
+    "icon": {
+      "iconName": "action:video",
+      "variant": "info"
+    },
+    "subtitles": [
+      {
+        "subtitleLabel": "Hour",
+        "subtitleType": "lightning/formattedTime",
+        "value": "22:12:30.999"
+      },
+      {
+        "subtitleLabel": "Name",
+        "subtitleType": "lightning/formattedName",
+        "firstName": "John",
+        "lastName": "Doe",
+        "salutation": "Mr."
+      }
+    ]
+  },
+  {
+    "id": "24",
+    "title": "Customer Support Metrics",
+    "icon": {
+      "iconName": "utility:warning",
+      "variant": "inverse"
+    },
+    "subtitles": [
+      {
+        "subtitleLabel": "Approval Status",
+        "subtitleType": "lightning/icon",
+        "iconName": "action:approval",
+        "title": "Approved"
+      },
+      {
+        "subtitleLabel": "Hour",
+        "subtitleType": "lightning/formattedTime",
+        "value": "22:12:30.999"
       }
     ]
   }

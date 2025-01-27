@@ -1,28 +1,40 @@
 import { LightningElement, api } from "lwc";
 
 export const COMPONENTS = {
-  "lightning-formatted-number": {
-    builder: () => import("lightning/formattedNumber")
+  "lightning/formattedAddress": {
+    builder: () => import("lightning/formattedAddress")
   },
-  "lightning-formatted-text": {
-    builder: () => import("lightning/formattedText")
-  },
-  "lightning-formatted-time": {
-    builder: () => import("lightning/formattedTime")
-  },
-  "lightning-formatted-date-time": {
+  "lightning/formattedDateTime": {
     builder: () => import("lightning/formattedDateTime")
   },
-  "lightning-formatted-email": {
+  "lightning/formattedEmail": {
     builder: () => import("lightning/formattedEmail")
   },
-  "lightning-formatted-url": {
-    builder: () => import("lightning/formattedUrl")
+  "lightning/formattedLocation": {
+    builder: () => import("lightning/formattedLocation")
   },
-  "lightning-formatted-rich-text": {
+  "lightning/formattedName": {
+    builder: () => import("lightning/formattedName")
+  },
+  "lightning/formattedNumber": {
+    builder: () => import("lightning/formattedNumber")
+  },
+  "lightning/formattedPhone": {
+    builder: () => import("lightning/formattedPhone")
+  },
+  "lightning/formattedRichText": {
     builder: () => import("lightning/formattedRichText")
   },
-  "lightning-icon": {
+  "lightning/formattedText": {
+    builder: () => import("lightning/formattedText")
+  },
+  "lightning/formattedTime": {
+    builder: () => import("lightning/formattedTime")
+  },
+  "lightning/formattedUrl": {
+    builder: () => import("lightning/formattedUrl")
+  },
+  "lightning/icon": {
     builder: () => import("lightning/icon"),
     baseProps: {
       iconName: "utility:check",
@@ -31,14 +43,19 @@ export const COMPONENTS = {
   }
 };
 
-export default class LightningFormattedDynamicOutput extends LightningElement {
-  @api type = "lightning-formatted-rich-text";
-  @api value;
-  @api props = {};
-
+export default class LookupSubtitle extends LightningElement {
   component;
+  type = "lightning/formattedText";
+  props = {};
+
+  @api subtitle = {};
 
   async connectedCallback() {
+    const { subtitleType, ...props } = this.subtitle;
+    delete props?.subtitleLabel;
+    this.type = subtitleType;
+    this.props = props;
+
     if (COMPONENTS[this.type]) {
       try {
         const { default: ComponentCtor } =
@@ -47,6 +64,9 @@ export default class LightningFormattedDynamicOutput extends LightningElement {
       } catch (error) {
         console.error(`Error loading component for type ${this.type}:`, error);
       }
+    } else {
+      const { default: ComponentCtor } = await import(this.type);
+      this.component = ComponentCtor;
     }
   }
 
@@ -54,8 +74,7 @@ export default class LightningFormattedDynamicOutput extends LightningElement {
     const baseProps = COMPONENTS[this.type].baseProps || {};
     return {
       ...baseProps,
-      ...this.props,
-      value: this.value
+      ...this.props
     };
   }
 }

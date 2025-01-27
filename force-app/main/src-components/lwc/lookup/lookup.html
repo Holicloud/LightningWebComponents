@@ -190,15 +190,13 @@
                         >
                           <lightning-formatted-rich-text
                             data-id="subtitle-label"
-                            value={subtitle.label}
+                            value={subtitle.subtitleLabel}
                             disable-linkify
                           ></lightning-formatted-rich-text>
                           <span>: </span>
                           <c-lookup-subtitle
                             data-id="subtitle-value"
-                            type={subtitle.type}
-                            value={subtitle.value}
-                            props={subtitle.props}
+                            subtitle={subtitle}
                           ></c-lookup-subtitle>
                         </p>
                       </template>
@@ -287,6 +285,7 @@
                     data-id="pill-icon"
                     icon-name="standard:default"
                     lwc:spread={item.icon}
+                    size="xx-small"
                   ></lightning-icon>
                 </lightning-pill>
               </li>

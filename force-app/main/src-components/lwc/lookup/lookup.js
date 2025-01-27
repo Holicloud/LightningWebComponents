@@ -9,8 +9,6 @@ import {
   executeAfterRender
 } from "c/utils";
 
-import { COMPONENTS } from "c/lookupSubtitle";
-
 const INPUT_SEARCH_DELAY = 300;
 
 const KEY_INPUTS = {
@@ -60,6 +58,7 @@ export default class Lookup extends LightningElement {
   @api defaultRecords = [];
   @api disabled = false;
   @api fieldLevelHelp = "";
+  @api highlightTittleOnMatch = false;
   @api isMultiEntry = false;
   @api messageWhenValueMissing = LABELS.errors.completeThisField;
   @api placeholder = "";
@@ -655,10 +654,8 @@ export default class Lookup extends LightningElement {
       if (this.displayMatching && matchesSearchTerm) {
         const singleResult = clone(record);
         this.setDisplayableRecord(singleResult, index);
-        this.highlightTitle(singleResult, regex);
-
-        if (singleResult.hasSubtitles) {
-          this.updateSubtitles(singleResult, regex);
+        if (this.highlightTittleOnMatch) {
+          this.highlightTitle(singleResult, regex);
         }
         result.push(singleResult);
         index++;
@@ -679,21 +676,6 @@ export default class Lookup extends LightningElement {
       isNotBlank(result.title)
         ? result.title.replace(regex, BOLD_MATCHER_REGEX)
         : result.title;
-  }
-
-  updateSubtitles(result, regex) {
-    result.subtitles.forEach((subtitle) => {
-      if (
-        this.searchTerm.length >= this.minSearchTermLength &&
-        subtitle.highlightSearchTerm &&
-        subtitle.type === COMPONENTS.RICH_TEXT.name
-      ) {
-        const formattedSubtitle = String(subtitle.value);
-        subtitle.value = isNotBlank(formattedSubtitle)
-          ? formattedSubtitle.replace(regex, BOLD_MATCHER_REGEX)
-          : formattedSubtitle;
-      }
-    });
   }
 
   processSelectionUpdate(isUserInteraction) {
