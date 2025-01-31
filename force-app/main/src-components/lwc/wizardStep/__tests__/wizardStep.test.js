@@ -3,25 +3,25 @@ import WizardStep, {
   SLDS_SHOW,
   SLDS_HIDE
 } from "c/wizardStep";
-import { createElement } from "@lwc/engine-dom";
-import { setImmediate } from "timers";
+import {
+  ElementBuilder,
+  flushPromises,
+  getByDataId,
+  removeChildren,
+  appendChild,
+  removeChild
+} from "test/utils";
+const elementBuilder = new ElementBuilder(
+  "c-wizard-step",
+  WizardStep
+).setConfig({
+  appendChild: false
+});
 
 describe("c-wizard-step", () => {
-  async function flushPromises() {
-    return new Promise((resolve) => setImmediate(resolve));
-  }
-
-  function getByDataId(element, dataId) {
-    return element.shadowRoot.querySelector(`[data-id="${dataId}"]`);
-  }
-
-  function createWizardStep(props = {}) {
-    const element = createElement("c-wizard-step", {
-      is: WizardStep
-    });
-    Object.assign(element, props);
-    return element;
-  }
+  afterEach(() => {
+    removeChildren();
+  });
 
   const configMock = {
     isFirst: false,
@@ -33,20 +33,13 @@ describe("c-wizard-step", () => {
     }
   };
 
-  afterEach(() => {
-    // The jsdom instance is shared across test cases in a single file so reset the DOM
-    while (document.body.firstChild) {
-      document.body.removeChild(document.body.firstChild);
-    }
-  });
-
   it("should dispatch register event on connectedCallback", async () => {
-    const element = createWizardStep({
+    const element = await elementBuilder.build({
       name: "first-step",
       label: "First step"
     });
     const dispatchEventSpy = jest.spyOn(element, "dispatchEvent");
-    document.body.appendChild(element);
+    appendChild(element);
 
     expect(dispatchEventSpy).toHaveBeenCalledTimes(1);
     const event = dispatchEventSpy.mock.calls[0][0];
@@ -65,15 +58,16 @@ describe("c-wizard-step", () => {
     await flushPromises();
 
     expect(getByDataId(element, "body")).toBeDefined();
+    await expect(element).toBeAccessible();
   });
 
   it("This should test the previous button and next button", async () => {
-    const element = createWizardStep({
+    const element = await elementBuilder.build({
       name: "first-step",
       label: "First step"
     });
     const dispatchEventSpy = jest.spyOn(element, "dispatchEvent");
-    document.body.appendChild(element);
+    appendChild(element);
 
     const event = dispatchEventSpy.mock.calls[0][0];
     event.detail.methods.config(configMock);
@@ -100,22 +94,23 @@ describe("c-wizard-step", () => {
         type: "next"
       })
     );
+    await expect(element).toBeAccessible();
   });
 
   it("should call 'unregister' with the correct name when the component is disconnected", async () => {
-    const element = createWizardStep({
+    const element = await elementBuilder.build({
       name: "first-step",
       label: "First step"
     });
     const dispatchEventSpy = jest.spyOn(element, "dispatchEvent");
-    document.body.appendChild(element);
+    appendChild(element);
 
     const event = dispatchEventSpy.mock.calls[0][0];
     event.detail.methods.config(configMock);
 
     await flushPromises();
 
-    document.body.removeChild(element);
+    removeChild(element);
 
     expect(dispatchEventSpy).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -126,14 +121,14 @@ describe("c-wizard-step", () => {
   });
 
   it("should hide next and previous buttons", async () => {
-    const element = createWizardStep({
+    const element = await elementBuilder.build({
       name: "first-step",
       label: "First step",
       hidePreviousButton: true,
       hideNextButton: true
     });
     const dispatchEventSpy = jest.spyOn(element, "dispatchEvent");
-    document.body.appendChild(element);
+    appendChild(element);
 
     const event = dispatchEventSpy.mock.calls[0][0];
     event.detail.methods.config(configMock);
@@ -147,13 +142,13 @@ describe("c-wizard-step", () => {
   });
 
   it("should hide/show when isActive", async () => {
-    const element = createWizardStep({
+    const element = await elementBuilder.build({
       name: "first-step",
       label: "First step",
       isActive: false
     });
     const dispatchEventSpy = jest.spyOn(element, "dispatchEvent");
-    document.body.appendChild(element);
+    appendChild(element);
 
     const event = dispatchEventSpy.mock.calls[0][0];
     event.detail.methods.config(configMock);
@@ -167,5 +162,6 @@ describe("c-wizard-step", () => {
 
     expect(element.getAttribute(IS_ACTIVE_ATTRIBUTE)).toBeTruthy();
     expect(element.classList[0]).toBe(SLDS_SHOW);
+    await expect(element).toBeAccessible();
   });
 });

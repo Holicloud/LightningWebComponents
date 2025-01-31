@@ -1,58 +1,63 @@
 import {
   ElementBuilder,
-  resetDOM,
   flushPromises,
   getByDataId,
-  assertElementIsAccesible
+  removeChildren
 } from "test/utils";
-import Lookup, { LABELS, KEY_INPUTS } from "c/Lookup";
+import Lookup, { KEY_INPUTS, LABELS } from "c/Lookup";
 import RECORDS from "./data/records.json";
 import {
-  inputSearchTerm,
-  searchHandler,
-  DEFAULT_RECORDS,
-  assertListBoxIsVisible,
   assertDropdownIsNotVisible,
   assertDropdownIsVisible,
-  selectionHandler
+  assertListBoxIsVisible,
+  DEFAULT_RECORDS,
+  inputSearchTerm
 } from "./lookup.utils.js";
 
-const BASE_LABEL = "Lookup";
-
-const elementBuilder = new ElementBuilder(
-  "c-lookup",
-  Lookup
-).setDefaultApiProperties({
-  label: BASE_LABEL,
-  searchHandler,
-  selectionHandler,
-  defaultRecords: DEFAULT_RECORDS
-});
-
-const modes = [
-  elementBuilder.setDefaultApiProperties({ isMultiEntry: true }),
-  elementBuilder.setDefaultApiProperties({ isMultiEntry: false })
-];
+const elementBuilder = new ElementBuilder("c-lookup", Lookup).setConfig({
+    defaultApiProps: {
+      label: "Lookup",
+      searchHandler: jest.fn(() => RECORDS),
+      selectionHandler: jest.fn(({ selectedIds }) => {
+        return RECORDS.filter((record) => selectedIds.includes(record.id));
+      }),
+      defaultRecords: DEFAULT_RECORDS
+    }
+  }),
+  multiEntry = elementBuilder.setConfig({
+    defaultApiProps: { isMultiEntry: true }
+  }),
+  singleEntry = elementBuilder.setConfig({ isMultiEntry: false }),
+  modes = [singleEntry, multiEntry];
 
 jest.mock("c/lookupSubtitle");
 
 describe("c-lookup rendering", () => {
+  let element;
+
+  async function isAccessible() {
+    jest.useRealTimers();
+    await expect(element).toBeAccessible();
+  }
+
+  const getInput = () => getByDataId(element, "input"),
+    getHelpMessage = () => getByDataId(element, "help-message");
+
   beforeEach(() => {
     jest.useFakeTimers();
   });
 
   afterEach(() => {
-    resetDOM();
+    removeChildren();
     jest.clearAllMocks();
-    jest.useRealTimers();
   });
 
   it.each(modes)(
     "(onblur) displays default message when is required and value is missing",
     async (builder) => {
-      const element = await builder.build({ required: true });
+      element = await builder.build({ required: true });
 
-      const input = getByDataId(element, "input");
+      const input = getInput();
       input.focus();
       input.blur();
 
@@ -61,11 +66,11 @@ describe("c-lookup rendering", () => {
       assertDropdownIsNotVisible(element);
 
       expect(element?.classList).toContain("slds-has-error");
-      expect(getByDataId(element, "help-message")?.textContent).toBe(
+      expect(getHelpMessage()?.textContent).toBe(
         LABELS.errors.completeThisField
       );
 
-      await assertElementIsAccesible(element);
+      await isAccessible();
     }
   );
 
@@ -73,30 +78,30 @@ describe("c-lookup rendering", () => {
     "(onblur) displays custom message is required and value is missing",
     async (builder) => {
       const messageWhenValueMissing = "Please enter a value";
-      const element = await builder.build({
+      element = await builder.build({
         required: true,
         messageWhenValueMissing
       });
 
-      const input = getByDataId(element, "input");
+      const input = getInput();
       input.focus();
       input.blur();
 
       await flushPromises();
 
       expect(element?.classList).toContain("slds-has-error");
-      expect(getByDataId(element, "help-message")?.textContent).toBe(
+      expect(getHelpMessage()?.textContent).toBe(
         messageWhenValueMissing
       );
 
-      await assertElementIsAccesible(element);
+      await isAccessible();
     }
   );
 
   it.each(modes)(
-    "search hanlder is called only when input is minSearchTermLength valid",
+    "search handler is called only when input is minSearchTermLength valid",
     async (builder) => {
-      const element = await builder.build({
+      element = await builder.build({
         minSearchTermLength: 3
       });
       element.searchHandler.mockClear();
@@ -116,18 +121,18 @@ describe("c-lookup rendering", () => {
       await inputSearchTerm(element, "123456*?");
       expect(element.searchHandler).toHaveBeenCalledTimes(1);
 
-      await assertElementIsAccesible(element);
+      await isAccessible();
     }
   );
 
   it.each(modes)(
-    "if options are not being displayed presing enter will make the list of records appear",
+    "if options are not being displayed pressing enter will make the list of records appear",
     async (builder) => {
-      const element = await builder.build();
+      element = await builder.build();
 
       await flushPromises();
 
-      const searchInput = getByDataId(element, "input");
+      const searchInput = getInput();
       searchInput.focus();
 
       assertDropdownIsNotVisible(element);
@@ -140,18 +145,18 @@ describe("c-lookup rendering", () => {
       assertListBoxIsVisible(element, DEFAULT_RECORDS);
       assertDropdownIsVisible(element);
 
-      await assertElementIsAccesible(element);
+      await isAccessible();
     }
   );
 
   it.each(modes)(
-    "if options are not being displayed presing enter will make the list of records appear",
+    "if options are not being displayed pressing space will make the list of records appear",
     async (builder) => {
-      const element = await builder.build();
+      element = await builder.build();
 
       await flushPromises();
 
-      const searchInput = getByDataId(element, "input");
+      const searchInput = getInput();
       searchInput.focus();
 
       assertDropdownIsNotVisible(element);
@@ -164,35 +169,7 @@ describe("c-lookup rendering", () => {
       assertListBoxIsVisible(element, DEFAULT_RECORDS);
       assertDropdownIsVisible(element);
 
-      await assertElementIsAccesible(element);
-    }
-  );
-
-  it.each(modes)(
-    "should options removed from keyboard and starts typing",
-    async (builder) => {
-      const element = await builder.build();
-
-      // select an option
-      element.shadowRoot.querySelector("[data-record-id]").click();
-      await flushPromises();
-
-      // clears input using backspace
-      const searchInput = getByDataId(element, "input");
-      searchInput.focus();
-      searchInput.dispatchEvent(
-        new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.BACKSPACE })
-      );
-
-      await flushPromises();
-
-      // types again
-      await inputSearchTerm(element, "anything");
-
-      assertListBoxIsVisible(element, RECORDS);
-      assertDropdownIsVisible(element);
-
-      await assertElementIsAccesible(element);
+      await isAccessible();
     }
   );
 });

@@ -1,47 +1,47 @@
 import {
+  createMockedEventListener,
   ElementBuilder,
-  resetDOM,
-  getByDataId,
   flushPromises,
-  assertElementIsAccesible,
-  mockFunction
+  getAllByDataId,
+  getByDataId,
+  removeChildren
 } from "test/utils";
 import Lookup, { KEY_INPUTS, LABELS } from "c/Lookup";
 import {
-  searchHandler,
   DEFAULT_RECORDS,
-  selectionHandler
 } from "./lookup.utils.js";
 
 import RECORDS from "./data/records.json";
 
 jest.mock("c/lookupSubtitle");
 
-describe("c-base-lookup multi entry", () => {
-  const elementBuilder = new ElementBuilder(
-    "c-base-lookup",
-    Lookup
-  ).setDefaultApiProperties({
+const elementBuilder = new ElementBuilder("c-lookup", Lookup).setConfig({
+  defaultApiProps: {
     label: "Lookup",
-    isMultiEntry: true,
+    searchHandler: jest.fn(() => RECORDS),
+    selectionHandler: jest.fn(({ selectedIds }) => {
+      return RECORDS.filter((record) => selectedIds.includes(record.id));
+    }),
     defaultRecords: DEFAULT_RECORDS,
-    searchHandler,
-    selectionHandler
-  });
+    isMultiEntry: true
+  }
+});
 
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
+describe("c-base-lookup multi entry", () => {
+  let element;
+
+  const getInput = () => getByDataId(element, 'input'),
+    getOption = () => element.shadowRoot.querySelector("[data-record-id]"),
+    getPills = () => getAllByDataId(element, "pill");
 
   afterEach(() => {
-    resetDOM();
+    removeChildren();
     jest.clearAllMocks();
-    jest.useRealTimers();
   });
 
   it("when option is not retrieved by search handler it should not be set up", async () => {
     const value = "any";
-    const element = await elementBuilder.build({
+    element = await elementBuilder.build({
       searchHandler: () => {
         return [];
       },
@@ -49,18 +49,18 @@ describe("c-base-lookup multi entry", () => {
     });
 
     expect(element.value).toEqual([]);
-    await assertElementIsAccesible(element);
+    await expect(element).toBeAccessible();
   });
 
   it("can select item with keyboard", async () => {
-    const element = await elementBuilder.build();
-    const changeFn = mockFunction(element, "change");
-    const scrollIntoView = jest.fn();
+    element = await elementBuilder.build();
+    const changeFn = createMockedEventListener(element, "change"),
+      scrollIntoView = jest.fn();
     window.HTMLElement.prototype.scrollIntoView = scrollIntoView;
 
     element.focus();
 
-    const searchInput = getByDataId(element, "input");
+    const searchInput = getInput();
     searchInput.dispatchEvent(
       new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.ARROW_DOWN })
     );
@@ -85,14 +85,14 @@ describe("c-base-lookup multi entry", () => {
         }
       })
     );
-    await assertElementIsAccesible(element);
+    await expect(element).toBeAccessible();
   });
 
   it("can select item with mouse", async () => {
-    const element = await elementBuilder.build();
-    const changeFn = mockFunction(element, "change");
+    element = await elementBuilder.build();
+    const changeFn = createMockedEventListener(element, "change");
 
-    element.shadowRoot.querySelectorAll("[data-record-id]")[0].click();
+    getOption().click();
 
     expect(element.value).toEqual([DEFAULT_RECORDS[0].id]);
     expect(changeFn).toHaveBeenCalledWith(
@@ -103,37 +103,36 @@ describe("c-base-lookup multi entry", () => {
         }
       })
     );
-    await assertElementIsAccesible(element);
+    await expect(element).toBeAccessible();
   });
 
   it("disables remove button when disabled", async () => {
-    const element = await elementBuilder.build({
+    element = await elementBuilder.build({
       disabled: true,
       value: [RECORDS[0].id, RECORDS[1].id]
     });
 
-    const changeFn = mockFunction(element, "change");
+    const changeFn = createMockedEventListener(element, "change");
 
     getByDataId(element, "pill").dispatchEvent(new CustomEvent("remove"));
 
     expect(changeFn).not.toHaveBeenCalled();
 
-    await assertElementIsAccesible(element);
+    await expect(element).toBeAccessible();
   });
 
   it("initial selection is displayed", async () => {
-    const element = await elementBuilder.build({
+    element = await elementBuilder.build({
       value: [RECORDS[0].id, RECORDS[1].id]
     });
 
-    const selList = element.shadowRoot.querySelectorAll('[data-id="pill"]');
-    expect(selList.length).toBe(2);
+    expect(getPills().length).toBe(2);
 
-    await assertElementIsAccesible(element);
+    await expect(element).toBeAccessible();
   });
 
   it("renders multi entry (no selection)", async () => {
-    const element = await elementBuilder.build();
+    element = await elementBuilder.build();
 
     // Verify selected icon is NOT rendered
     const selIcon = element.shadowRoot.querySelectorAll(
@@ -149,17 +148,15 @@ describe("c-base-lookup multi entry", () => {
     );
     expect(selList.length).toBe(1);
 
-    await assertElementIsAccesible(element);
+    await expect(element).toBeAccessible();
   });
 
   it("renders pills on selection", async () => {
-    const element = await elementBuilder.build({
+    element = await elementBuilder.build({
       value: RECORDS.map((result) => result.id)
     });
 
-    const selPills = [
-      ...element.shadowRoot.querySelectorAll('[data-id="pill"]')
-    ];
+    const selPills = getPills();
 
     RECORDS.forEach((record) => {
       const pillEl = selPills.find(
@@ -168,16 +165,16 @@ describe("c-base-lookup multi entry", () => {
       expect(pillEl).toBeTruthy();
     });
 
-    await assertElementIsAccesible(element);
+    await expect(element).toBeAccessible();
   });
 
   it("can clear selection", async () => {
     // Create lookup
-    const element = await elementBuilder.build({
+    element = await elementBuilder.build({
       value: RECORDS.map((result) => result.id)
     });
 
-    const changeFn = mockFunction(element, "change");
+    const changeFn = createMockedEventListener(element, "change");
 
     // Remove a selected item
     getByDataId(element, "pill").dispatchEvent(new CustomEvent("remove"));
@@ -192,27 +189,27 @@ describe("c-base-lookup multi entry", () => {
         }
       })
     );
-    await assertElementIsAccesible(element);
+    await expect(element).toBeAccessible();
   });
 
   it("does not show search results when they are already selected", async () => {
-    const element = await elementBuilder.build({
+    element = await elementBuilder.build({
       value: RECORDS.map((result) => result.id)
     });
 
     const noResultElement = getByDataId(element, "no-results");
     expect(noResultElement?.textContent).toBe(LABELS.noResults);
 
-    await assertElementIsAccesible(element);
+    await expect(element).toBeAccessible();
   });
 
   it("sets all valid options from selected", async () => {
     // Create lookup
-    const element = await elementBuilder.build({
+    element = await elementBuilder.build({
       value: RECORDS.map((result) => result.id)
     });
 
     expect(element.value.length).toBe(RECORDS.length);
-    await assertElementIsAccesible(element);
+    await expect(element).toBeAccessible();
   });
 });

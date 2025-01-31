@@ -1,29 +1,20 @@
 import { LightningElement, api } from "lwc";
 
 export const COMPONENTS = {
-  "lightning/formattedAddress": {
-    builder: () => import("lightning/formattedAddress")
-  },
-  "lightning/formattedDateTime": {
-    builder: () => import("lightning/formattedDateTime")
-  },
-  "lightning/formattedEmail": {
-    builder: () => import("lightning/formattedEmail")
-  },
-  "lightning/formattedLocation": {
-    builder: () => import("lightning/formattedLocation")
+  "lightning/formattedPhone": {
+    builder: () => import("lightning/formattedPhone")
   },
   "lightning/formattedName": {
     builder: () => import("lightning/formattedName")
   },
+  "lightning/formattedLocation": {
+    builder: () => import("lightning/formattedLocation")
+  },
+  "lightning/formattedAddress": {
+    builder: () => import("lightning/formattedAddress")
+  },
   "lightning/formattedNumber": {
     builder: () => import("lightning/formattedNumber")
-  },
-  "lightning/formattedPhone": {
-    builder: () => import("lightning/formattedPhone")
-  },
-  "lightning/formattedRichText": {
-    builder: () => import("lightning/formattedRichText")
   },
   "lightning/formattedText": {
     builder: () => import("lightning/formattedText")
@@ -31,8 +22,17 @@ export const COMPONENTS = {
   "lightning/formattedTime": {
     builder: () => import("lightning/formattedTime")
   },
+  "lightning/formattedDateTime": {
+    builder: () => import("lightning/formattedDateTime")
+  },
+  "lightning/formattedEmail": {
+    builder: () => import("lightning/formattedEmail")
+  },
   "lightning/formattedUrl": {
     builder: () => import("lightning/formattedUrl")
+  },
+  "lightning/formattedRichText": {
+    builder: () => import("lightning/formattedRichText")
   },
   "lightning/icon": {
     builder: () => import("lightning/icon"),
@@ -44,18 +44,12 @@ export const COMPONENTS = {
 };
 
 export default class LookupSubtitle extends LightningElement {
-  component;
-  type = "lightning/formattedText";
-  props = {};
+  @api type = "lightning/formattedRichText";
+  @api props = {};
 
-  @api subtitle = {};
+  component;
 
   async connectedCallback() {
-    const { subtitleType, ...props } = this.subtitle;
-    delete props?.subtitleLabel;
-    this.type = subtitleType;
-    this.props = props;
-
     if (COMPONENTS[this.type]) {
       try {
         const { default: ComponentCtor } =

@@ -2,7 +2,7 @@ import { getByDataId, flushPromises } from "test/utils";
 import RECORDS from "./data/records.json";
 const DEFAULT_RECORDS = RECORDS.slice(0, 5);
 
-const inputSearchTerm = async (element, searchTerm) => {
+async function inputSearchTerm(element, searchTerm) {
   // Sets input search term and force input change
   const searchInput = getByDataId(element, "input");
   searchInput.focus();
@@ -11,15 +11,7 @@ const inputSearchTerm = async (element, searchTerm) => {
   // Disable search throttling
   jest.runOnlyPendingTimers();
   await flushPromises();
-};
-
-const searchHandler = jest.fn(() => {
-  return RECORDS;
-});
-
-const selectionHandler = jest.fn(({ selectedIds }) => {
-  return RECORDS.filter((record) => selectedIds.includes(record.id));
-});
+}
 
 function assertListBoxIsVisible(element, recordsToValidate) {
   expect(recordsToValidate?.length).toBeGreaterThan(0);
@@ -54,10 +46,11 @@ function assertListBoxIsVisible(element, recordsToValidate) {
     if (record.subtitles?.length) {
       record.subtitles.forEach(function (subtitle, index) {
         const subtitleContainer =
-          containerEl.querySelectorAll(`[data-id="subtitle"]`)[index];
-        const subtitleLabelEl = subtitleContainer.querySelector(
-          `[data-id="subtitle-label"]`
-        );
+            containerEl.querySelectorAll(`[data-id="subtitle"]`)[index],
+          subtitleLabelEl = subtitleContainer.querySelector(
+            `[data-id="subtitle-label"]`
+          );
+
         expect(subtitleLabelEl).toBeTruthy();
         expect(subtitleLabelEl.value).toBe(subtitle.subtitleLabel);
 
@@ -82,8 +75,6 @@ function assertDropdownIsNotVisible(element) {
 
 export {
   inputSearchTerm,
-  searchHandler,
-  selectionHandler,
   DEFAULT_RECORDS,
   assertListBoxIsVisible,
   assertDropdownIsVisible,

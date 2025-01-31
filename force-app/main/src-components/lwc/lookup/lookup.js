@@ -102,11 +102,12 @@ export default class Lookup extends LightningElement {
     return this._minSearchTermLength;
   }
   set minSearchTermLength(value) {
-    this._minSearchTermLength = Number.isInteger(value)
-      ? value < MIN_SEARCH_TERM_LENGTH
-        ? MIN_SEARCH_TERM_LENGTH
-        : value
-      : MIN_SEARCH_TERM_LENGTH;
+    if (Number.isInteger(value)) {
+      this._minSearchTermLength =
+        value < MIN_SEARCH_TERM_LENGTH ? MIN_SEARCH_TERM_LENGTH : value;
+    } else {
+      this._minSearchTermLength = MIN_SEARCH_TERM_LENGTH;
+    }
   }
 
   @api
@@ -129,11 +130,13 @@ export default class Lookup extends LightningElement {
   }
 
   set value(value) {
-    let selectedIds = this.isSingleEntry
-      ? [value]
-      : Array.isArray(value) && value.length
-        ? value
-        : [];
+    let selectedIds = [];
+
+    if (this.isSingleEntry) {
+      selectedIds = [value];
+    } else if (Array.isArray(value) && value.length) {
+      selectedIds = value;
+    }
 
     selectedIds
       .filter((recordId) => isNotBlank(recordId))
@@ -223,8 +226,8 @@ export default class Lookup extends LightningElement {
 
   get getDropdownClass() {
     const isSearchTermValid =
-      this.cleanSearchTerm?.length >= this.minSearchTermLength;
-    const isSelectionAllowed = this.isMultiEntry || !this.hasSelection();
+        this.cleanSearchTerm?.length >= this.minSearchTermLength,
+      isSelectionAllowed = this.isMultiEntry || !this.hasSelection();
     const shouldDisplayDropdown = !!(
       this.displayListBox &&
       isSelectionAllowed &&
@@ -473,45 +476,70 @@ export default class Lookup extends LightningElement {
     const getFocusableElement = (index) =>
       this.template.querySelector(`[data-index="${[index]}"]`);
 
-    if (
-      this.hasSelection() &&
-      this.isSingleEntry &&
-      (event.keyCode === KEY_INPUTS.BACKSPACE ||
-        event.keyCode === KEY_INPUTS.DEL)
-    ) {
+    switch (event.keyCode) {
+      case KEY_INPUTS.BACKSPACE:
+      case KEY_INPUTS.DEL:
+        this.handleBackspaceOrDelete();
+        break;
+      case KEY_INPUTS.ESCAPE:
+        this.handleEscape();
+        break;
+      case KEY_INPUTS.ARROW_DOWN:
+        this.handleArrowDown(event, getFocusableElement);
+        break;
+      case KEY_INPUTS.ARROW_UP:
+        this.handleArrowUp(event, getFocusableElement);
+        break;
+      case KEY_INPUTS.ENTER:
+        this.handleEnter(event, getFocusableElement);
+        break;
+      case KEY_INPUTS.SPACE:
+        this.handleSpace(event);
+        break;
+      default:
+        break;
+    }
+  }
+
+  handleBackspaceOrDelete() {
+    if (this.hasSelection() && this.isSingleEntry) {
       this.displayListBox = false;
       this.cancelDisplayListBoxOnFocus = true;
       this.template.querySelector(`[data-id="remove"]`).click();
-    } else if (event.keyCode === KEY_INPUTS.ESCAPE) {
-      this.displayListBox = false;
-    } else if (event.keyCode === KEY_INPUTS.ARROW_DOWN) {
-      // If we hit 'down', select the next item, or cycle over.
-      this.focusedResultIndex++;
-      if (this.focusedResultIndex >= this.recordsDropdown.length) {
-        this.focusedResultIndex = 0;
-      }
+    }
+  }
 
-      getFocusableElement(this.focusedResultIndex)?.scrollIntoView({
-        block: "nearest",
-        inline: "nearest"
-      });
-      event.preventDefault();
-    } else if (event.keyCode === KEY_INPUTS.ARROW_UP) {
-      // If we hit 'up', select the previous item, or cycle over.
-      this.focusedResultIndex--;
-      if (this.focusedResultIndex < 0) {
-        this.focusedResultIndex = this.recordsDropdown.length - 1;
-      }
-      getFocusableElement(this.focusedResultIndex)?.scrollIntoView({
-        block: "nearest",
-        inline: "nearest"
-      });
-      event.preventDefault();
-    } else if (
-      event.keyCode === KEY_INPUTS.ENTER &&
-      this.hasFocus &&
-      this.focusedResultIndex >= 0
-    ) {
+  handleEscape() {
+    this.displayListBox = false;
+  }
+
+  handleArrowDown(event, getFocusableElement) {
+    this.focusedResultIndex++;
+    if (this.focusedResultIndex >= this.recordsDropdown.length) {
+      this.focusedResultIndex = 0;
+    }
+
+    getFocusableElement(this.focusedResultIndex)?.scrollIntoView({
+      block: "nearest",
+      inline: "nearest"
+    });
+    event.preventDefault();
+  }
+
+  handleArrowUp(event, getFocusableElement) {
+    this.focusedResultIndex--;
+    if (this.focusedResultIndex < 0) {
+      this.focusedResultIndex = this.recordsDropdown.length - 1;
+    }
+    getFocusableElement(this.focusedResultIndex)?.scrollIntoView({
+      block: "nearest",
+      inline: "nearest"
+    });
+    event.preventDefault();
+  }
+
+  handleEnter(event, getFocusableElement) {
+    if (this.hasFocus && this.focusedResultIndex >= 0) {
       if (this.isSingleEntry) {
         if (!this.hasSelection()) {
           getFocusableElement(this.focusedResultIndex)?.click();
@@ -521,12 +549,11 @@ export default class Lookup extends LightningElement {
         getFocusableElement(this.focusedResultIndex)?.click();
         event.preventDefault();
       }
-    } else if (
-      !this.hasSelection() &&
-      (event.keyCode === KEY_INPUTS.ENTER ||
-        event.keyCode === KEY_INPUTS.SPACE) &&
-      isBlank(this.searchTerm)
-    ) {
+    }
+  }
+
+  handleSpace() {
+    if (!this.hasSelection() && isBlank(this.searchTerm)) {
       this.hasFocus = true;
       this.displayListBox = true;
     }
@@ -702,7 +729,7 @@ export default class Lookup extends LightningElement {
   }
 
   setDefaultRecords() {
-    let defaultRecords =
+    const defaultRecords =
       this.defaultRecords instanceof Array && this.defaultRecords?.length
         ? this.defaultRecords
         : [];
@@ -726,13 +753,13 @@ export default class Lookup extends LightningElement {
           typeof this.selectionHandler === "function"
             ? this.selectionHandler
             : () => [];
-        let records = await Promise.resolve(
+        const records = await Promise.resolve(
           selectionHandler({
             selectedIds
           })
         );
 
-        if (records?.length) {
+        if (records instanceof Array && records?.length) {
           clone(records).forEach((record) => {
             if (isNotBlank(record.id)) {
               this.upsertRecord(record.id, { record });

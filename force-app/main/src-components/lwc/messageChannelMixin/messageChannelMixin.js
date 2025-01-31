@@ -7,20 +7,20 @@ import {
 } from "lightning/messageService";
 import { wire } from "lwc";
 
-const isLightningElementSubclass = (Base) => {
+const Subscribe = Symbol("Subscribe"),
+  Publish = Symbol("Publish"),
+  Unsubscribe = Symbol("Unsubscribe"),
+  Subscriptions = Symbol("Subscriptions"),
+  Context = Symbol("UniqueMessageContext"),
+  MISSING_CHANNEL = "Missing parameter: channel is required";
+
+function isLightningElementSubclass(Base) {
   const baseProto = Base.prototype;
 
   if (typeof baseProto.dispatchEvent !== "function") {
     throw new TypeError(`${Base} must be an Element type`);
   }
-};
-
-const Subscribe = Symbol("Subscribe");
-const Publish = Symbol("Publish");
-const Unsubscribe = Symbol("Unsubscribe");
-const Subscriptions = Symbol("Subscriptions");
-const Context = Symbol("UniqueMessageContext");
-const MISSING_CHANNEL = "Missing parameter: channel is required";
+}
 
 const MessageChannelMixin = (Base) => {
   isLightningElementSubclass(Base);
@@ -90,10 +90,10 @@ const MessageChannelMixin = (Base) => {
   };
 };
 
-MessageChannelMixin.Subscribe = Subscribe;
-MessageChannelMixin.Unsubscribe = Unsubscribe;
-MessageChannelMixin.Publish = Publish;
 MessageChannelMixin.Context = Context;
+MessageChannelMixin.Publish = Publish;
+MessageChannelMixin.Subscribe = Subscribe;
 MessageChannelMixin.Subscriptions = Subscriptions;
+MessageChannelMixin.Unsubscribe = Unsubscribe;
 
 export { MessageChannelMixin };

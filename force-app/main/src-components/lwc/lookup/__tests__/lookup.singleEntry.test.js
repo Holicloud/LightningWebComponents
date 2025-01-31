@@ -1,47 +1,45 @@
 import {
   ElementBuilder,
-  resetDOM,
+  removeChildren,
   getByDataId,
   flushPromises,
-  assertElementIsAccesible,
-  mockFunction
+  createMockedEventListener
 } from "test/utils";
 import Lookup, { KEY_INPUTS } from "c/Lookup";
 import RECORDS from "./data/records.json";
 import {
-  searchHandler,
   assertListBoxIsVisible,
   assertDropdownIsNotVisible,
   DEFAULT_RECORDS,
-  selectionHandler
 } from "./lookup.utils.js";
 
 jest.mock("c/lookupSubtitle");
 
-describe("c-base-lookup single entry", () => {
-  const elementBuilder = new ElementBuilder(
-    "c-base-lookup",
-    Lookup
-  ).setDefaultApiProperties({
+const elementBuilder = new ElementBuilder("c-lookup", Lookup).setConfig({
+  defaultApiProps: {
     label: "Lookup",
-    searchHandler,
-    selectionHandler,
+    searchHandler: jest.fn(() => RECORDS),
+    selectionHandler: jest.fn(({ selectedIds }) => {
+      return RECORDS.filter((record) => selectedIds.includes(record.id));
+    }),
     defaultRecords: DEFAULT_RECORDS
-  });
+  }
+});
 
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
+describe("c-base-lookup single entry", () => {
+  let element;
+
+  const getInput = () => getByDataId(element, "input"),
+    getRemoveButton = () => getByDataId(element, "remove");
 
   afterEach(() => {
-    resetDOM();
+    removeChildren();
     jest.clearAllMocks();
-    jest.useRealTimers();
   });
 
   it("should not set option when invalid", async () => {
     // Create lookup
-    const element = await elementBuilder.build({
+    element = await elementBuilder.build({
       searchHandler: () => {
         return [];
       },
@@ -49,18 +47,18 @@ describe("c-base-lookup single entry", () => {
     });
 
     expect(element.value).toBe("any");
-    await assertElementIsAccesible(element);
+    await expect(element).toBeAccessible();
   });
 
   it("can select item with keyboard", async () => {
-    const element = await elementBuilder.build();
-    const changeFn = mockFunction(element, "change");
-    const scrollIntoView = jest.fn();
+    element = await elementBuilder.build();
+    const changeFn = createMockedEventListener(element, "change"),
+      scrollIntoView = jest.fn();
     window.HTMLElement.prototype.scrollIntoView = scrollIntoView;
 
     element.focus();
 
-    const searchInput = getByDataId(element, "input");
+    const searchInput = getInput();
     searchInput.dispatchEvent(
       new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.ARROW_DOWN })
     );
@@ -85,13 +83,13 @@ describe("c-base-lookup single entry", () => {
         }
       })
     );
-    await assertElementIsAccesible(element);
+    await expect(element).toBeAccessible();
   });
 
   it("can select item with mouse", async () => {
-    const element = await elementBuilder.build();
-    const changeFn = mockFunction(element, "change");
-    const record = DEFAULT_RECORDS[0];
+    element = await elementBuilder.build();
+    const changeFn = createMockedEventListener(element, "change"),
+      record = DEFAULT_RECORDS[0];
 
     element.shadowRoot.querySelector(`[data-record-id="${record.id}"]`).click();
 
@@ -104,17 +102,17 @@ describe("c-base-lookup single entry", () => {
         }
       })
     );
-    await assertElementIsAccesible(element);
+    await expect(element).toBeAccessible();
   });
 
   it("can clear selection when single entry", async () => {
-    const element = await elementBuilder.build({
+    element = await elementBuilder.build({
       value: RECORDS[0].id
     });
 
-    const changeFn = mockFunction(element, "change");
+    const changeFn = createMockedEventListener(element, "change");
 
-    getByDataId(element, "remove").click();
+    getRemoveButton().click();
 
     expect(element.value).toBeUndefined();
     expect(changeFn).toHaveBeenCalledWith(
@@ -126,22 +124,22 @@ describe("c-base-lookup single entry", () => {
       })
     );
 
-    await assertElementIsAccesible(element);
+    await expect(element).toBeAccessible();
   });
 
   it("disables clear selection button when single entry and disabled", async () => {
-    const element = await elementBuilder.build({
+    element = await elementBuilder.build({
       disabled: true,
       value: RECORDS[0].id
     });
 
-    expect(getByDataId(element, "remove").disabled).toBe(true);
+    expect(getRemoveButton().disabled).toBe(true);
 
-    await assertElementIsAccesible(element);
+    await expect(element).toBeAccessible();
   });
 
   it("should remove selected option and hide results when backspace or del is pressed", async () => {
-    const element = await elementBuilder.build();
+    element = await elementBuilder.build();
 
     // select an option
     element.shadowRoot.querySelector("[data-record-id]").click();
@@ -149,7 +147,7 @@ describe("c-base-lookup single entry", () => {
     await flushPromises();
 
     // users clears option using backspace or delete
-    const searchInput = getByDataId(element, "input");
+    const searchInput = getInput();
     searchInput.focus();
     searchInput.dispatchEvent(
       new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.BACKSPACE })
@@ -160,6 +158,6 @@ describe("c-base-lookup single entry", () => {
     assertListBoxIsVisible(element, DEFAULT_RECORDS);
     assertDropdownIsNotVisible(element);
 
-    await assertElementIsAccesible(element);
+    await expect(element).toBeAccessible();
   });
 });

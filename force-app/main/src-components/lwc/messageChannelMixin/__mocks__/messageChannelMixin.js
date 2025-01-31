@@ -2,7 +2,7 @@ const Subscribe = Symbol("Subscribe");
 const Publish = Symbol("Publish");
 const Unsubscribe = Symbol("Unsubscribe");
 
-let subscriptions = new Map();
+const subscriptions = new Map();
 
 const publish = jest.fn(({ channel, payload }) => {
   subscriptions.get(channel)?.(payload);

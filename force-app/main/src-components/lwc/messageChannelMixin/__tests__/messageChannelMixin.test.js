@@ -1,5 +1,5 @@
 import { LightningElement, api } from "lwc";
-import { ElementBuilder, resetDOM, addToDOM, removeFromDOM } from "test/utils";
+import { ElementBuilder, removeChildren, appendChild, removeChild } from "test/utils";
 import {
   publish,
   subscribe,
@@ -42,7 +42,7 @@ describe("c-message-channel-mixing", () => {
   const elementBuilder = new ElementBuilder("c-component", Component);
 
   afterEach(() => {
-    resetDOM();
+    removeChildren();
   });
 
   function subscribeToChannels(element) {
@@ -90,7 +90,7 @@ describe("c-message-channel-mixing", () => {
   it("Should subscribe to channels", async () => {
     const element = await elementBuilder.build();
     MessageContext.emit(MessageContextData);
-    addToDOM(element);
+    appendChild(element);
     subscribeToChannels(element);
 
     expect(subscribe).toHaveBeenNthCalledWith(
@@ -114,7 +114,7 @@ describe("c-message-channel-mixing", () => {
     const element = await elementBuilder.build();
     MessageContext.emit(MessageContextData);
 
-    addToDOM(element);
+    appendChild(element);
     subscribeToChannels(element);
 
     element.unsub(messageChannelA);
@@ -128,10 +128,10 @@ describe("c-message-channel-mixing", () => {
     const element = await elementBuilder.build();
     MessageContext.emit(MessageContextData);
 
-    addToDOM(element);
+    appendChild(element);
     subscribeToChannels(element);
 
-    removeFromDOM(element);
+    removeChild(element);
 
     expect(disconect).toHaveBeenCalled();
     assertUnsub();

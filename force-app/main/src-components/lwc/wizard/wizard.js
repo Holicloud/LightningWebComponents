@@ -51,7 +51,7 @@ export default class Wizard extends LightningElement {
   handleRegister(event) {
     event.stopPropagation();
     event.preventDefault();
-    let step = event.detail;
+    const step = event.detail;
     this.steps[step.name] = step;
     step.methods.config({
       labels: {
@@ -97,7 +97,7 @@ export default class Wizard extends LightningElement {
   }
 
   configSteps() {
-    let stepComponents = [...this.querySelectorAll("c-wizard-step")];
+    const stepComponents = [...this.querySelectorAll("c-wizard-step")];
 
     this.flow = stepComponents.reduce((acc, step, index) => {
       const actualStep = this.steps[step.name];
@@ -119,12 +119,12 @@ export default class Wizard extends LightningElement {
   async handleNext(event) {
     event.stopPropagation();
     event.preventDefault();
-    let currentStep = this.steps[this._currentStep];
-    let currentStepIndex = this.flow.indexOf(currentStep);
+    const currentStep = this.steps[this._currentStep],
+      currentStepIndex = this.flow.indexOf(currentStep);
     this.hasError = !(await this.validateStep(currentStep));
 
     if (!this.hasError) {
-      let newStep = this.flow[currentStepIndex + 1];
+      const newStep = this.flow[currentStepIndex + 1];
 
       if (newStep) {
         this.dispatchChange(newStep.name);
@@ -138,8 +138,8 @@ export default class Wizard extends LightningElement {
   async handlePrevious(event) {
     event.stopPropagation();
     event.preventDefault();
-    let currentStepIndex = this.flow.indexOf(this.steps[this._currentStep]);
-    let newStep = this.flow[currentStepIndex - 1];
+    const currentStepIndex = this.flow.indexOf(this.steps[this._currentStep]),
+      newStep = this.flow[currentStepIndex - 1];
 
     if (newStep) {
       this.hasError = false;

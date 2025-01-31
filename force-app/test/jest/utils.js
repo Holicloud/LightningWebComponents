@@ -1,98 +1,70 @@
 import { setImmediate } from "timers";
-import { createElement } from "@lwc/engine-dom";
+import ElementBuilder from "./elementBuilder";
 
-function getByDataId(element, dataId, all = false) {
-  const selector = `[data-id="${dataId}"]`;
-  return all
-    ? element.shadowRoot.querySelectorAll(selector)
-    : element.shadowRoot.querySelector(selector);
+const LWC_DOM_MANUAL_WARNING = '`lwc:dom="manual"` directive.';
+let lwcDomManualWarningMock = jest.fn();
+
+function getByDataId(element, dataId) {
+  const root = element?.shadowRoot || element;
+  return root.querySelector(`[data-id="${dataId}"]`);
+}
+
+function getAllByDataId(element, dataId) {
+  const root = element?.shadowRoot || element;
+  return [...root.querySelectorAll(`[data-id="${dataId}"]`)];
 }
 
 async function flushPromises() {
   return new Promise((resolve) => setImmediate(resolve));
 }
 
-function resetDOM() {
-  while (document.body.firstChild) {
-    document.body.removeChild(document.body.firstChild);
+function removeChildren(root = document.body) {
+  while (root.firstChild) {
+    root.removeChild(root.firstChild);
   }
 }
 
-function addToDOM(element) {
-  document.body.appendChild(element);
+function appendChild(element, root = document.body) {
+  root.appendChild(element);
 }
 
-function removeFromDOM(element) {
-  document.body.removeChild(element);
+function removeChild(element, root = document.body) {
+  root.removeChild(element);
 }
 
-async function assertElementIsAccesible(element) {
-  jest.useRealTimers();
-  await expect(element).toBeAccessible();
-  jest.useFakeTimers();
-}
-
-async function assertElementIsNotAccesible(element) {
-  jest.useRealTimers();
-  await expect(element).not.toBeAccessible();
-  jest.useFakeTimers();
-}
-
-function mockFunction(element, name, implementation = () => {}) {
+function createMockedEventListener(
+  element,
+  eventName,
+  implementation = () => {}
+) {
   const mockedFunction = jest.fn(implementation);
-  element.addEventListener(name, mockedFunction);
+  element.addEventListener(eventName, mockedFunction);
   return mockedFunction;
 }
 
-class ElementBuilder {
-  defaultApiProps = {};
-  addToDOM = true;
-  flushPromisesAfter = true;
-
-  constructor(descriptor, componentReference) {
-    this.descriptor = descriptor;
-    this.componentReference = componentReference;
-  }
-
-  addToDOM(value) {
-    this.addToDOM = value;
-    return this;
-  }
-
-  flushPromises(value) {
-    this.flushPromisesAfter = value;
-    return this;
-  }
-
-  setDefaultApiProperties(defaultApiProps) {
-    Object.assign(this.defaultApiProps, defaultApiProps);
-    return this;
-  }
-
-  async build(props = {}) {
-    const element = createElement(this.descriptor, {
-      is: this.componentReference
-    });
-    Object.assign(element, this.defaultApiProps, props);
-
-    if (this.addToDOM) {
-      document.body.appendChild(element);
-      if (this.flushPromisesAfter) {
-        await flushPromises();
+const suppressLwcDomWarnings = () => {
+  lwcDomManualWarningMock = jest
+    .spyOn(console, "warn")
+    .mockImplementation((message) => {
+      if (!message.includes(LWC_DOM_MANUAL_WARNING)) {
+        console.warn(message);
       }
-    }
-    return element;
-  }
-}
+    });
+};
+
+const restoreLwcDomWarnings = () => {
+  lwcDomManualWarningMock?.mockRestore();
+};
 
 export {
-  getByDataId,
-  flushPromises,
-  resetDOM,
-  addToDOM,
-  removeFromDOM,
-  assertElementIsAccesible,
-  assertElementIsNotAccesible,
+  appendChild,
+  createMockedEventListener,
   ElementBuilder,
-  mockFunction
+  flushPromises,
+  getAllByDataId,
+  getByDataId,
+  removeChild,
+  removeChildren,
+  restoreLwcDomWarnings,
+  suppressLwcDomWarnings
 };

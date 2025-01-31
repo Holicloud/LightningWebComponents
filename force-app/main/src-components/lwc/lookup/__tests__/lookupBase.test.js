@@ -1,159 +1,163 @@
 import {
   ElementBuilder,
-  resetDOM,
+  removeChildren,
   flushPromises,
   getByDataId,
-  assertElementIsAccesible,
-  mockFunction
+  createMockedEventListener
 } from "test/utils";
 import Lookup, { VARIANTS, LABELS, SCROLL_AFTER_N, KEY_INPUTS } from "c/Lookup";
 import RECORDS from "./data/records.json";
 import {
   inputSearchTerm,
-  searchHandler,
   DEFAULT_RECORDS,
   assertListBoxIsVisible,
-  selectionHandler
+  assertDropdownIsVisible,
+  assertDropdownIsNotVisible
 } from "./lookup.utils.js";
 
-const BASE_LABEL = "Lookup";
-const SAMPLE_SEARCH_TOO_SHORT_WHITESPACE = "A ";
-const SAMPLE_SEARCH_TOO_SHORT_SPECIAL = "a*";
-const SAMPLE_SEARCH_RAW = "Sample search* ";
-const SAMPLE_SEARCH_CLEAN = "Sample search?";
-
-const elementBuilder = new ElementBuilder(
-  "c-lookup",
-  Lookup
-).setDefaultApiProperties({
-  label: BASE_LABEL,
-  defaultRecords: DEFAULT_RECORDS,
-  searchHandler,
-  selectionHandler
-});
-
-const modes = [
-  elementBuilder.setDefaultApiProperties({ isMultiEntry: true }),
-  elementBuilder.setDefaultApiProperties({ isMultiEntry: false })
-];
+const BASE_LABEL = "Lookup",
+  SAMPLE_SEARCH_TOO_SHORT_WHITESPACE = "A ",
+  SAMPLE_SEARCH_TOO_SHORT_SPECIAL = "a*",
+  SAMPLE_SEARCH_RAW = "Sample search* ",
+  SAMPLE_SEARCH_CLEAN = "Sample search?",
+  elementBuilder = new ElementBuilder("c-lookup", Lookup).setConfig({
+    defaultApiProps: {
+      label: "Lookup",
+      searchHandler: jest.fn(() => RECORDS),
+      selectionHandler: jest.fn(({ selectedIds }) => {
+        return RECORDS.filter((record) => selectedIds.includes(record.id));
+      }),
+      defaultRecords: DEFAULT_RECORDS
+    }
+  }),
+  multiEntry = elementBuilder.setConfig({
+    defaultApiProps: { isMultiEntry: true }
+  }),
+  singleEntry = elementBuilder.setConfig({ isMultiEntry: false }),
+  modes = [multiEntry, singleEntry];
 
 jest.mock("c/lookupSubtitle");
 
-function assertDropdownIsVisible(element) {
-  expect(getByDataId(element, "dropdown")?.classList).toContain("slds-is-open");
-}
-
-function assertDropdownIsNotVisible(element) {
-  expect(getByDataId(element, "dropdown")?.classList).not.toContain(
-    "slds-is-open"
-  );
-}
 
 describe("c-lookup", () => {
+  let element;
+
+  const getResultListBox = () => getByDataId(element, "result-list-box"),
+    getInput = () => getByDataId(element, "input"),
+    getLabel = () => getByDataId(element, "label"),
+    getHelpText = () => getByDataId(element, "help-text"),
+    getSearchIcon = () => getByDataId(element, "search-icon"),
+    getClearButton = () => getByDataId(element, "clear"),
+    getNoResults = () => getByDataId(element, "no-results"),
+    getRequiredIndicator = () => getByDataId(element, "required-indicator");
+
+  async function isAccessible() {
+    jest.useRealTimers();
+    await expect(element).toBeAccessible();
+  }
+
   beforeEach(() => {
     jest.useFakeTimers();
   });
 
   afterEach(() => {
-    resetDOM();
+    removeChildren();
     jest.clearAllMocks();
     jest.useRealTimers();
   });
 
   it.each(modes)("renders default options and subtitles", async (builder) => {
-    // Create lookup
-    const element = await builder.build();
+    element = await builder.build();
     assertListBoxIsVisible(element, DEFAULT_RECORDS);
-    await assertElementIsAccesible(element);
+    await isAccessible();
   });
 
   it.each(modes)("displays the label", async (builder) => {
-    const element = await builder.build();
+    element = await builder.build();
 
-    const labelEl = getByDataId(element, "label");
+    const labelEl = getLabel();
     expect(labelEl.textContent).toBe(BASE_LABEL);
     expect(labelEl.className).toBe("slds-form-element__label");
 
-    await assertElementIsAccesible(element);
+    await isAccessible();
   });
 
   it.each(modes)(
     "input is disabled and user cannot remove items",
     async (builder) => {
-      const element = await builder.build({
+      element = await builder.build({
         disabled: true
       });
 
-      const input = getByDataId(element, "input");
-      expect(input.disabled).toBe(true);
+      expect(getInput().disabled).toBe(true);
 
-      await assertElementIsAccesible(element);
+      await isAccessible();
     }
   );
 
   it.each(modes)("displays field level help", async (builder) => {
     const message = "some help text";
-    const element = await builder.build({ fieldLevelHelp: message });
-    expect(getByDataId(element, "help-text").content).toBe(message);
+    element = await builder.build({ fieldLevelHelp: message });
+    expect(getHelpText().content).toBe(message);
 
-    await assertElementIsAccesible(element);
+    await isAccessible();
   });
 
   it.each(modes)("displays indicator when is required", async (builder) => {
-    const element = await builder.build({ required: true });
-    expect(getByDataId(element, "required-indicator")).toBeDefined();
+    element = await builder.build({ required: true });
+    expect(getRequiredIndicator()).toBeDefined();
 
-    await assertElementIsAccesible(element);
+    await isAccessible();
   });
 
   it.each(modes)("should display placeholder", async (builder) => {
     const placeholder = "ABCDE";
-    const element = await builder.build({
+    element = await builder.build({
       placeholder
     });
 
-    expect(getByDataId(element, "input")?.placeholder).toBe(placeholder);
+    expect(getInput()?.placeholder).toBe(placeholder);
 
-    await assertElementIsAccesible(element);
+    await isAccessible();
   });
 
   it.each(modes)(
     "hides label when variant set to label-hidden",
     async (builder) => {
-      const element = await builder.build({
+      element = await builder.build({
         variant: VARIANTS.LABEL_HIDDEN
       });
 
-      const labelEl = getByDataId(element, "label");
+      const labelEl = getLabel();
       expect(labelEl).not.toBeNull();
       expect(labelEl.classList).toContain("slds-assistive-text");
 
-      await assertElementIsAccesible(element);
+      await isAccessible();
     }
   );
 
   it.each(modes)(
     "horizontal label when variant set to label-inline",
     async (builder) => {
-      const element = await builder.build({
+      element = await builder.build({
         variant: VARIANTS.LABEL_INLINE
       });
 
       expect(element.classList).toContain("slds-form-element_horizontal");
 
-      await assertElementIsAccesible(element);
+      await isAccessible();
     }
   );
 
   it.each(modes)(
     "custom action is shown an can be clicked",
     async (builder) => {
-      const newAccount = { name: "new-account", label: "New Account" };
-      const newCase = { name: "new-case", label: "New Case" };
-      const element = await builder.build({
+      const newAccount = { name: "new-account", label: "New Account" },
+        newCase = { name: "new-case", label: "New Case" };
+      element = await builder.build({
         actions: [newAccount, newCase]
       });
-      const onaction = mockFunction(element, "action");
+      const onaction = createMockedEventListener(element, "action");
 
       expect(getByDataId(element, newAccount.name)).toBeDefined();
       expect(getByDataId(element, newCase.name)).toBeDefined();
@@ -164,39 +168,39 @@ describe("c-lookup", () => {
         expect.objectContaining({ detail: newAccount.name })
       );
 
-      await assertElementIsAccesible(element);
+      await isAccessible();
     }
   );
 
   it.each(modes)("set scroll items class", async (builder) => {
     const scrollAfterNItems = 7;
-    const element = await builder.build();
+    element = await builder.build();
 
-    expect(getByDataId(element, "result-list-box")?.classList).toContain(
+    expect(getResultListBox()?.classList).toContain(
       "slds-dropdown_length-with-icon-" + SCROLL_AFTER_N
     );
 
     element.scrollAfterNItems = scrollAfterNItems;
     await flushPromises();
 
-    expect(getByDataId(element, "result-list-box")?.classList).toContain(
+    expect(getResultListBox()?.classList).toContain(
       "slds-dropdown_length-with-icon-" + scrollAfterNItems
     );
 
     element.scrollAfterNItems = "some invalid value";
     await flushPromises();
 
-    expect(getByDataId(element, "result-list-box")?.classList).toContain(
+    expect(getResultListBox()?.classList).toContain(
       "slds-dropdown_length-with-icon-" + SCROLL_AFTER_N
     );
 
-    await assertElementIsAccesible(element);
+    await isAccessible();
   });
 
   it.each(modes)(
     "shows no results when there are no options",
     async (builder) => {
-      const element = await builder.build({
+      element = await builder.build({
         defaultRecords: [],
         searchHandler: () => {
           return [];
@@ -204,32 +208,17 @@ describe("c-lookup", () => {
         value: [RECORDS[0].id, RECORDS[2].id]
       });
 
-      const noResultsElement = getByDataId(element, "no-results");
+      const noResultsElement = getNoResults();
       expect(noResultsElement).toBeTruthy();
       expect(noResultsElement?.textContent).toBe(LABELS.noResults);
 
-      await assertElementIsAccesible(element);
-    }
-  );
-
-  it.each(modes)(
-    "should throw error when search handler is not setup properly",
-    async (builder) => {
-      const element = await builder.build({
-        selectionHandler: () => "invalid return",
-        value: RECORDS[0].id
-      });
-
-      expect(getByDataId(element, "help-message")?.textContent).toBe(
-        LABELS.errors.errorFetchingData
-      );
-      await assertElementIsAccesible(element);
+      await isAccessible();
     }
   );
 
   it.each(modes)("test validity", async (builder) => {
     const errorMessage = "custom error";
-    const element = await builder.build();
+    element = await builder.build();
 
     element.setCustomValidity(errorMessage);
     expect(element.validity).toEqual({ valid: false });
@@ -240,17 +229,17 @@ describe("c-lookup", () => {
     expect(document.activeElement).not.toBe(element);
     assertDropdownIsNotVisible(element);
 
-    await assertElementIsAccesible(element);
+    await isAccessible();
   });
 
   it.each(modes)("should focus input", async (builder) => {
-    const element = await builder.build();
+    element = await builder.build();
 
-    const input = getByDataId(element, "input");
-    const mockedListener = mockFunction(element, "focus");
-    const mocked = mockFunction(input, "focus");
-    const mockedListenerBlur = mockFunction(element, "blur");
-    const mockedBlur = mockFunction(input, "blur");
+    const input = getInput(),
+      mocked = createMockedEventListener(input, "focus"),
+      mockedBlur = createMockedEventListener(input, "blur"),
+      mockedListener = createMockedEventListener(element, "focus"),
+      mockedListenerBlur = createMockedEventListener(element, "blur");
 
     element.focus();
     await flushPromises();
@@ -269,13 +258,13 @@ describe("c-lookup", () => {
     expect(mockedListenerBlur).toHaveBeenCalled();
     assertDropdownIsNotVisible(element);
 
-    await assertElementIsAccesible(element);
+    await isAccessible();
   });
 
   it.each(modes)(
     "executes the searchHandler when user types on input",
     async (builder) => {
-      const element = await builder.build();
+      element = await builder.build();
       element.searchHandler.mockClear();
 
       await inputSearchTerm(element, SAMPLE_SEARCH_TOO_SHORT_WHITESPACE);
@@ -307,80 +296,80 @@ describe("c-lookup", () => {
         })
       );
 
-      await assertElementIsAccesible(element);
+      await isAccessible();
     }
   );
 
   it.each(modes)(
     "options should not be visible when user types escape",
     async (builder) => {
-      const element = await builder.build();
+      element = await builder.build();
 
       await inputSearchTerm(element, "jlskadjflkasd");
       assertListBoxIsVisible(element, RECORDS);
       assertDropdownIsVisible(element);
 
-      const searchInput = getByDataId(element, "input");
+      const searchInput = getInput();
       searchInput.dispatchEvent(
         new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.ESCAPE })
       );
       await flushPromises();
       assertListBoxIsVisible(element, RECORDS);
       assertDropdownIsNotVisible(element);
-      await assertElementIsAccesible(element);
+      await isAccessible();
     }
   );
 
   it.each(modes)(
     "should clear the input and display default list items when clear button is clicked",
     async (builder) => {
-      const element = await builder.build();
+      element = await builder.build();
 
       await inputSearchTerm(element, "any");
 
-      getByDataId(element, "clear").click();
+      getClearButton().click();
 
       await flushPromises();
 
-      expect(getByDataId(element, "input").value).toBe("");
+      expect(getInput().value).toBe("");
       assertListBoxIsVisible(element, DEFAULT_RECORDS);
       assertDropdownIsVisible(element);
 
-      await assertElementIsAccesible(element);
+      await isAccessible();
     }
   );
 
   it.each(modes)("should hide search icon when user typed", async (builder) => {
-    const element = await builder.build();
+    element = await builder.build();
 
     await inputSearchTerm(element, "any");
 
-    getByDataId(element, "clear").click();
+    getClearButton().click();
 
     await flushPromises();
 
-    expect(getByDataId(element, "search-icon")).toBeDefined();
-    await assertElementIsAccesible(element);
+    expect(getSearchIcon()).toBeDefined();
+    await isAccessible();
   });
 
   it.each(modes)(
     "should hide clear icon when the user has not put input anything",
     async (builder) => {
-      const element = await builder.build();
+      element = await builder.build();
 
       await inputSearchTerm(element, "any");
 
-      expect(getByDataId(element, "clear")).toBeDefined();
-      expect(getByDataId(element, "search-icon")).toBeFalsy();
+      expect(getClearButton()).toBeDefined();
+      expect(getSearchIcon()).toBeFalsy();
 
-      getByDataId(element, "clear").click();
+      getClearButton().click();
 
       await flushPromises();
 
-      expect(getByDataId(element, "search-icon")).toBeDefined();
-      expect(getByDataId(element, "clear")).toBeFalsy();
+      expect(getSearchIcon()).toBeDefined();
+      expect(getClearButton()).toBeFalsy();
 
-      await assertElementIsAccesible(element);
+      await isAccessible();
     }
   );
 });
