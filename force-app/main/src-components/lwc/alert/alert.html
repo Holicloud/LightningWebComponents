@@ -1,27 +1,29 @@
 <template>
-  <div lwc:if={_visible} data-id="alert" class={alertClasses} role="alert">
+  <div lwc:if={isVisible} data-id="alert" class={alertClasses} role="alert">
     <span class="slds-assistive-text">{variantProps.assistiveText}</span>
     <span
       class="slds-icon_container slds-icon-utility-user slds-m-right_x-small"
-      title="Description of icon when needed"
+      title={variantProps.assistiveText}
     >
       <lightning-icon
         size="x-small"
         class="slds-button__icon"
         icon-name={icon}
-        variant={iconVariant}
+        data-id="icon"
+        variant={variantProps.iconVariant}
         alternative-text={variantProps.assistiveText}
       ></lightning-icon>
     </span>
     <h2>
       <slot></slot>
-      <a lwc:if={actionMessage} href="#" onclick={handleAction}
+      <a lwc:if={actionMessage} data-id="action" href="#" onclick={handleAction}
         >{actionMessage}</a
       >
     </h2>
     <div class="slds-notify__close" lwc:if={isCollapsible}>
       <span class="slds-assistive-text">Close</span>
       <lightning-button-icon
+        data-id="close-button"
         icon-name="utility:close"
         alternative-text="Close"
         icon-class="slds-button__icon"
