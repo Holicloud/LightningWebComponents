@@ -1,18 +1,28 @@
-# Salesforce DX Project: Next Steps
+# Lightning Component Library
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
+## Component Reference
 
-## How Do You Plan to Deploy Your Changes?
+The Component Reference is where you find the details about each base Lightning component. It documents the full set of base components for both the Lightning Web Components and Aura programming models.
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
+Here are a few highlights about the Component Reference.
 
-## Configure Your Salesforce DX Project
+### Filter components
 
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
+On the Overview page, filter to focus on the components you’re interested in. For example, to see only those components related to navigation, select **Filters | Categories | Navigation**.
 
-## Read All About It
+### View targets
 
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+When you select a component, the Target panel at the top shows where you can use the component. Targets can include Salesforce App, Lightning Experience, Experience Builder Sites, Salesforce Mobile App, Standalone Lightning App, and so on.
+
+### View example, documentation, and specification pages
+
+Most components have **Example** and **Documentation** pages.
+
+The Component Reference doesn’t display documentation for your custom Lightning web components.
+
+Some attributes that have default values don't display a value in the Default column. See the Description column for default values.
+Custom events aren’t displayed in Specification pages. See the component’s Documentation page for this information.
+
+## Component Reference Examples
+
+The **Examples** tab shows base Lightning component sample code that renders in a runtime environment on the page.
