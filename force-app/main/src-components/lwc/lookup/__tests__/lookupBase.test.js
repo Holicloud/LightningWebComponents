@@ -38,7 +38,6 @@ const BASE_LABEL = "Lookup",
 
 jest.mock("c/lookupSubtitle");
 
-
 describe("c-lookup", () => {
   let element;
 
@@ -69,6 +68,7 @@ describe("c-lookup", () => {
   it.each(modes)("renders default options and subtitles", async (builder) => {
     element = await builder.build();
     assertListBoxIsVisible(element, DEFAULT_RECORDS);
+    expect(element).not.toBeNull();
     await isAccessible();
   });
 
@@ -173,7 +173,7 @@ describe("c-lookup", () => {
   );
 
   it.each(modes)("set scroll items class", async (builder) => {
-    const scrollAfterNItems = 7;
+    const scrollAfterNItems = "7";
     element = await builder.build();
 
     expect(getResultListBox()?.classList).toContain(
@@ -316,6 +316,7 @@ describe("c-lookup", () => {
       await flushPromises();
       assertListBoxIsVisible(element, RECORDS);
       assertDropdownIsNotVisible(element);
+      expect(element).not.toBeNull();
       await isAccessible();
     }
   );
@@ -372,4 +373,25 @@ describe("c-lookup", () => {
       await isAccessible();
     }
   );
+
+  it.each(modes)("should highlight title on match", async (builder) => {
+    const filterByTitle = (word) =>
+      RECORDS.filter((record) => record.title.includes(word));
+    element = await builder.build({
+      searchHandler: ({ searchTerm }) => filterByTitle(searchTerm),
+      highlightTittleOnMatch: true
+    });
+
+    const word = "Sales";
+
+    await inputSearchTerm(element, "Sales");
+
+    await flushPromises();
+
+    assertListBoxIsVisible(element, filterByTitle(word), word);
+    assertDropdownIsVisible(element);
+
+    expect(element).not.toBeNull();
+    await isAccessible();
+  });
 });

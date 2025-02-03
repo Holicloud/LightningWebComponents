@@ -67,13 +67,14 @@ export default class Lookup extends LightningElement {
   @api searchHandler = () => [];
   @api selectionHandler = () => [];
 
+  @track recordsDropdown = [];
+
   _defaultRecords = [];
   _label = DEFAULT_LABEL;
   _minSearchTermLength = MIN_SEARCH_TERM_LENGTH;
   _scrollAfterNItems = SCROLL_AFTER_N;
   _variant = VARIANTS.LABEL_STACKED;
 
-  @track recordsDropdown = [];
   cancelBlur = false;
   cleanSearchTerm;
   displayListBox = false;
@@ -114,7 +115,6 @@ export default class Lookup extends LightningElement {
   get variant() {
     return this._variant;
   }
-
   set variant(value) {
     this._variant = Object.values(VARIANTS).includes(value)
       ? value
@@ -128,7 +128,6 @@ export default class Lookup extends LightningElement {
       ? this.selectedRecords.map((record) => record.id)
       : this.selectedRecords[0]?.id;
   }
-
   set value(value) {
     let selectedIds = [];
 
@@ -225,21 +224,20 @@ export default class Lookup extends LightningElement {
   }
 
   get getDropdownClass() {
-    const isSearchTermValid =
+    const isSelectionAllowed = this.isMultiEntry || !this.hasSelection(),
+      isSearchTermValid =
         this.cleanSearchTerm?.length >= this.minSearchTermLength,
-      isSelectionAllowed = this.isMultiEntry || !this.hasSelection();
-    const shouldDisplayDropdown = !!(
-      this.displayListBox &&
-      isSelectionAllowed &&
-      (isSearchTermValid ||
-        this.recordsDropdown?.length ||
-        this.actions?.length)
-    );
+      hasItems = this.recordsDropdown?.length || this.actions?.length;
 
     return classSet("slds-combobox")
       .add("slds-dropdown-trigger")
       .add("slds-dropdown-trigger_click")
-      .add({ "slds-is-open": shouldDisplayDropdown })
+      .add({
+        "slds-is-open":
+          this.displayListBox &&
+          isSelectionAllowed &&
+          (hasItems || isSearchTermValid)
+      })
       .toString();
   }
 
@@ -295,11 +293,9 @@ export default class Lookup extends LightningElement {
   }
 
   get getListboxClass() {
-    const scrollAfterNItems =
-      this.scrollAfterNItems === SCROLL_AFTER_N ||
-      Number.isInteger(this.scrollAfterNItems)
-        ? this.scrollAfterNItems
-        : SCROLL_AFTER_N;
+    const scrollAfterNItems = Number.isInteger(Number(this.scrollAfterNItems))
+      ? this.scrollAfterNItems
+      : SCROLL_AFTER_N;
     const iconClass = `slds-dropdown_length-with-icon-${scrollAfterNItems}`;
     return classSet("slds-dropdown")
       .add({ [iconClass]: scrollAfterNItems })
@@ -416,38 +412,38 @@ export default class Lookup extends LightningElement {
         // Display spinner until results are returned
 
         try {
-          const searchHandler =
-            typeof this.searchHandler === "function"
-              ? this.searchHandler
-              : () => [];
-          let matchingRecords = await Promise.resolve(
-            searchHandler({
-              searchTerm: this.cleanSearchTerm,
-              rawSearchTerm: newSearchTerm
-            })
-          );
-
-          matchingRecords = (
-            matchingRecords instanceof Array ? matchingRecords : []
-          ).filter((record) => isNotBlank(record?.id));
-
-          if (matchingRecords.length) {
-            const matchingRecordIds = matchingRecords.map(
-              (record) => record.id
-            );
-
-            for (const { record } of Array.from(this.records.values())) {
-              if (!matchingRecordIds.includes(record.id)) {
-                this.upsertRecord(record.id, { matchesSearchTerm: false });
-              }
-            }
-
-            matchingRecords.forEach((record) =>
-              this.upsertRecord(record.id, {
-                record,
-                matchesSearchTerm: true
+          if (typeof this.searchHandler === "function") {
+            const matching = await Promise.resolve(
+              this.searchHandler({
+                searchTerm: this.cleanSearchTerm,
+                rawSearchTerm: newSearchTerm
               })
             );
+
+            if (matching instanceof Array) {
+              const matchingRecords = matching.filter((record) =>
+                isNotBlank(record?.id)
+              );
+
+              for (const { record } of Array.from(this.records.values())) {
+                const match = matchingRecords.find(
+                  (recordMatch) => recordMatch.id === record.id
+                );
+                if (!match) {
+                  this.upsertRecord(record.id, {
+                    record: match,
+                    matchesSearchTerm: false
+                  });
+                }
+              }
+
+              matchingRecords.forEach((record) =>
+                this.upsertRecord(record.id, {
+                  record,
+                  matchesSearchTerm: true
+                })
+              );
+            }
           }
 
           this.displayMatching = true;
@@ -729,12 +725,14 @@ export default class Lookup extends LightningElement {
   }
 
   setDefaultRecords() {
-    const defaultRecords =
-      this.defaultRecords instanceof Array && this.defaultRecords?.length
-        ? this.defaultRecords
-        : [];
+    if (
+      !(this.defaultRecords instanceof Array) ||
+      !this.defaultRecords?.length
+    ) {
+      return;
+    }
 
-    for (const record of clone(defaultRecords)) {
+    for (const record of clone(this.defaultRecords)) {
       if (isNotBlank(record.id)) {
         this.upsertRecord(record.id, {
           record,
@@ -748,24 +746,22 @@ export default class Lookup extends LightningElement {
     try {
       const selectedIds = this.selectedRecords.map((record) => record.id);
 
-      if (selectedIds.length) {
-        const selectionHandler =
-          typeof this.selectionHandler === "function"
-            ? this.selectionHandler
-            : () => [];
-        const records = await Promise.resolve(
-          selectionHandler({
-            selectedIds
-          })
-        );
+      if (typeof this.selectionHandler !== "function" || !selectedIds.length) {
+        return;
+      }
 
-        if (records instanceof Array && records?.length) {
-          clone(records).forEach((record) => {
-            if (isNotBlank(record.id)) {
-              this.upsertRecord(record.id, { record });
-            }
-          });
-        }
+      const records = await Promise.resolve(
+        this.selectionHandler({
+          selectedIds
+        })
+      );
+
+      if (records instanceof Array && records?.length) {
+        clone(records).forEach((record) => {
+          if (isNotBlank(record.id)) {
+            this.upsertRecord(record.id, { record });
+          }
+        });
       }
     } catch (error) {
       this.setCustomValidity(LABELS.errors.errorFetchingData);

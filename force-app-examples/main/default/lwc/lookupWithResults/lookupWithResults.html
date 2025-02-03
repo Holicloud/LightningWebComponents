@@ -29,13 +29,33 @@
     ></c-lookup>
   </c-component-example>
 
-  <c-component-example title="Multi Entry with Selection">
+  <c-component-example title="Multi Entry with Initial Selection">
     <c-lookup
       selection-handler={getSelection}
       search-handler={getMatching}
       default-records={defaultRecords}
       is-multi-entry
       value={value}
+      label="Account"
+    ></c-lookup>
+  </c-component-example>
+
+  <c-component-example title="Highlight title on match">
+    <c-lookup
+      search-handler={getMatching}
+      selection-handler={getSelection}
+      default-records={defaultRecords}
+      highlight-tittle-on-match
+      label="Account"
+    ></c-lookup>
+  </c-component-example>
+
+  <c-component-example title="With scroll after N items">
+    <c-lookup
+      search-handler={getMatching}
+      selection-handler={getSelection}
+      default-records={defaultRecords}
+      scroll-after-n-items="5"
       label="Account"
     ></c-lookup>
   </c-component-example>

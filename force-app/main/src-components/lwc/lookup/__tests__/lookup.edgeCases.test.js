@@ -90,9 +90,7 @@ describe("c-lookup rendering", () => {
       await flushPromises();
 
       expect(element?.classList).toContain("slds-has-error");
-      expect(getHelpMessage()?.textContent).toBe(
-        messageWhenValueMissing
-      );
+      expect(getHelpMessage()?.textContent).toBe(messageWhenValueMissing);
 
       await isAccessible();
     }
@@ -145,6 +143,7 @@ describe("c-lookup rendering", () => {
       assertListBoxIsVisible(element, DEFAULT_RECORDS);
       assertDropdownIsVisible(element);
 
+      expect(element).not.toBeNull();
       await isAccessible();
     }
   );
@@ -169,6 +168,7 @@ describe("c-lookup rendering", () => {
       assertListBoxIsVisible(element, DEFAULT_RECORDS);
       assertDropdownIsVisible(element);
 
+      expect(element).not.toBeNull();
       await isAccessible();
     }
   );
