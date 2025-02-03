@@ -22,10 +22,18 @@
   </c-component-example>
 
   <c-component-example title="Non Collapsible">
-    <c-alert non-collapsible>message</c-alert>
+    <c-alert is-non-collapsible>message</c-alert>
   </c-component-example>
 
   <c-component-example title="Overwrite Icon">
     <c-alert icon-name="utility:activity">message</c-alert>
+  </c-component-example>
+
+  <c-component-example title="Hidden">
+    <lightning-button
+      label="Toggle Visibility"
+      onclick={handleToggleVisibility}
+    ></lightning-button>
+    <c-alert is-hidden={isHidden}>message</c-alert>
   </c-component-example>
 </template>

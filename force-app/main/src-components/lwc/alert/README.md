@@ -2,13 +2,13 @@
 
 - ## Public Properties
 
-  | Property Name             | Type      | Default Value | Description                                                                 |
-  | ------------------------- | --------- | ------------- | --------------------------------------------------------------------------- |
-  | `variant`                 | `String`  | `"info"`      | The type of alert. Available values: `info`, `warning`, `error`, `offline`. |
-  | `iconName`                | `String`  | Derived       | Overwrites the default icon for the alert variant.                          |
-  | `actionMessage`           | `String`  | `null`        | The text displayed for the action link.                                     |
-  | `nonCollapsible`          | `Boolean` | `false`       | Determines if the alert can be closed or not.                               |
-  | `visible` (getter/setter) | `Boolean` | `true`        | Determines if the alert is visible.                                         |
+  | Property Name      | Type      | Default Value | Description                                                                 |
+  | ------------------ | --------- | ------------- | --------------------------------------------------------------------------- |
+  | `variant`          | `String`  | `info`        | The type of alert. Available values: `info`, `warning`, `error`, `offline`. |
+  | `iconName`         | `String`  | Derived       | Overwrites the default icon for the alert variant.                          |
+  | `actionMessage`    | `String`  | `null`        | The text displayed for the action link.                                     |
+  | `isNonCollapsible` | `Boolean` | `false`       | Determines if the alert can be closed or not.                               |
+  | `isHidden`         | `Boolean` | `false`       | Determines if the alert is visible.                                         |
 
 - ## Events
 
@@ -67,3 +67,9 @@
     ```html
     <c-alert icon-name="utility:activity">overwrite icon</c-alert>
     ```
+
+  - #### Hidden
+
+  ```html
+  <c-alert is-hidden>hidden alert</c-alert>
+  ```

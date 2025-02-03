@@ -1,57 +1,56 @@
 import { LightningElement, api } from "lwc";
+import { classSet } from "c/utils";
+
 export const VARIANTS = Object.freeze({
-  info: {
-    assistiveText: "info",
-    icon: "utility:info",
-    iconVariant: "inverse"
-  },
-  warning: {
-    assistiveText: "warning",
-    icon: "utility:warning",
-    alertClass: "slds-alert_warning"
-  },
   error: {
-    assistiveText: "error",
-    icon: "utility:error",
     alertClass: "slds-alert_error",
-    iconVariant: "inverse"
+    assistiveText: "error",
+    iconName: "utility:error"
+  },
+  info: {
+    alertClass: "slds-alert_info",
+    assistiveText: "info",
+    iconName: "utility:info"
   },
   offline: {
-    assistiveText: "offline",
-    icon: "utility:offline",
     alertClass: "slds-alert_offline",
-    iconVariant: "inverse"
+    assistiveText: "offline",
+    iconName: "utility:offline"
+  },
+  warning: {
+    alertClass: "slds-alert_warning",
+    assistiveText: "warning",
+    iconName: "utility:warning"
   }
 });
 
 export default class Alert extends LightningElement {
-  @api variant = "info";
-  @api iconName;
   @api actionMessage;
-  @api nonCollapsible = false;
+  @api iconName;
+  @api isNonCollapsible = false;
+  @api variant = "info";
+
+  _isHidden = false;
 
   @api
-  get visible() {
-    return this.visible;
+  get isHidden() {
+    return this._isHidden;
   }
-  set visible(value) {
-    this._visible = value;
+  set isHidden(value) {
+    this.setAttribute("is-hidden", !!value);
+    this._isHidden = !!value;
   }
-
-  _visible = true;
 
   get alertClasses() {
-    return (
-      "slds-notify slds-notify_alert " + this.variantProps.alertClass || ""
-    );
+    return classSet("slds-notify slds-notify_alert").add({
+      [this.variantProps.alertClass]: !!this.variantProps.alertClass
+    });
   }
 
   get closeButtonClasses() {
-    return "slds-button slds-button_icon slds-button_icon-small" +
-      this.variant ===
-      "warning"
-      ? " slds-button_icon-inverse"
-      : "";
+    return classSet("slds-button slds-button_icon slds-button_icon-small").add({
+      "slds-button_icon-inverse": this.variant === "warning"
+    });
   }
 
   get variantProps() {
@@ -59,23 +58,25 @@ export default class Alert extends LightningElement {
   }
 
   get icon() {
-    return this.iconName || this.variantProps.icon;
-  }
-
-  get iconVariant() {
-    return this.variantProps.iconVariant;
+    return this.iconName || this.variantProps.iconName;
   }
 
   get closeButtonVariant() {
-    return "bare" + (this.iconVariant ? `-${this.iconVariant}` : "");
+    return "bare" + (this.variant !== "warning" ? `-inverse` : "");
   }
 
-  hideAlert() {
-    this._visible = false;
+  get isVisible() {
+    return !this.isHidden;
+  }
+
+  hideAlert(event) {
+    event.preventDefault();
+    this._isHidden = true;
+    this.dispatchEvent(new CustomEvent("collapsed"));
   }
 
   get isCollapsible() {
-    return !this.nonCollapsible;
+    return !this.isNonCollapsible;
   }
 
   handleAction(event) {
