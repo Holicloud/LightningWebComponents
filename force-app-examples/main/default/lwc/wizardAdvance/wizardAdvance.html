@@ -1,0 +1,15 @@
+<template>
+  <c-wizard header="My Account Wizard" oncomplete={handleComplete}>
+    <c-wizard-step label="Enter Account" name="step-1" validate={validateStep}>
+      <lightning-input label="Account Name" required></lightning-input>
+      <lightning-input label="Account Type" required></lightning-input>
+    </c-wizard-step>
+    <c-wizard-step label="Enter Case" name="step-2" validate={validateStep}>
+      <lightning-input label="Case Name" required></lightning-input>
+      <lightning-input label="Case Type" required></lightning-input>
+    </c-wizard-step>
+    <c-wizard-step label="Step 3" name="step-3">
+      Click finish to trigger oncomple action
+    </c-wizard-step>
+  </c-wizard>
+</template>

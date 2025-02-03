@@ -60,6 +60,18 @@ export const EXAMPLES = {
       description: "this is some sample",
       git: GIT_EXAMPLES + "wizardBasic",
       constructor: () => import("c/wizardBasic")
+    },
+    {
+      title: "With Variants",
+      description: "Wizard with variants",
+      git: GIT_EXAMPLES + "wizardVariants",
+      constructor: () => import("c/wizardVariants")
+    },
+    {
+      title: "Validation and Completion",
+      description: "validate a step and execute and action on complete",
+      git: GIT_EXAMPLES + "wizardAdvance",
+      constructor: () => import("c/wizardAdvance")
     }
   ],
   [COMPONENTS.C_ALERT.descriptor]: [
@@ -76,7 +88,7 @@ export const EXAMPLES = {
       description: "this is some sample",
       git: GIT_EXAMPLES + "messageChannelMixinBasic",
       constructor: () => import("c/messageChannelMixinBasic")
-    },
+    }
   ],
   [COMPONENTS.C_LOOKUP.descriptor]: [
     {

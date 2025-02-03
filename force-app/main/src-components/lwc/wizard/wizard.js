@@ -1,7 +1,7 @@
 import { LightningElement, api, track } from "lwc";
 
 export const VARIANTS = Object.freeze({
-  "base-shaded": { variant: "shaded", type: "base" },
+  "base-shade": { variant: "shade", type: "base" },
   path: { variant: "base", type: "path" },
   base: { variant: "base", type: "base" }
 });
@@ -155,7 +155,7 @@ export default class Wizard extends LightningElement {
           return resolve(true);
         }
 
-        return resolve(step.methods.validate());
+        return resolve(step.methods.validate(step.name));
       } catch (error) {
         this.errorMessage = error;
         return resolve(false);
