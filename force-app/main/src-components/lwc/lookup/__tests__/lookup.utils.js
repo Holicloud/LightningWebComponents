@@ -13,7 +13,7 @@ async function inputSearchTerm(element, searchTerm) {
   await flushPromises();
 }
 
-function assertListBoxIsVisible(element, recordsToValidate) {
+function assertListBoxIsVisible(element, recordsToValidate, inputValue) {
   expect(recordsToValidate?.length).toBeGreaterThan(0);
 
   if (typeof recordsToValidate[0] === "object") {
@@ -41,7 +41,13 @@ function assertListBoxIsVisible(element, recordsToValidate) {
     expect(containerEl).toBeTruthy();
 
     const titleEl = containerEl.querySelector('[data-id="title"]');
-    expect(titleEl.value).toBe(record.title);
+    if (!inputValue) {
+      expect(titleEl.value).toBe(record.title);
+    } else {
+      expect(titleEl.value).toBe(
+        record.title.replace(inputValue, `<strong>${inputValue}</strong>`)
+      );
+    }
 
     if (record.subtitles?.length) {
       record.subtitles.forEach(function (subtitle, index) {
