@@ -1,4 +1,5 @@
 import { LightningElement, api, track } from "lwc";
+import { classListMutation } from "c/utils";
 
 export const IS_ACTIVE_ATTRIBUTE = "is-active";
 export const SLDS_SHOW = "slds-show";
@@ -62,14 +63,15 @@ export default class WizardStep extends LightningElement {
     if (value) {
       this.setAttribute(IS_ACTIVE_ATTRIBUTE, true);
       this.setAttribute("aria-hidden", false);
-      this.classList.add(SLDS_SHOW);
-      this.classList.remove(SLDS_HIDE);
     } else {
       this.removeAttribute(IS_ACTIVE_ATTRIBUTE);
       this.setAttribute("aria-hidden", true);
-      this.classList.remove(SLDS_SHOW);
-      this.classList.add(SLDS_HIDE);
     }
+
+    classListMutation(this.classList, {
+      [SLDS_SHOW]: value,
+      [SLDS_HIDE]: !value
+    });
   };
 
   config = (props) => {

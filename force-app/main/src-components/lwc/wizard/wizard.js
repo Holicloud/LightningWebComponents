@@ -41,6 +41,11 @@ export default class Wizard extends LightningElement {
   setCurrentStep(value) {
     this.setAttribute(CURRENT_STEP_ATTRIBUTE, value);
     this._currentStep = value;
+
+    if (this.hasRender) {
+      this.dispatchChange(value);
+      this.setActiveStep(value);
+    }
   }
 
   handleSlotChange() {

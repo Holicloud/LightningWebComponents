@@ -1,0 +1,39 @@
+<template>
+  <c-component-example>
+    <c-wizard
+      lwc:ref="firstWizard"
+      title="step with hide-next-button"
+      current-step="step-1"
+    >
+      <c-wizard-step
+        label="Next button disabled"
+        name="step-1"
+        hide-next-button
+      >
+        <p>next button is disabled on this step</p>
+        <lightning-button
+          variant="brand"
+          label="Click me to go to the next step"
+          onclick={navigateToNextStep}
+        ></lightning-button>
+      </c-wizard-step>
+      <c-wizard-step
+        label="Enter Account"
+        name="step-2"
+        validate={validateStep}
+      >
+        <p>step with validation</p>
+        <lightning-input label="Account Name" required></lightning-input>
+        <lightning-input label="Account Type" required></lightning-input>
+      </c-wizard-step>
+      <c-wizard-step label="Enter Case" name="step-3" hide-previous-button>
+        <p>previous button is disabled on this step</p>
+      </c-wizard-step>
+      <c-wizard-step label="Enter Case" name="step-4" validate={validateStep}>
+        <p>step with validation</p>
+        <lightning-input label="Case Name" required></lightning-input>
+        <lightning-input label="Case Type" required></lightning-input>
+      </c-wizard-step>
+    </c-wizard>
+  </c-component-example>
+</template>
