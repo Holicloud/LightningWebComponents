@@ -1,12 +1,10 @@
-import { LightningElement } from "lwc";
 import { COMPONENTS, EXAMPLES } from "c/componentReference";
 import componentReference from "@salesforce/messageChannel/ComponentReference__c";
 import { MessageChannelMixin } from "c/messageChannelMixin";
-import { applyMixings } from "c/utils";
+import { Mix } from "c/utils";
 import { NavigationMixin } from "lightning/navigation";
 
-export default class ComponentReferenceOverview extends applyMixings(
-  LightningElement,
+export default class ComponentReferenceOverview extends Mix(
   MessageChannelMixin,
   NavigationMixin
 ) {

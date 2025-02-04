@@ -1,14 +1,12 @@
-import { LightningElement } from "lwc";
 import { HEADER_INFO, COMPONENTS } from "c/componentReference";
 import componentReference from "@salesforce/messageChannel/ComponentReference__c";
 import { MessageChannelMixin } from "c/messageChannelMixin";
 import { NavigationMixin } from "lightning/navigation";
-import { applyMixings } from "c/utils";
+import { Mix } from "c/utils";
 
 export const BASE_INFO = HEADER_INFO[Object.values(COMPONENTS)[0].descriptor];
 
-export default class ComponentReferenceHeader extends applyMixings(
-  LightningElement,
+export default class ComponentReferenceHeader extends Mix(
   MessageChannelMixin,
   NavigationMixin
 ) {
