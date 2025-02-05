@@ -55,7 +55,7 @@ const DEFAULT_LABEL = "Select";
 
 export default class Lookup extends LightningElement {
   @api actions = [];
-  @api defaultRecords = [];
+
   @api disabled = false;
   @api fieldLevelHelp = "";
   @api highlightTittleOnMatch = false;
@@ -89,6 +89,19 @@ export default class Lookup extends LightningElement {
   searchTerm = "";
   searchThrottlingTimeout;
   showHelpMessage = false;
+
+  @api
+  get defaultRecords() {
+    return this._defaultRecords;
+  }
+  set defaultRecords(value) {
+    this._defaultRecords = value;
+
+    if (this.hasInit) {
+      this.setDefaultRecords();
+      this.updateDropdownOfRecords();
+    }
+  }
 
   @api
   get label() {
@@ -129,19 +142,35 @@ export default class Lookup extends LightningElement {
       : this.selectedRecords[0]?.id;
   }
   set value(value) {
+    const currentValue = this.isMultiEntry
+      ? clone(this.value).sort().toString()
+      : this.value;
+
     let selectedIds = [];
 
-    if (this.isSingleEntry) {
+    if (this.isSingleEntry && isNotBlank(value)) {
       selectedIds = [value];
     } else if (Array.isArray(value) && value.length) {
       selectedIds = value;
     }
 
+    // unmark items not selected
+    for (const { record } of Array.from(this.records.values())) {
+      if (!selectedIds.includes(record.id)) {
+        this.upsertRecord(record.id, { selected: false });
+      }
+    }
+
+    // mark items as selected
     selectedIds
       .filter((recordId) => isNotBlank(recordId))
       .forEach((recordId) => this.upsertRecord(recordId, { selected: true }));
 
-    if (this.hasInit) {
+    // if the value trully changed then use then update via selectionHandler
+    const newValue = this.isMultiEntry
+      ? this.value.sort().toString()
+      : this.value;
+    if (this.hasInit && currentValue !== newValue) {
       this.updateValue();
     }
   }

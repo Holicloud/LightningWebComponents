@@ -7,9 +7,7 @@ import {
   removeChildren
 } from "test/utils";
 import Lookup, { KEY_INPUTS, LABELS } from "c/Lookup";
-import {
-  DEFAULT_RECORDS,
-} from "./lookup.utils.js";
+import { DEFAULT_RECORDS } from "./lookup.utils.js";
 
 import RECORDS from "./data/records.json";
 
@@ -30,7 +28,7 @@ const elementBuilder = new ElementBuilder("c-lookup", Lookup).setConfig({
 describe("c-base-lookup multi entry", () => {
   let element;
 
-  const getInput = () => getByDataId(element, 'input'),
+  const getInput = () => getByDataId(element, "input"),
     getOption = () => element.shadowRoot.querySelector("[data-record-id]"),
     getPills = () => getAllByDataId(element, "pill");
 
@@ -128,6 +126,33 @@ describe("c-base-lookup multi entry", () => {
 
     expect(getPills().length).toBe(2);
 
+    await expect(element).toBeAccessible();
+  });
+
+  it("marks only selection", async () => {
+    element = await elementBuilder.build({
+      value: [RECORDS[0].id, RECORDS[1].id]
+    });
+
+    expect(getPills().length).toBe(2);
+
+    element.value = [RECORDS[0].id];
+
+    await flushPromises();
+
+    expect(getPills().length).toBe(1);
+
+    await expect(element).toBeAccessible();
+  });
+
+  it("should call selection handler only when trully changed", async () => {
+    element = await elementBuilder.build();
+
+    element.value = [RECORDS[0].id];
+    element.value = [RECORDS[0].id];
+    element.value = [RECORDS[0].id];
+
+    expect(element.selectionHandler).toHaveBeenCalledTimes(1);
     await expect(element).toBeAccessible();
   });
 
