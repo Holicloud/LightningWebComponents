@@ -10,7 +10,7 @@ import RECORDS from "./data/records.json";
 import {
   assertListBoxIsVisible,
   assertDropdownIsNotVisible,
-  DEFAULT_RECORDS,
+  DEFAULT_RECORDS
 } from "./lookup.utils.js";
 
 jest.mock("c/lookupSubtitle");
@@ -47,6 +47,17 @@ describe("c-base-lookup single entry", () => {
     });
 
     expect(element.value).toBe("any");
+    await expect(element).toBeAccessible();
+  });
+
+  it("should trigger selection handler only when it trully changed", async () => {
+    // Create lookup
+    element = await elementBuilder.build();
+
+    element.value = RECORDS[0].id;
+    element.value = RECORDS[0].id;
+    element.value = RECORDS[0].id;
+    expect(element.selectionHandler).toHaveBeenCalledTimes(1);
     await expect(element).toBeAccessible();
   });
 

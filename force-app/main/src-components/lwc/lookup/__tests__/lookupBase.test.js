@@ -72,6 +72,21 @@ describe("c-lookup", () => {
     await isAccessible();
   });
 
+  it.each(modes)("renders default options", async (builder) => {
+    element = await builder.build({
+      defaultRecords: []
+    });
+    expect(getNoResults()).toBeTruthy();
+
+    element.defaultRecords = DEFAULT_RECORDS;
+
+    await flushPromises();
+
+    assertListBoxIsVisible(element, DEFAULT_RECORDS);
+    expect(element).not.toBeNull();
+    await isAccessible();
+  });
+
   it.each(modes)("displays the label", async (builder) => {
     element = await builder.build();
 
