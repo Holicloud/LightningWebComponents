@@ -1,3 +1,5 @@
+import { LightningElement } from "lwc";
+
 function clone(any) {
   return JSON.parse(JSON.stringify(any));
 }
@@ -10,6 +12,12 @@ const isBlank = (value) =>
 
 function isNotBlank(value) {
   return !isBlank(value);
+}
+
+function isObject(value) {
+  return (
+    typeof value === "object" && value !== null && value.constructor === Object
+  );
 }
 
 function assert(condition, message) {
@@ -37,7 +45,7 @@ function isArrayLike(input) {
   return false;
 }
 
-function applyMixings(baseClass, ...mixins) {
+function Mix(baseClass = LightningElement, ...mixins) {
   for (const mixin of mixins) {
     baseClass = mixin(baseClass);
   }
@@ -52,11 +60,7 @@ function deepMerge(base, overwrite) {
     const overwriteValue = overwrite[key];
     const baseValue = clonedBase[key];
 
-    if (
-      typeof overwriteValue === "object" &&
-      overwriteValue !== null &&
-      overwriteValue.constructor === Object
-    ) {
+    if (isObject(overwriteValue)) {
       // If both base and overwrite are objects, merge them
       clonedBase[key] = deepMerge(baseValue || {}, overwriteValue);
     } else {
@@ -68,6 +72,15 @@ function deepMerge(base, overwrite) {
   return clonedBase;
 }
 
-export { isBlank, clone, isNotBlank, assert, executeAfterRender, isArrayLike, applyMixings, deepMerge };
+export {
+  isBlank,
+  clone,
+  isNotBlank,
+  assert,
+  executeAfterRender,
+  isArrayLike,
+  Mix,
+  deepMerge
+};
 export { classSet } from "./classSet";
 export { classListMutation } from "./classListMutation";
