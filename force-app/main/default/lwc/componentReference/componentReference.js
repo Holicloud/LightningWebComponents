@@ -2,7 +2,11 @@ const GIT_HUB_START =
   "https://github.com/santiagoparradev/LWC-RECIPES-SANTIAGO/tree/main";
 const GIT_SOURCE_COMPONENTS =
   GIT_HUB_START + "/force-app/main/src-components/lwc/";
+const GIT_APEX_RELIANT_SOURCE_COMPONENTS =
+  GIT_HUB_START + "/force-app/main/src-components-with-apex/lwc/";
 const GIT_EXAMPLES = GIT_HUB_START + "/force-app-examples/main/default/lwc/";
+const GIT_APEX_RELIANT_EXAMPLES =
+  GIT_HUB_START + "/force-app-examples/main/examples-with-apex/lwc/";
 
 const TARGETS = Object.freeze({
   LIGHTNING_EXPERIENCE: "Lightning Experience",
@@ -14,7 +18,8 @@ const TARGETS = Object.freeze({
 
 export const COMPONENT_TYPES = {
   MIXIN: "Mixin",
-  COMPONENT: "Component"
+  COMPONENT: "Component",
+  APEX_RELIANT_COMPONENT: "Apex Reliant Component"
 };
 
 export const COMPONENTS = {
@@ -47,6 +52,11 @@ export const COMPONENTS = {
     type: COMPONENT_TYPES.COMPONENT,
     descriptor: "c/lookup",
     label: "Lookup"
+  },
+  C_APEX_LOOKUP: {
+    type: COMPONENT_TYPES.APEX_RELIANT_COMPONENT,
+    descriptor: "c/apexLookup",
+    label: "apexLookup"
   }
 };
 
@@ -116,6 +126,20 @@ export const EXAMPLES = {
       git: GIT_EXAMPLES + "lookupWithResults",
       constructor: () => import("c/lookupWithResults")
     }
+  ],
+  [COMPONENTS.C_APEX_LOOKUP.descriptor]: [
+    {
+      title: "apex lookup",
+      description: "this is some sample",
+      git: GIT_APEX_RELIANT_EXAMPLES + "apexLookupBasic",
+      constructor: () => import("c/apexLookupBasic")
+    },
+    {
+      title: "apex lookup multientry",
+      description: "this is some sample",
+      git: GIT_APEX_RELIANT_EXAMPLES + "apexLookupMultiEntry",
+      constructor: () => import("c/apexLookupMultiEntry")
+    }
   ]
 };
 
@@ -160,6 +184,13 @@ export const HEADER_INFO = {
     title: COMPONENTS.C_LOOKUP.label,
     description: "Its a C_LOOKUP",
     descriptor: COMPONENTS.C_LOOKUP.descriptor,
+    targets: [TARGETS.LIGHTNING_EXPERIENCE]
+  },
+  [COMPONENTS.C_APEX_LOOKUP.descriptor]: {
+    git: GIT_APEX_RELIANT_SOURCE_COMPONENTS + "apexLookup",
+    title: COMPONENTS.C_APEX_LOOKUP.label,
+    description: "Its a C_APEX_LOOKUP",
+    descriptor: COMPONENTS.C_APEX_LOOKUP.descriptor,
     targets: [TARGETS.LIGHTNING_EXPERIENCE]
   },
   [COMPONENTS.C_MESSAGE_CHANNEL_MIXIN.descriptor]: {

@@ -14,6 +14,12 @@ function isNotBlank(value) {
   return !isBlank(value);
 }
 
+function isObject(value) {
+  return (
+    typeof value === "object" && value !== null && value.constructor === Object
+  );
+}
+
 function assert(condition, message) {
   if (!condition) {
     throw new Error(message || "Assertion failed");
@@ -54,11 +60,7 @@ function deepMerge(base, overwrite) {
     const overwriteValue = overwrite[key];
     const baseValue = clonedBase[key];
 
-    if (
-      typeof overwriteValue === "object" &&
-      overwriteValue !== null &&
-      overwriteValue.constructor === Object
-    ) {
+    if (isObject(overwriteValue)) {
       // If both base and overwrite are objects, merge them
       clonedBase[key] = deepMerge(baseValue || {}, overwriteValue);
     } else {

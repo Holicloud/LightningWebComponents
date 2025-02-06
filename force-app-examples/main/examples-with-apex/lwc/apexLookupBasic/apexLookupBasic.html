@@ -1,0 +1,33 @@
+<template>
+  <c-component-example>
+    <div class="slds-form slds-form_stacked slds-var-m-around_xx-large">
+      <c-apex-lookup
+        actions={actions}
+        apex-class="AccountLookup"
+        label="SObject Search"
+        lwc:ref="lookup"
+        onaction={handleAction}
+        onchange={handleChange}
+        payload={payload}
+        required
+        value={value}
+      ></c-apex-lookup>
+
+      <div class="slds-var-m-top_large">
+        <lightning-button
+          label="Focus"
+          onclick={handleFocus}
+        ></lightning-button>
+        <lightning-button
+          label="Clear"
+          onclick={handleClear}
+        ></lightning-button>
+        <lightning-button
+          variant="brand"
+          label="Submit"
+          onclick={handleSubmit}
+        ></lightning-button>
+      </div>
+    </div>
+  </c-component-example>
+</template>

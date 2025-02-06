@@ -424,6 +424,7 @@ export default class Lookup extends LightningElement {
       newCleanSearchTerm.replace(/\?/g, "").length < this.minSearchTermLength
     ) {
       this.displayMatching = false;
+      this.updateDropdownOfRecords();
       return;
     }
 
@@ -460,7 +461,6 @@ export default class Lookup extends LightningElement {
                 );
                 if (!match) {
                   this.upsertRecord(record.id, {
-                    record: match,
                     matchesSearchTerm: false
                   });
                 }
@@ -731,9 +731,11 @@ export default class Lookup extends LightningElement {
   }
 
   processSelectionUpdate(isUserInteraction) {
-    // Reset search
-    this.cleanSearchTerm = "";
-    this.searchTerm = "";
+    if (this.isSingleEntry) {
+      this.cleanSearchTerm = "";
+      this.searchTerm = "";
+    }
+
     if (this.isSingleEntry && this.hasSelection()) {
       this.displayMatching = false;
       this.displayListBox = false;

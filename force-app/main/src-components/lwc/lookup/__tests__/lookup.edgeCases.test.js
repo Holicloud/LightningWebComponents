@@ -172,4 +172,31 @@ describe("c-lookup rendering", () => {
       await isAccessible();
     }
   );
+
+  it.each(modes)(
+    "should display default options when no searchTerm is blank",
+    async (builder) => {
+      element = await builder.build({
+        searchHandler: () => []
+      });
+
+      await flushPromises();
+
+      const searchInput = getInput();
+      searchInput.focus();
+
+      await inputSearchTerm(element, "literally Anything");
+
+      const noResultElement = getByDataId(element, "no-results");
+      expect(noResultElement?.textContent).toBe(LABELS.noResults);
+
+      await inputSearchTerm(element, "");
+
+      assertListBoxIsVisible(element, DEFAULT_RECORDS);
+      assertDropdownIsVisible(element);
+
+      expect(element).not.toBeNull();
+      await isAccessible();
+    }
+  );
 });
