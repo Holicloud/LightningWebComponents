@@ -28,6 +28,11 @@ export const COMPONENTS = {
     descriptor: "c/wizard",
     label: "Wizard"
   },
+  C_WIZARD_STEP: {
+    type: COMPONENT_TYPES.COMPONENT,
+    descriptor: "c/wizardStep",
+    label: "WizardStep"
+  },
   C_MESSAGE_CHANNEL_MIXIN: {
     type: COMPONENT_TYPES.MIXIN,
     descriptor: "c/messageChannelMixin",
@@ -72,6 +77,14 @@ export const EXAMPLES = {
       description: "validate a step and execute and action on complete",
       git: GIT_EXAMPLES + "wizardAdvance",
       constructor: () => import("c/wizardAdvance")
+    }
+  ],
+  [COMPONENTS.C_WIZARD_STEP.descriptor]: [
+    {
+      title: "Basic",
+      description: "this is some sample",
+      git: GIT_EXAMPLES + "wizardStepBasic",
+      constructor: () => import("c/wizardStepBasic")
     }
   ],
   [COMPONENTS.C_ALERT.descriptor]: [
@@ -126,6 +139,13 @@ export const HEADER_INFO = {
     title: COMPONENTS.C_WIZARD.label,
     description: "Its a wizard",
     descriptor: COMPONENTS.C_WIZARD.descriptor,
+    targets: [TARGETS.LIGHTNING_EXPERIENCE]
+  },
+  [COMPONENTS.C_WIZARD_STEP.descriptor]: {
+    git: GIT_SOURCE_COMPONENTS + "wizardStep",
+    title: COMPONENTS.C_WIZARD_STEP.label,
+    description: "Its a wizard",
+    descriptor: COMPONENTS.C_WIZARD_STEP.descriptor,
     targets: [TARGETS.LIGHTNING_EXPERIENCE]
   },
   [COMPONENTS.C_ALERT.descriptor]: {
