@@ -12,18 +12,13 @@ function clone(value) {
     : JSON.parse(JSON.stringify(value));
 }
 
-export { clone, assert, Mixer };
+function isLightningElementSubclass(base) {
+  const baseProto = base.prototype;
 
-export {
-  isBlank,
-  isNotBlank,
-  isValidDate,
-  convertToISOString
-} from "./strings";
-export { isObject, deepMerge, flattenObject } from "./objects";
-export { classSet } from "./classSet";
-export { CsvProccessor } from "./csv";
-export { classListMutation } from "./classListMutation";
+  if (typeof baseProto?.dispatchEvent !== "function") {
+    throw new TypeError(`${base} must be an Element type`);
+  }
+}
 
 class Mixer {
   base;
@@ -42,3 +37,16 @@ class Mixer {
     this.base = base;
   }
 }
+
+export { clone, assert, isLightningElementSubclass, Mixer };
+
+export {
+  isBlank,
+  isNotBlank,
+  isValidDate,
+  convertToISOString
+} from "./strings";
+export { isObject, deepMerge, flattenObject } from "./objects";
+export { classSet } from "./classSet";
+export { CsvProccessor } from "./csv";
+export { classListMutation } from "./classListMutation";
