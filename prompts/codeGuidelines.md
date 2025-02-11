@@ -13,9 +13,9 @@
 - All event handlers should start with the word handle
 - @api that have getters setters should have a corresponding private property that starts with underscore
 - jest component listeners should be tested as such
-- ideally your jest test only has a single describe if more describe are needed add them as another test files
+- ideally your jest test only has a single describe if more describe are needed add them as **another** test files
   const element = await elementBuilder.build();
-  const focusFunction = mockListener(element, "focus");
+  const focusFunction = createMockedEventListener(element, "focus");
   element.focus();
 
       expect(focusFunction).toHaveBeenCalledWith(

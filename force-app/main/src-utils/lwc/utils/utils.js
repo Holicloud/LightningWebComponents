@@ -32,6 +32,14 @@ class Mixer {
 
 export { clone, assert, Mixer };
 
+function isLightningElementSubclass(base) {
+  const baseProto = base.prototype;
+
+  if (typeof baseProto?.dispatchEvent !== "function") {
+    throw new TypeError(`${base} must be an Element type`);
+  }
+}
+
 export {
   isBlank,
   isNotBlank,
