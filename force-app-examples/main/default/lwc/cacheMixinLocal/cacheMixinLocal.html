@@ -1,0 +1,72 @@
+<template>
+  <lightning-card title="CacheMixin (Local Storage)" icon-name="utility:save">
+    <div slot="actions">
+      <lightning-badge
+        label={statusLabel}
+        variant="info"
+        class="slds-m-right_small"
+      ></lightning-badge>
+      <lightning-button
+        label="Clear Local Storage"
+        variant="destructive-text"
+        onclick={handleClear}
+      ></lightning-button>
+    </div>
+
+    <div class="slds-p-around_medium">
+      <div class="slds-m-bottom_medium slds-box slds-theme_shade">
+        <h3 class="slds-text-heading_small slds-m-bottom_small">
+          Configuration
+        </h3>
+        <lightning-input
+          type="toggle"
+          label="Persist state on navigation?"
+          name="isCacheEnabled"
+          checked={isCacheEnabled}
+          message-toggle-active="On"
+          message-toggle-inactive="Off"
+          onchange={handleToggleCache}
+        ></lightning-input>
+        <p class="slds-text-body_small slds-m-top_small">
+          Data in this component survives <b>tab closing</b> and
+          <b>browser restarts</b> because it uses <code>localStorage</code>.
+        </p>
+      </div>
+
+      <lightning-combobox
+        name="priority"
+        label="Priority Level"
+        value={priority}
+        options={options}
+        onchange={handleInputChange}
+        class="slds-m-bottom_small"
+      ></lightning-combobox>
+
+      <lightning-textarea
+        name="notes"
+        label="Draft Notes"
+        value={notes}
+        onchange={handleInputChange}
+        placeholder="Your draft will be saved locally..."
+        rows="4"
+      ></lightning-textarea>
+
+      <div class="slds-m-top_large">
+        <h3 class="slds-text-heading_small slds-m-bottom_small">History</h3>
+        <div
+          class="slds-scrollable_y"
+          style="
+            height: 80px;
+            border: 1px solid #dddbda;
+            border-radius: 4px;
+            padding: 8px;
+          "
+        >
+          <template for:each={logs} for:item="log">
+            <p key={log.id} class="slds-text-body_small">{log.text}</p>
+          </template>
+        </div>
+      </div>
+    </div>
+  </lightning-card>
+</template>
