@@ -69,6 +69,14 @@ function deepMerge(base, overwrite) {
   return clonedBase;
 }
 
+function isLightningElementSubclass(base) {
+  const baseProto = base.prototype;
+
+  if (typeof baseProto?.dispatchEvent !== "function") {
+    throw new TypeError(`${base} must be an Element type`);
+  }
+}
+
 export {
   isBlank,
   clone,
@@ -77,7 +85,8 @@ export {
   executeAfterRender,
   Mixer,
   deepMerge,
-  isObject
+  isObject,
+  isLightningElementSubclass
 };
 export { classSet } from "./classSet";
 export { classListMutation } from "./classListMutation";
