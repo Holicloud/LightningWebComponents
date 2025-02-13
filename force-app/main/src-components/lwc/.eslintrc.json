@@ -15,7 +15,6 @@
       }
     }
   ],
-  "plugins": ["sort-keys"],
   "rules": {
     "prefer-const": ["error"],
     "object-curly-spacing": ["error", "always"],

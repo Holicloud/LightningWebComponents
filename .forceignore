@@ -10,3 +10,5 @@ package.xml
 
 # LWC Jest
 **/__tests__/**
+force-app/main/src-datatable-sample
+force-app/main/src-sobject-datatable

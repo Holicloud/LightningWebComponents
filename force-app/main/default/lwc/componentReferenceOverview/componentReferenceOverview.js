@@ -1,10 +1,10 @@
 import { COMPONENTS, EXAMPLES } from "c/componentReference";
 import componentReference from "@salesforce/messageChannel/ComponentReference__c";
 import { MessageChannelMixin } from "c/messageChannelMixin";
-import { Mix } from "c/utils";
+import { Mixer } from "c/utils";
 import { NavigationMixin } from "lightning/navigation";
 
-export default class ComponentReferenceOverview extends Mix(
+export default class ComponentReferenceOverview extends new Mixer().mix(
   MessageChannelMixin,
   NavigationMixin
 ) {

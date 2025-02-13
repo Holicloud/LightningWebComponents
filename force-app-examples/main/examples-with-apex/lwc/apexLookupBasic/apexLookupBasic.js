@@ -1,8 +1,8 @@
-import { Mix } from "c/utils";
+import { Mixer } from "c/utils";
 import { NavigationMixin } from "lightning/navigation";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 
-export default class ApexLookupBasic extends Mix(NavigationMixin) {
+export default class ApexLookupBasic extends new Mixer().mix(NavigationMixin) {
   isMultiEntry = true;
   maxSelectionSize = 2;
   value;
