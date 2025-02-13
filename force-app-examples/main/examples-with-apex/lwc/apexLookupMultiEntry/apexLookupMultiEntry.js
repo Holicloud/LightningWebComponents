@@ -1,8 +1,10 @@
-import { Mix } from "c/utils";
+import { Mixer } from "c/utils";
 import { NavigationMixin } from "lightning/navigation";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 
-export default class ApexLookupMultiEntry extends Mix(NavigationMixin) {
+export default class ApexLookupMultiEntry extends new Mixer().mix(
+  NavigationMixin
+) {
   value;
   payload = { accountName: "Edge Communications" };
   actions = [{ name: "newAccountAction", label: "New Account" }];
