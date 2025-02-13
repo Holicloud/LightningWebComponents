@@ -31,25 +31,22 @@ function executeAfterRender(callback) {
   setTimeout(callback, 0);
 }
 
-function isArrayLike(input) {
-  if (Array.isArray(input)) {
-    return true;
+class Mixer {
+  base;
+
+  constructor(base = LightningElement) {
+    this.base = base;
   }
 
-  if (typeof input === "object" && input !== null) {
-    // Check if all keys are numeric and in sequence
-    const keys = Object.keys(input);
-    return keys.every((key, index) => Number(key) === index);
+  mix(...mixins) {
+    return mixins.reduce((cls, mixin) => {
+      if (mixin instanceof Array) {
+        const [mixinFn, params] = mixin;
+        return mixinFn(cls, params);
+      }
+      return mixin(cls);
+    }, this.base);
   }
-
-  return false;
-}
-
-function Mix(baseClass = LightningElement, ...mixins) {
-  for (const mixin of mixins) {
-    baseClass = mixin(baseClass);
-  }
-  return baseClass;
 }
 
 function deepMerge(base, overwrite) {
@@ -78,9 +75,9 @@ export {
   isNotBlank,
   assert,
   executeAfterRender,
-  isArrayLike,
-  Mix,
-  deepMerge
+  Mixer,
+  deepMerge,
+  isObject
 };
 export { classSet } from "./classSet";
 export { classListMutation } from "./classListMutation";

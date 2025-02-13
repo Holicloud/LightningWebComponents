@@ -2,11 +2,11 @@ import { HEADER_INFO, COMPONENTS } from "c/componentReference";
 import componentReference from "@salesforce/messageChannel/ComponentReference__c";
 import { MessageChannelMixin } from "c/messageChannelMixin";
 import { NavigationMixin } from "lightning/navigation";
-import { Mix } from "c/utils";
+import { Mixer } from "c/utils";
 
 export const BASE_INFO = HEADER_INFO[Object.values(COMPONENTS)[0].descriptor];
 
-export default class ComponentReferenceHeader extends Mix(
+export default class ComponentReferenceHeader extends new Mixer().mix(
   MessageChannelMixin,
   NavigationMixin
 ) {
