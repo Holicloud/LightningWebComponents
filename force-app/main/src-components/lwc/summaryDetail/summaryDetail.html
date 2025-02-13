@@ -1,0 +1,39 @@
+<template>
+  <div data-id="summary-class" class={summaryClasses}>
+    <button
+      lwc:if={isCollapsible}
+      aria-controls="expando-unique-id"
+      aria-expanded={isExpanded}
+      class="slds-button slds-button_icon slds-m-right_x-small"
+      title="Toggle details for Summary Title"
+      data-id="toggle"
+      onclick={handleToggle}
+    >
+      <lightning-icon
+        size="x-small"
+        class="slds-button__icon slds-summary-detail__action-icon"
+        icon-name="utility:switch"
+        alternative-text="Switch"
+      ></lightning-icon>
+      <span class="slds-assistive-text">Summary Title</span>
+    </button>
+    <div>
+      <div class="slds-summary-detail__title">
+        <div class="slds-grid" lwc:if={title}>
+          <h3
+            class="slds-text-heading_small slds-truncate slds-p-right_small"
+            title={title}
+          >
+            {title}
+          </h3>
+        </div>
+        <div lwc:else>
+          <slot name ="title"></slot>
+        </div>
+      </div>
+      <div class="slds-summary-detail__content" id="expando-unique-id">
+        <slot></slot>
+      </div>
+    </div>
+  </div>
+</template>
