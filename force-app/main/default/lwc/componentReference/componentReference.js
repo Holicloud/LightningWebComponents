@@ -57,6 +57,11 @@ export const COMPONENTS = {
     type: COMPONENT_TYPES.APEX_RELIANT_COMPONENT,
     descriptor: "c/apexLookup",
     label: "apexLookup"
+  },
+  C_SUMMARY_DETAIL: {
+    type: COMPONENT_TYPES.COMPONENT,
+    descriptor: "c/summaryDetail",
+    label: "Summary Detail"
   }
 };
 
@@ -139,6 +144,14 @@ export const EXAMPLES = {
       description: "this is some sample",
       git: GIT_APEX_RELIANT_EXAMPLES + "apexLookupMultiEntry",
       constructor: () => import("c/apexLookupMultiEntry")
+    }
+  ],
+  [COMPONENTS.C_SUMMARY_DETAIL.descriptor]: [
+    {
+      title: "Basic",
+      description: "this is some sample",
+      git: GIT_EXAMPLES + "summaryDetailBasic",
+      constructor: () => import("c/summaryDetailBasic")
     }
   ]
 };
