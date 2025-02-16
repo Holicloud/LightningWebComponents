@@ -1,0 +1,42 @@
+<template>
+  <lightning-layout multiple-rows="true" horizontal-align="spread">
+    <lightning-layout-item flexibility="auto">
+      <lightning-combobox
+        label="Size"
+        value={size}
+        options={sizes}
+        onchange={handleSizeChange}
+      ></lightning-combobox>
+    </lightning-layout-item>
+
+    <lightning-layout-item flexibility="auto">
+      <lightning-combobox
+        label="Variant"
+        value={variant}
+        options={variants}
+        onchange={handleVariantChange}
+      ></lightning-combobox>
+    </lightning-layout-item>
+
+    <lightning-layout-item flexibility="auto">
+      <lightning-input
+        type="checkbox"
+        label="Hide Illustration"
+        checked={hideIllustration}
+        onchange={handleIllustrationChange}
+      ></lightning-input>
+    </lightning-layout-item>
+  </lightning-layout>
+
+  <c-illustration
+    hide-illustration={hideIllustration}
+    size={size}
+    variant={variant}
+    title="Lorem ipsum dolor"
+  >
+    <p>
+      Lorem ipsum dolor sit amet, consectetur
+      <a href="#" class="slds-truncate" title="Learn More">Learn More</a>
+    </p>
+  </c-illustration>
+</template>
