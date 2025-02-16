@@ -1,5 +1,10 @@
 import { LightningElement, api } from "lwc";
-import { ElementBuilder, removeChildren, appendChild, removeChild } from "test/utils";
+import {
+  ElementBuilder,
+  removeChildren,
+  appendChild,
+  removeChild
+} from "test/utils";
 import {
   publish,
   subscribe,

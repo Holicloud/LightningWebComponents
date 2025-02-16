@@ -14,19 +14,18 @@
 - @api that have getters setters should have a corresponding private property that starts with underscore
 - jest component listeners should be tested as such
 - ideally your jest test only has a single describe if more describe are needed add them as another test files
-const element = await elementBuilder.build();
-const focusFunction = mockListener(element, "focus");
-element.focus();
+  const element = await elementBuilder.build();
+  const focusFunction = mockListener(element, "focus");
+  element.focus();
 
-    expect(focusFunction).toHaveBeenCalledWith(
-      expect.objectContaining({
-        detail: {
-          value: [DEFAULT_RECORDS[0].id],
-          info: [DEFAULT_RECORDS[0]]
-        }
-      })
-    );
-
+      expect(focusFunction).toHaveBeenCalledWith(
+        expect.objectContaining({
+          detail: {
+            value: [DEFAULT_RECORDS[0].id],
+            info: [DEFAULT_RECORDS[0]]
+          }
+        })
+      );
 
 - for testing on disconnectedCallback use removeFromDOM
 - Refactor the test file to use ElementBuilder for creating the wizard component.

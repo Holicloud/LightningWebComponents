@@ -5,15 +5,15 @@
   <c-component-example title="Disabled">
     <c-lookup label="Account" disabled></c-lookup>
   </c-component-example>
-  
+
   <c-component-example title="With fieldLevelHelp">
     <c-lookup label="Account" field-level-help="Hello World"></c-lookup>
   </c-component-example>
-  
+
   <c-component-example title="Required">
     <c-lookup label="Account" required></c-lookup>
   </c-component-example>
-  
+
   <c-component-example title="With Message when value missing">
     <c-lookup
       label="Account"
@@ -21,27 +21,29 @@
       required
     ></c-lookup>
   </c-component-example>
-  
+
   <c-component-example title="With Placeholder">
     <c-lookup label="Account" placeholder="Hello World"></c-lookup>
   </c-component-example>
-  
-  <c-component-example title="With min search term length (type at least 5 characters)">
+
+  <c-component-example
+    title="With min search term length (type at least 5 characters)"
+  >
     <c-lookup label="Account" min-search-term-length="5"></c-lookup>
   </c-component-example>
-  
+
   <c-component-example title="Variant label-stacked">
     <c-lookup label="Account" variant="label-stacked"></c-lookup>
   </c-component-example>
-  
+
   <c-component-example title="Variant label-inline">
     <c-lookup label="Account" variant="label-inline"></c-lookup>
   </c-component-example>
-  
+
   <c-component-example title="Variant label-hidden">
     <c-lookup label="Account" variant="label-hidden"></c-lookup>
   </c-component-example>
-  
+
   <c-component-example title="With actions">
     <p>select an action</p>
     <c-lookup
@@ -50,5 +52,5 @@
       onaction={handleAction}
     ></c-lookup>
     <p>action selected: {actionClicked}</p>
-  </c-component-example>  
+  </c-component-example>
 </template>
