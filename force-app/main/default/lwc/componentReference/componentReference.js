@@ -62,6 +62,11 @@ export const COMPONENTS = {
     type: COMPONENT_TYPES.COMPONENT,
     descriptor: "c/summaryDetail",
     label: "Summary Detail"
+  },
+  C_ILLUSTRATION: {
+    type: COMPONENT_TYPES.COMPONENT,
+    descriptor: "c/illustration",
+    label: "illustration"
   }
 };
 
@@ -153,6 +158,20 @@ export const EXAMPLES = {
       git: GIT_EXAMPLES + "summaryDetailBasic",
       constructor: () => import("c/summaryDetailBasic")
     }
+  ],
+  [COMPONENTS.C_ILLUSTRATION.descriptor]: [
+    {
+      title: "Basic",
+      description: "",
+      git: GIT_APEX_RELIANT_EXAMPLES + "illustrationBasic",
+      constructor: () => import("c/illustrationBasic")
+    },
+    {
+      title: "With custom title and colors",
+      description: "custom title and colors",
+      git: GIT_APEX_RELIANT_EXAMPLES + "illustrationAdvanced",
+      constructor: () => import("c/illustrationAdvanced")
+    }
   ]
 };
 
@@ -211,6 +230,14 @@ export const HEADER_INFO = {
     title: COMPONENTS.C_MESSAGE_CHANNEL_MIXIN.label,
     description: "Message channel mixing descriptions",
     descriptor: COMPONENTS.C_MESSAGE_CHANNEL_MIXIN.descriptor,
+    targets: [TARGETS.LIGHTNING_EXPERIENCE]
+  },
+  [COMPONENTS.C_ILLUSTRATION.descriptor]: {
+    git: GIT_SOURCE_COMPONENTS + "illustration",
+    title: COMPONENTS.C_ILLUSTRATION.label,
+    description:
+      "Illustrations should be used within other components, such as cards, to express the state of the component. An illustration image must be accompanied with heading text inline.",
+    descriptor: COMPONENTS.C_ILLUSTRATION.descriptor,
     targets: [TARGETS.LIGHTNING_EXPERIENCE]
   }
 };
