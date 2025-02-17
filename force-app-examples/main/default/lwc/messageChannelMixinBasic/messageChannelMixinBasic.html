@@ -1,32 +1,29 @@
 <template>
   <c-component-example title="Basic Example">
-    <lightning-input 
-      type="text"
-      label="Enter some text"
-    ></lightning-input>
+    <lightning-input type="text" label="Enter some text"></lightning-input>
 
     <lightning-layout class="slds-m-top_medium">
       <lightning-layout-item size="4">
-        <lightning-button 
+        <lightning-button
           variant="success"
-          label="Subscribe" 
-          onclick={handleSubscribe} 
+          label="Subscribe"
+          onclick={handleSubscribe}
         ></lightning-button>
       </lightning-layout-item>
 
       <lightning-layout-item size="4">
-        <lightning-button 
+        <lightning-button
           variant="destructive"
-          label="Unsubscribe" 
-          onclick={handleUnsubscribe} 
+          label="Unsubscribe"
+          onclick={handleUnsubscribe}
         ></lightning-button>
       </lightning-layout-item>
 
       <lightning-layout-item size="4">
-        <lightning-button 
+        <lightning-button
           variant="brand"
-          label="Publish" 
-          onclick={handlePublishMessage} 
+          label="Publish"
+          onclick={handlePublishMessage}
         ></lightning-button>
       </lightning-layout-item>
     </lightning-layout>
@@ -34,4 +31,3 @@
     <p>Value from message channel: {message}</p>
   </c-component-example>
 </template>
-

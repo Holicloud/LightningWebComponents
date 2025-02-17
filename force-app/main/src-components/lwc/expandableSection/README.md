@@ -2,11 +2,11 @@
 
 ## Properties
 
-| **Property**       | **Type**         | **Description**                                                                                              |
-| ------------------ | ---------------- | ------------------------------------------------------------------------------------------------------------ |
-| `@api title`       | `String`         | The title displayed in the header of the section.                                                           |
-| `@api isCollapsed` | `Boolean`        | Controls the collapsed state of the section. Defaults to `false`. If `true`, the section is collapsed.       |
-| `@api isNonCollapsible` | `Boolean`        | If `true`, the section is always expanded and cannot be collapsed. Defaults to `false`.                     |
+| **Property**            | **Type**  | **Description**                                                                                        |
+| ----------------------- | --------- | ------------------------------------------------------------------------------------------------------ |
+| `@api title`            | `String`  | The title displayed in the header of the section.                                                      |
+| `@api isCollapsed`      | `Boolean` | Controls the collapsed state of the section. Defaults to `false`. If `true`, the section is collapsed. |
+| `@api isNonCollapsible` | `Boolean` | If `true`, the section is always expanded and cannot be collapsed. Defaults to `false`.                |
 
 ## Example Usage
 

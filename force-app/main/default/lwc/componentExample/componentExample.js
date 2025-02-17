@@ -1,10 +1,10 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement, api } from "lwc";
 import { classSet } from "c/utils";
 
-const INVERSE_VARIANT = 'inverse';
+const INVERSE_VARIANT = "inverse";
 
 export default class ComponentExample extends LightningElement {
-  @api title = 'Example title';
+  @api title = "Example title";
   @api variant;
 
   get bodyClasses() {
