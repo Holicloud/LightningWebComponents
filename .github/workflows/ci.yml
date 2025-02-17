@@ -10,6 +10,14 @@ on:
 
 # Jobs to be executed
 jobs:
+  skip-ci:
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Noop
+        run: |
+          echo "Skipping CI run for automated PRs."
+
   deploy-to-org:
     runs-on: ubuntu-latest
     if: github.actor != 'dependabot[bot]'

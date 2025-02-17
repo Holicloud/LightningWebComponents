@@ -11,7 +11,7 @@ on:
 jobs:
   # Dummy job used to skip CI run on automated PRs
   skip-ci:
-    if: github.actor == 'trailheadapps-bot'
+    if: github.actor == 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Noop
@@ -20,7 +20,7 @@ jobs:
 
   # Formatting and linting only runs on human-submitted PRs
   format-lint-lwc-tests:
-    if: github.actor != 'trailheadapps-bot'
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       # Checkout the source code
