@@ -199,6 +199,13 @@ export const HEADER_INFO = {
     descriptor: COMPONENTS.C_LOOKUP.descriptor,
     targets: [TARGETS.LIGHTNING_EXPERIENCE]
   },
+  [COMPONENTS.C_SUMMARY_DETAIL.descriptor]: {
+    git: GIT_SOURCE_COMPONENTS + "summaryDetail",
+    title: COMPONENTS.C_SUMMARY_DETAIL.label,
+    description: "Use Summary Detail to show and hide details",
+    descriptor: COMPONENTS.C_SUMMARY_DETAIL.descriptor,
+    targets: [TARGETS.LIGHTNING_EXPERIENCE]
+  },
   [COMPONENTS.C_APEX_LOOKUP.descriptor]: {
     git: GIT_APEX_RELIANT_SOURCE_COMPONENTS + "apexLookup",
     title: COMPONENTS.C_APEX_LOOKUP.label,
