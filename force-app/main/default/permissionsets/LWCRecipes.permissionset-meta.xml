@@ -6,25 +6,4 @@
     </applicationVisibilities>
     <hasActivationRequired>false</hasActivationRequired>
     <label>LWCRecipes</label>
-    <objectPermissions>
-        <allowCreate>true</allowCreate>
-        <allowDelete>true</allowDelete>
-        <allowEdit>true</allowEdit>
-        <allowRead>true</allowRead>
-        <modifyAllRecords>true</modifyAllRecords>
-        <object>Custom__c</object>
-        <viewAllRecords>true</viewAllRecords>
-    </objectPermissions>
-    <tabSettings>
-        <tab>CustomLookup</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
-        <tab>datatable</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
-        <tab>Custom__c</tab>
-        <visibility>Visible</visibility>
-    </tabSettings>
 </PermissionSet>
