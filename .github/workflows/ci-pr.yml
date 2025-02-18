@@ -20,7 +20,6 @@ jobs:
 
   # Formatting and linting only runs on human-submitted PRs
   format-lint-lwc-tests:
-    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       # Checkout the source code
