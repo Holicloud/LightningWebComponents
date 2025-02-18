@@ -20,9 +20,6 @@
     <label>LWCRecipes</label>
     <navType>Standard</navType>
     <tabs>standard-home</tabs>
-    <tabs>CustomLookup</tabs>
-    <tabs>datatable</tabs>
-    <tabs>Custom__c</tabs>
     <uiType>Lightning</uiType>
     <utilityBar>LWCRecipes_UtilityBar</utilityBar>
 </CustomApplication>
