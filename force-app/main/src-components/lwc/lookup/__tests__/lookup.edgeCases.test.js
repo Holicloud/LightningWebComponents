@@ -4,7 +4,7 @@ import {
   getByDataId,
   removeChildren
 } from "test/utils";
-import Lookup, { KEY_INPUTS, LABELS } from "c/Lookup";
+import Lookup, { KEY_INPUTS, LABELS } from "c/lookup";
 import RECORDS from "./data/records.json";
 import {
   assertDropdownIsNotVisible,

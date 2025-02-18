@@ -6,7 +6,7 @@ import {
   getByDataId,
   removeChildren
 } from "test/utils";
-import Lookup, { KEY_INPUTS, LABELS } from "c/Lookup";
+import Lookup, { KEY_INPUTS, LABELS } from "c/lookup";
 import { DEFAULT_RECORDS } from "./lookup.utils.js";
 
 import RECORDS from "./data/records.json";

@@ -91,7 +91,6 @@ export default class ComponentReferenceList extends LightningElement {
 
   // - hooks such as connectedCallback, renderedCallback, errorCallback, etc...
 
-
   renderedCallback() {
     console.log("rendered");
   }

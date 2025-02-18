@@ -50,13 +50,12 @@ describe("c-summary-detail", () => {
 
     let summaryClassAttribute = getSummaryClassAttribute();
     expect(summaryClassAttribute).toContain("slds-is-open");
-    
+
     element.isCollapsed = true;
     await flushPromises();
 
     summaryClassAttribute = getSummaryClassAttribute();
     expect(summaryClassAttribute).not.toContain("slds-is-open");
     await expect(element).toBeAccessible();
-    
   });
 });

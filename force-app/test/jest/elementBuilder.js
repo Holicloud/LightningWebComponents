@@ -23,7 +23,11 @@ export default class ElementBuilder {
   }
 
   setConfig(config = {}) {
-    return new ElementBuilder(this.descriptor, this.componentReference, deepMerge(this.config, config));
+    return new ElementBuilder(
+      this.descriptor,
+      this.componentReference,
+      deepMerge(this.config, config)
+    );
   }
 
   async build(overwrite = {}) {

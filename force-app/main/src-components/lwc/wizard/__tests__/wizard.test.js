@@ -17,8 +17,7 @@ describe("c-wizard", () => {
   const getErrorMessage = () => getByDataId(element, "error-message"),
     getHeader = () => getByDataId(element, "header"),
     getProgressIndicator = () => getByDataId(element, "progress-indicator"),
-    getStepSlot = () =>
-      element.shadowRoot.querySelector("slot:not([name])");
+    getStepSlot = () => element.shadowRoot.querySelector("slot:not([name])");
 
   async function testVariant(variant) {
     element.variant = variant;

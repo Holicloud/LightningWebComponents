@@ -4,8 +4,13 @@ import { MessageChannelMixin } from "c/messageChannelMixin";
 import componentReferenceChannel from "@salesforce/messageChannel/ComponentReference__c";
 const sections = Object.freeze(
   Object.values(COMPONENTS).reduce((acc, component) => {
-    const group = acc.find((g) => g.label === component.type) || acc[acc.push({ label: component.type, items: [] }) - 1];
-    group.items.push({ label: component.descriptor, name: component.descriptor });
+    const group =
+      acc.find((g) => g.label === component.type) ||
+      acc[acc.push({ label: component.type, items: [] }) - 1];
+    group.items.push({
+      label: component.descriptor,
+      name: component.descriptor
+    });
     return acc;
   }, [])
 );

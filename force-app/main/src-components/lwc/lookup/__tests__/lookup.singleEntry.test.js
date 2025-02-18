@@ -5,7 +5,7 @@ import {
   flushPromises,
   createMockedEventListener
 } from "test/utils";
-import Lookup, { KEY_INPUTS } from "c/Lookup";
+import Lookup, { KEY_INPUTS } from "c/lookup";
 import RECORDS from "./data/records.json";
 import {
   assertListBoxIsVisible,

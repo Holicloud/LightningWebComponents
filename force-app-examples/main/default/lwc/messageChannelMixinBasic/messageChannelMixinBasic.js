@@ -1,8 +1,10 @@
-import { LightningElement } from 'lwc';
+import { LightningElement } from "lwc";
 import { MessageChannelMixin } from "c/messageChannelMixin";
 import channel from "@salesforce/messageChannel/PrimaryMessageChannel__c";
 
-export default class MessageChannelMixinBasic extends MessageChannelMixin(LightningElement) {
+export default class MessageChannelMixinBasic extends MessageChannelMixin(
+  LightningElement
+) {
   message = "";
 
   connectedCallback() {
@@ -31,7 +33,7 @@ export default class MessageChannelMixinBasic extends MessageChannelMixin(Lightn
     this[MessageChannelMixin.Publish]({
       channel: channel,
       payload: {
-        value: this.template.querySelector('lightning-input').value
+        value: this.template.querySelector("lightning-input").value
       }
     });
   }

@@ -5,7 +5,7 @@ import {
   getByDataId,
   createMockedEventListener
 } from "test/utils";
-import Lookup, { VARIANTS, LABELS, SCROLL_AFTER_N, KEY_INPUTS } from "c/Lookup";
+import Lookup, { VARIANTS, LABELS, SCROLL_AFTER_N, KEY_INPUTS } from "c/lookup";
 import RECORDS from "./data/records.json";
 import {
   inputSearchTerm,
