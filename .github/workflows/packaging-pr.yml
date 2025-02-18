@@ -14,7 +14,7 @@ env:
 # Jobs to be executed
 jobs:
   packaging:
-    runs-on: trailheadapps-Ubuntu
+    runs-on: ubuntu-latest
     steps:
       # Install Salesforce CLI
       - name: "Install Salesforce CLI"
