@@ -7,9 +7,7 @@ import {
   ElementBuilder,
   flushPromises,
   getByDataId,
-  removeChildren,
-  appendChild,
-  removeChild
+  removeChildren
 } from "test/utils";
 const elementBuilder = new ElementBuilder(
   "c-wizard-step",
@@ -39,7 +37,7 @@ describe("c-wizard-step", () => {
       label: "First step"
     });
     const dispatchEventSpy = jest.spyOn(element, "dispatchEvent");
-    appendChild(element);
+    document.body.appendChild(element);
 
     expect(dispatchEventSpy).toHaveBeenCalledTimes(1);
     const event = dispatchEventSpy.mock.calls[0][0];
@@ -67,7 +65,7 @@ describe("c-wizard-step", () => {
       label: "First step"
     });
     const dispatchEventSpy = jest.spyOn(element, "dispatchEvent");
-    appendChild(element);
+    document.body.appendChild(element);
 
     const event = dispatchEventSpy.mock.calls[0][0];
     event.detail.methods.config(configMock);
@@ -103,14 +101,14 @@ describe("c-wizard-step", () => {
       label: "First step"
     });
     const dispatchEventSpy = jest.spyOn(element, "dispatchEvent");
-    appendChild(element);
+    document.body.appendChild(element);
 
     const event = dispatchEventSpy.mock.calls[0][0];
     event.detail.methods.config(configMock);
 
     await flushPromises();
 
-    removeChild(element);
+    document.body.removeChild(element);
 
     expect(dispatchEventSpy).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -128,7 +126,7 @@ describe("c-wizard-step", () => {
       hideNextButton: true
     });
     const dispatchEventSpy = jest.spyOn(element, "dispatchEvent");
-    appendChild(element);
+    document.body.appendChild(element);
 
     const event = dispatchEventSpy.mock.calls[0][0];
     event.detail.methods.config(configMock);
@@ -148,7 +146,7 @@ describe("c-wizard-step", () => {
       isActive: false
     });
     const dispatchEventSpy = jest.spyOn(element, "dispatchEvent");
-    appendChild(element);
+    document.body.appendChild(element);
 
     const event = dispatchEventSpy.mock.calls[0][0];
     event.detail.methods.config(configMock);
