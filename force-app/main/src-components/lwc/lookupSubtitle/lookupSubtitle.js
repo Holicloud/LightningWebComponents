@@ -1,6 +1,5 @@
 import { LightningElement, api } from "lwc";
-
-export const COMPONENTS = {
+const COMPONENTS = {
   "lightning/formattedPhone": {
     builder: () => import("lightning/formattedPhone")
   },
@@ -51,13 +50,8 @@ export default class LookupSubtitle extends LightningElement {
 
   async connectedCallback() {
     if (COMPONENTS[this.type]) {
-      try {
-        const { default: ComponentCtor } =
-          await COMPONENTS[this.type].builder();
-        this.component = ComponentCtor;
-      } catch (error) {
-        console.error(`Error loading component for type ${this.type}:`, error);
-      }
+      const { default: ComponentCtor } = await COMPONENTS[this.type].builder();
+      this.component = ComponentCtor;
     } else {
       const { default: ComponentCtor } = await import(this.type);
       this.component = ComponentCtor;
@@ -65,7 +59,7 @@ export default class LookupSubtitle extends LightningElement {
   }
 
   get componentProps() {
-    const baseProps = COMPONENTS[this.type].baseProps || {};
+    const baseProps = COMPONENTS[this.type]?.baseProps || {};
     return {
       ...baseProps,
       ...this.props

@@ -4,7 +4,7 @@ import { MessageChannelMixin } from "c/messageChannelMixin";
 import { NavigationMixin } from "lightning/navigation";
 import { Mixer } from "c/utils";
 
-export const BASE_INFO = HEADER_INFO[Object.values(COMPONENTS)[0].descriptor];
+const BASE_INFO = HEADER_INFO[Object.values(COMPONENTS)[0].descriptor];
 
 export default class ComponentReferenceHeader extends new Mixer().mix(
   MessageChannelMixin,

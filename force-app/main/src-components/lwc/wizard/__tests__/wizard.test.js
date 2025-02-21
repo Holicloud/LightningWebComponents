@@ -5,6 +5,8 @@ import {
   flushPromises,
   getByDataId,
   removeChildren,
+  suppressLwcDomWarnings,
+  restoreLwcDomWarnings,
   createMockedEventListener
 } from "test/utils";
 
@@ -170,8 +172,9 @@ describe("c-wizard", () => {
       secondStepElement = await stepBuilder.build(secondStep);
 
     await flushPromises();
-
+    suppressLwcDomWarnings();
     wizardSlot.removeChild(firstStepElement);
+    restoreLwcDomWarnings();
     wizardSlot.dispatchEvent(
       new CustomEvent("unregister", { detail: firstStep.name })
     );

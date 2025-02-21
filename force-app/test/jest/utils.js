@@ -24,14 +24,6 @@ function removeChildren(root = document.body) {
   }
 }
 
-function appendChild(element, root = document.body) {
-  root.appendChild(element);
-}
-
-function removeChild(element, root = document.body) {
-  root.removeChild(element);
-}
-
 function createMockedEventListener(
   element,
   eventName,
@@ -57,13 +49,11 @@ const restoreLwcDomWarnings = () => {
 };
 
 export {
-  appendChild,
   createMockedEventListener,
   ElementBuilder,
   flushPromises,
   getAllByDataId,
   getByDataId,
-  removeChild,
   removeChildren,
   restoreLwcDomWarnings,
   suppressLwcDomWarnings

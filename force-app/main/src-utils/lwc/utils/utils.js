@@ -1,7 +1,9 @@
 import { LightningElement } from "lwc";
 
 function clone(any) {
-  return JSON.parse(JSON.stringify(any));
+  return window.structuredClone
+    ? window.structuredClone(any)
+    : JSON.parse(JSON.stringify(any));
 }
 
 const isBlank = (value) =>
