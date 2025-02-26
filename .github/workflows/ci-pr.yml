@@ -36,6 +36,9 @@ jobs:
       # Checkout the source code
       - name: "Checkout source code"
         uses: actions/checkout@v4
+        with:
+          path: dev
+          fetch-depth: 0
 
       # Install Volta to enforce proper node and package manager versions
       - name: "Install Volta"
@@ -116,25 +119,28 @@ jobs:
   scratch-org-test:
     runs-on: ubuntu-latest
     needs: format-lint-lwc-tests
+    permissions:
+      pull-requests: write
     if: github.actor != 'dependabot[bot]'
     steps:
       # Checkout the source code
       - name: "Checkout source code"
         uses: actions/checkout@v4
+        with:
+          path: dev
+          fetch-depth: 0
 
       # Run PMD scan
-      - name: "Run PMD scan"
-        uses: pmd/pmd-github-action@v2.0.0
-        id: pmd
-        with:
-          version: "6.55.0"
-          sourcePath: "force-app"
-          rulesets: "ruleset.xml"
+      - name: Install PMD
+        run: |
+          cd dev
+          wget https://github.com/pmd/pmd/releases/download/pmd_releases%2F7.0.0/pmd-dist-7.0.0-bin.zip
+          unzip pmd-dist-7.0.0-bin.zip
 
-      # Check for PMD violations
-      - name: "Check for PMD violations"
-        if: steps.pmd.outputs.violations != 0
-        run: exit 1
+      - name: Validate with PMD
+        run: |
+          cd dev
+          PMD_APEX_ROOT_DIRECTORY=$(pwd) ./pmd-bin-7.0.0/bin/pmd check -R .pmd/rulesets/apex.xml --no-cache --minimum-priority 3 --dir force-app,force-app-examples --no-progress
 
       # Install Salesforce CLI
       - name: "Install Salesforce CLI"

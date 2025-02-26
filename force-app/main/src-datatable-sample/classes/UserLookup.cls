@@ -10,7 +10,7 @@ public with sharing class UserLookup implements LookupResult.ILookupResult {
     List<LookupResult> result = new List<LookupResult>();
 
     List<User> users = [
-      SELECT Name, Profile.Name
+      SELECT Name, Profile.Name, Profile.Id
       FROM User
       WHERE Id IN :selectedIds
       LIMIT 1
