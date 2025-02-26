@@ -1,5 +1,5 @@
 import { LightningElement, api } from "lwc";
-const COMPONENTS = {
+export const COMPONENTS = {
   "lightning/formattedPhone": {
     builder: () => import("lightning/formattedPhone")
   },

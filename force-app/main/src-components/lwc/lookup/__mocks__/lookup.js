@@ -18,10 +18,10 @@ export default class Lookup extends LightningElement {
   @api validity;
   @api value;
   @api variant;
-  @api blur() {}
-  @api checkValidity() {}
-  @api focus() {}
-  @api reportValidity() {}
-  @api setCustomValidity() {}
-  @api showHelpMessageIfInvalid() {}
+  @api blur = jest.fn();
+  @api checkValidity = jest.fn();
+  @api focus = jest.fn();
+  @api reportValidity = jest.fn();
+  @api setCustomValidity = jest.fn();
+  @api showHelpMessageIfInvalid = jest.fn();
 }

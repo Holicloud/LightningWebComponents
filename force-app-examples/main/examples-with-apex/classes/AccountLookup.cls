@@ -13,6 +13,7 @@ public with sharing class AccountLookup implements LookupResult.ILookup {
       SELECT Id, Name
       FROM Account
       WHERE Id IN :selectedIds
+      WITH USER_MODE
     ]) {
       result.add(buildResult(account));
     }
@@ -32,6 +33,7 @@ public with sharing class AccountLookup implements LookupResult.ILookup {
       SELECT Id, Name
       FROM Account
       WHERE Name LIKE :searchTerm
+      WITH USER_MODE
     ]) {
       result.add(buildResult(account));
     }
@@ -42,7 +44,12 @@ public with sharing class AccountLookup implements LookupResult.ILookup {
   public List<LookupResult> getDefault(String payload) {
     List<LookupResult> result = new List<LookupResult>();
 
-    for (Account account : [SELECT Id, Name FROM Account LIMIT 10]) {
+    for (Account account : [
+      SELECT Id, Name
+      FROM Account
+      WITH USER_MODE
+      LIMIT 10
+    ]) {
       result.add(buildResult(account));
     }
 

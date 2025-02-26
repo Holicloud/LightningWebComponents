@@ -26,13 +26,13 @@ describe("c-markdown", () => {
   });
 
   it("should update html using url", async () => {
+    element = await elementBuilder.build({ string: "string" });
+
     global.fetch = jest.fn(() =>
       Promise.resolve({
         text: () => Promise.resolve(INNER_HTML)
       })
     );
-
-    element = await elementBuilder.build({ url: "string" });
 
     // eslint-disable-next-line @lwc/lwc/no-inner-html
     expect(getContainer().innerHTML).toBe(INNER_HTML);
