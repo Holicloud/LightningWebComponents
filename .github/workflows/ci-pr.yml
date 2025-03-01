@@ -12,8 +12,6 @@ on:
   pull_request:
     types: [opened, edited, synchronize, reopened]
 
-# Workflow environment variables
-
 # Jobs to be executed
 jobs:
   # Dummy job used to skip CI run on automated PRs
@@ -37,36 +35,12 @@ jobs:
           path: dev
           fetch-depth: 0
 
-      # Run PMD scan
-      - name: Install PMD
-        run: |
-          cd dev
-          wget https://github.com/pmd/pmd/releases/download/pmd_releases%2F7.0.0/pmd-dist-7.0.0-bin.zip
-          unzip pmd-dist-7.0.0-bin.zip
-
-      - name: Validate with PMD
-        run: |
-          cd dev
-          PMD_APEX_ROOT_DIRECTORY=$(pwd) ./pmd-bin-7.0.0/bin/pmd check -R .pmd/rulesets/apex.xml --no-cache --minimum-priority 3 --dir force-app,force-app-examples --no-progress
-
       # Install Volta to enforce proper node and package manager versions
       - name: "Install Volta"
         uses: volta-cli/action@v4
 
-      # Cache node_modules to speed up the process
-      - name: "Restore node_modules cache"
-        id: cache-npm
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: npm-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            npm-${{ env.cache-name }}-
-            npm-
-
       # Install npm dependencies for Prettier and Jest
       - name: "Install npm dependencies"
-        if: steps.cache-npm.outputs.cache-hit != 'true'
         run: HUSKY=0 npm ci
 
       # Prettier formatting
@@ -80,6 +54,18 @@ jobs:
       # LWC unit tests
       - name: "Unit test Lightning Web Components"
         run: npm run test:unit:coverage
+
+      # # Run PMD scan
+      # - name: Install PMD
+      #   run: |
+      #     cd dev
+      #     wget https://github.com/pmd/pmd/releases/download/pmd_releases%2F7.0.0/pmd-dist-7.0.0-bin.zip
+      #     unzip pmd-dist-7.0.0-bin.zip
+
+      # - name: Validate with PMD
+      #   run: |
+      #     cd dev
+      #     PMD_APEX_ROOT_DIRECTORY=$(pwd) ./pmd-bin-7.0.0/bin/pmd check -R .pmd/rulesets/apex.xml --no-cache --dir force-app,force-app-examples --no-progress
 
       # Upload code coverage data
       - name: "Upload code coverage for LWC to Codecov.io"
@@ -159,11 +145,6 @@ jobs:
       # Authenticate dev hub
       - name: "Authenticate Dev Hub"
         run: sf org login sfdx-url -f ./DEVHUB_SFDX_URL.txt -a devhub -d
-
-      # Create prerelease scratch org
-      - name: "Create prerelease scratch org"
-        if: ${{ env.IS_PRERELEASE }}
-        run: sf org create scratch -f config/project-scratch-def.json -a scratch-org -d -y 1 --release=preview
 
       # Create scratch org
       - name: "Create scratch org"

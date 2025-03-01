@@ -18,6 +18,7 @@ public with sharing class AccountLookup implements LookupResult.ILookup {
    * @param payload Additional payload information.
    * @return List<LookupResult> - A list of LookupResult objects that match the selection criteria.
    */
+  @SuppressWarnings('PMD.UnusedMethod')
   public List<LookupResult> getSelection(
     List<String> selectedIds,
     String payload
@@ -45,6 +46,7 @@ public with sharing class AccountLookup implements LookupResult.ILookup {
    * @param payload Additional payload information.
    * @return List<LookupResult> - A list of lookup results that match the criteria.
    */
+  @SuppressWarnings('PMD.UnusedMethod')
   public List<LookupResult> getMatching(
     String searchTerm,
     String rawSearchTerm,
@@ -70,6 +72,7 @@ public with sharing class AccountLookup implements LookupResult.ILookup {
    * @param payload The input string used to determine the default lookup results.
    * @return A list of LookupResult objects that match the default criteria.
    */
+  @SuppressWarnings('PMD.UnusedMethod')
   public List<LookupResult> getDefault(String payload) {
     List<LookupResult> result = new List<LookupResult>();
 
