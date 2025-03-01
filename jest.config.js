@@ -19,21 +19,12 @@ module.exports = {
   testPathIgnorePatterns: [
     "/node_modules/",
     "<rootDir>/force-app-examples/",
-    "<rootDir>/force-app/main/default/lwc/componentReference/componentReference",
-    "<rootDir>/force-app/main/src-datatable/",
-    "<rootDir>/force-app/main/src-datatable-plus/",
-    "<rootDir>/force-app/main/src-datatable-sample/",
-    "<rootDir>/force-app/main/src-sobject-datatable/",
-    "<rootDir>/force-app/main/src-sobject-datatable/"
+    "<rootDir>/force-app/main/default/lwc/componentReference/componentReference"
   ],
   coveragePathIgnorePatterns: [
     "/node_modules/",
     "<rootDir>/force-app-examples/",
-    "<rootDir>/force-app/main/default/lwc/componentReference/componentReference",
-    "<rootDir>/force-app/main/src-datatable/",
-    "<rootDir>/force-app/main/src-datatable-plus/",
-    "<rootDir>/force-app/main/src-datatable-sample/",
-    "<rootDir>/force-app/main/src-sobject-datatable/"
+    "<rootDir>/force-app/main/default/lwc/componentReference/componentReference"
   ],
   coverageThreshold: {
     global: {
