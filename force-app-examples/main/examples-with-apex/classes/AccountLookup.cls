@@ -1,8 +1,23 @@
+/**
+ * AccountLookup class that implements the LookupResult.ILookup interface.
+ * This class is used to perform account lookup operations.
+ * @description This class implements the LookupResult.ILookup interface to provide account lookup functionality.
+ * @author santiagoparradev
+ * @date 2023-10-05
+ */
 public with sharing class AccountLookup implements LookupResult.ILookup {
   public final static Map<String, Object> ACCOUNT_ICON = new Map<String, Object>{
     'iconName' => 'standard:account'
   };
 
+  /**
+   * Retrieves a list of LookupResult based on the selection criteria.
+   *
+   * @description This method retrieves a list of LookupResult objects based on the provided selection criteria.
+   * @param selectedIds List of selected account IDs.
+   * @param payload Additional payload information.
+   * @return List<LookupResult> - A list of LookupResult objects that match the selection criteria.
+   */
   public List<LookupResult> getSelection(
     List<String> selectedIds,
     String payload
@@ -21,6 +36,15 @@ public with sharing class AccountLookup implements LookupResult.ILookup {
     return result;
   }
 
+  /**
+   * Retrieves a list of matching lookup results based on the provided criteria.
+   *
+   * @description This method retrieves a list of LookupResult objects based on the provided search term and payload.
+   * @param searchTerm The term used to search for matching accounts.
+   * @param rawSearchTerm The raw search term input by the user.
+   * @param payload Additional payload information.
+   * @return List<LookupResult> - A list of lookup results that match the criteria.
+   */
   public List<LookupResult> getMatching(
     String searchTerm,
     String rawSearchTerm,
@@ -41,6 +65,11 @@ public with sharing class AccountLookup implements LookupResult.ILookup {
     return result;
   }
 
+  /**
+   * @description Retrieves the default lookup results based on the provided payload.
+   * @param payload The input string used to determine the default lookup results.
+   * @return A list of LookupResult objects that match the default criteria.
+   */
   public List<LookupResult> getDefault(String payload) {
     List<LookupResult> result = new List<LookupResult>();
 

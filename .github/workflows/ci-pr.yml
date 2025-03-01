@@ -1,5 +1,5 @@
 # Unique name for this workflow
-name: CI on PR
+name: Validate PR on dev branch
 
 # Definition when the workflow should run
 on:
@@ -13,9 +13,6 @@ on:
     types: [opened, edited, synchronize, reopened]
 
 # Workflow environment variables
-env:
-  # Is the PR base branch a prerelease branch
-  IS_PRERELEASE: ${{ startsWith(github.event.pull_request.base.ref, 'prerelease/') || inputs.prerelease  }}
 
 # Jobs to be executed
 jobs:
@@ -36,6 +33,21 @@ jobs:
       # Checkout the source code
       - name: "Checkout source code"
         uses: actions/checkout@v4
+        with:
+          path: dev
+          fetch-depth: 0
+
+      # Run PMD scan
+      - name: Install PMD
+        run: |
+          cd dev
+          wget https://github.com/pmd/pmd/releases/download/pmd_releases%2F7.0.0/pmd-dist-7.0.0-bin.zip
+          unzip pmd-dist-7.0.0-bin.zip
+
+      - name: Validate with PMD
+        run: |
+          cd dev
+          PMD_APEX_ROOT_DIRECTORY=$(pwd) ./pmd-bin-7.0.0/bin/pmd check -R .pmd/rulesets/apex.xml --no-cache --minimum-priority 3 --dir force-app,force-app-examples --no-progress
 
       # Install Volta to enforce proper node and package manager versions
       - name: "Install Volta"
@@ -116,27 +128,14 @@ jobs:
   scratch-org-test:
     runs-on: ubuntu-latest
     needs: format-lint-lwc-tests
-    permissions:
-      pull-requests: write
     if: github.actor != 'dependabot[bot]'
     steps:
       # Checkout the source code
       - name: "Checkout source code"
         uses: actions/checkout@v4
-
-      # Run PMD scan
-      - name: "Run PMD scan"
-        uses: pmd/pmd-github-action@v2.0.0
-        id: pmd
         with:
-          version: "6.55.0"
-          sourcePath: "force-app"
-          rulesets: "ruleset.xml"
-
-      # Check for PMD violations
-      - name: "Check for PMD violations"
-        if: steps.pmd.outputs.violations != 0
-        run: exit 1
+          path: dev
+          fetch-depth: 0
 
       # Install Salesforce CLI
       - name: "Install Salesforce CLI"
