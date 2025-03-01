@@ -61,26 +61,27 @@ public inherited sharing class LookupController {
 
   /**
    * @description Retrieves a list of LookupResult that matches the provided search terms and payload.
-   * @param apexClass The name of the Apex class implementing the ILookup interface.
-   * @param searchTerm The term used to search for matching LookupResult.
-   * @param rawSearchTerm The raw search term used for more precise matching.
-   * @param payload Additional data required for the matching process.
-   * @return A list of LookupResult that matches the search terms and payload.
+   * @return matching records
    */
   @AuraEnabled(cacheable=true)
-  public static List<LookupResult> getMatching(
-    String apexClass,
-    String searchTerm,
-    String rawSearchTerm,
-    String payload
-  ) {
+  /**
+   * @description Retrieves a list of matching lookup results based on the provided input.
+   *
+   * @param input The input criteria for the lookup.
+   * @return A list of LookupResult objects that match the input criteria.
+   */
+  public static List<LookupResult> getMatching(LookupInput input) {
     try {
       LookupResult.ILookup lookupClass = (LookupResult.ILookup) Type.forName(
-          apexClass
+          input.apexClass
         )
         .newInstance();
 
-      return lookupClass.getMatching(searchTerm, rawSearchTerm, payload);
+      return lookupClass.getMatching(
+        input.searchTerm,
+        input.rawSearchTerm,
+        input.payload
+      );
     } catch (Exception e) {
       throw new AuraHandledException(e.getMessage());
     }
@@ -88,49 +89,69 @@ public inherited sharing class LookupController {
 
   /**
    * @description Retrieves a list of LookupResult based on the provided selected IDs and payload without caching.
-   * @param apexClass The name of the Apex class implementing the ILookup interface.
-   * @param selectedIds A list of selected IDs to filter the LookupResult.
-   * @param payload Additional data required for the selection process.
+   * @param input The input containing apexClass, selectedIds, and payload.
    * @return A list of LookupResult that matches the selected IDs and payload.
    */
   @AuraEnabled
-  public static List<LookupResult> getSelectionNonCacheable(
-    String apexClass,
-    List<String> selectedIds,
-    String payload
-  ) {
-    return getSelection(apexClass, selectedIds, payload);
+  public static List<LookupResult> getSelectionNonCacheable(LookupInput input) {
+    return getSelection(input.apexClass, input.selectedIds, input.payload);
   }
 
   /**
    * @description Retrieves a default list of LookupResult based on the provided payload without caching.
-   * @param apexClass The name of the Apex class implementing the ILookup interface.
-   * @param payload Additional data required for retrieving the default LookupResult.
-   * @return A list of default LookupResult based on the payload.
    */
   @AuraEnabled
-  public static List<LookupResult> getDefaultNonCacheable(
-    String apexClass,
-    String payload
-  ) {
-    return getDefault(apexClass, payload);
+  /**
+   * @description Retrieves a default list of LookupResult based on the provided payload without caching.
+   * @param input The input containing apexClass and payload.
+   * @return A list of default LookupResult based on the payload.
+   */
+  public static List<LookupResult> getDefaultNonCacheable(LookupInput input) {
+    return getDefault(input.apexClass, input.payload);
   }
 
   /**
    * @description Retrieves a list of LookupResult that matches the provided search terms and payload without caching.
-   * @param apexClass The name of the Apex class implementing the ILookup interface.
-   * @param searchTerm The term used to search for matching LookupResult.
-   * @param rawSearchTerm The raw search term used for more precise matching.
-   * @param payload Additional data required for the matching process.
+   * @param input The input containing apexClass, searchTerm, rawSearchTerm, and payload.
    * @return A list of LookupResult that matches the search terms and payload.
    */
   @AuraEnabled
-  public static List<LookupResult> getMatchingNonCacheable(
-    String apexClass,
-    String searchTerm,
-    String rawSearchTerm,
-    String payload
-  ) {
-    return getMatching(apexClass, searchTerm, rawSearchTerm, payload);
+  public static List<LookupResult> getMatchingNonCacheable(LookupInput input) {
+    return getMatching(input);
+  }
+
+  /**
+   * @description This class represents the inputs for a lookup operation.
+   */
+  public class LookupInput {
+    /**
+     * @description The name of the Apex class to be used.
+     */
+    @AuraEnabled
+    public String apexClass { get; set; }
+
+    /**
+     * @description The search term entered by the user.
+     */
+    @AuraEnabled
+    public String searchTerm { get; set; }
+
+    /**
+     * @description The raw search term before any processing.
+     */
+    @AuraEnabled
+    public String rawSearchTerm { get; set; }
+
+    /**
+     * @description Additional payload information for the lookup operation.
+     */
+    @AuraEnabled
+    public String payload { get; set; }
+
+    /**
+     * @description A list of selected record IDs.
+     */
+    @AuraEnabled
+    public List<String> selectedIds { get; set; }
   }
 }
