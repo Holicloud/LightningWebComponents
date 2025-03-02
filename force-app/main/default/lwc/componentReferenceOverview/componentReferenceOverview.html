@@ -14,6 +14,7 @@
         <div class="slds-col slds-grow">
           <lightning-combobox
             label="Example"
+            data-id="example"
             value={selectedExample.title}
             options={exampleOptions}
             onchange={handleChangeExample}
@@ -25,6 +26,7 @@
             onclick={handleViewInGit}
             label="View in Git"
             title="View in Git"
+            data-id="view-in-git"
             icon-name="utility:insert_tag_field"
           ></lightning-button>
         </div>
@@ -34,7 +36,9 @@
               >Description</label
             >
             <div class="slds-form-element__control">
-              <div id="form-element-01-356">{selectedExample.description}</div>
+              <div id="form-element-01-356" data-id="description">
+                {selectedExample.description}
+              </div>
             </div>
           </div>
         </div>
@@ -43,7 +47,10 @@
         class="slds-scrollable_y"
         style="max-height: 17rem; min-height: 17rem"
       >
-        <lwc:component lwc:is={componentConstructor}></lwc:component>
+        <lwc:component
+          lwc:is={componentConstructor}
+          data-component={selectedExample.title}
+        ></lwc:component>
       </div>
     </div>
   </div>

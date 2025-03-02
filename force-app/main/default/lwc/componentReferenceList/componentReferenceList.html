@@ -3,6 +3,7 @@
     <lightning-input
       class="slds-form-element slds-p-horizontal_large slds-col slds-grow-none slds-m-around_medium"
       type="text"
+      data-id="input"
       variant="label-hidden"
       label="Quick Find"
       placeholder="Quick Find"
@@ -15,11 +16,13 @@
       >
         <h3 class="slds-text-heading_small">Lightning Web Components</h3>
         <lightning-vertical-navigation
+          data-id="navigate"
           selected-item={initiallySelected}
           onselect={handleSelect}
         >
           <template for:each={navigationData} for:item="section">
             <lightning-vertical-navigation-section
+              data-id="section"
               key={section.label}
               label={section.label}
             >
@@ -35,6 +38,7 @@
                 <template lwc:else>
                   <lightning-vertical-navigation-item
                     key={item.name}
+                    data-id="item"
                     label={item.label}
                     name={item.name}
                   ></lightning-vertical-navigation-item>

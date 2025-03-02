@@ -17,7 +17,7 @@ export default class ApexLookup extends LightningElement {
   @api label;
   @api messageWhenValueMissing;
   @api minSearchTermLength;
-  @api nonCacheable = false;
+  @api isNonCacheable = false;
   @api payload = {};
   @api placeholder;
   @api required;
@@ -64,15 +64,15 @@ export default class ApexLookup extends LightningElement {
   }
 
   get getDefaultImplementation() {
-    return this.nonCacheable ? getDefaultNonCacheable : getDefault;
+    return this.isNonCacheable ? getDefaultNonCacheable : getDefault;
   }
 
   get getSelectionImplementation() {
-    return this.nonCacheable ? getSelectionNonCacheable : getSelection;
+    return this.isNonCacheable ? getSelectionNonCacheable : getSelection;
   }
 
   get getMatchingImplementation() {
-    return this.nonCacheable ? getMatchingNonCacheable : getMatching;
+    return this.isNonCacheable ? getMatchingNonCacheable : getMatching;
   }
 
   async renderedCallback() {
@@ -103,7 +103,7 @@ export default class ApexLookup extends LightningElement {
     }
   }
 
-  searchHandler = async ({ rawSearchTerm, searchTerm }) => {
+  searchHandler = async ({ rawSearchTerm = "", searchTerm = "" } = {}) => {
     const result = await this.getMatchingImplementation({
       apexClass: this.apexClass,
       searchTerm,
@@ -113,7 +113,7 @@ export default class ApexLookup extends LightningElement {
     return result;
   };
 
-  selectionHandler = async ({ selectedIds }) => {
+  selectionHandler = async ({ selectedIds } = {}) => {
     const result = await this.getSelectionImplementation({
       apexClass: this.apexClass,
       selectedIds,

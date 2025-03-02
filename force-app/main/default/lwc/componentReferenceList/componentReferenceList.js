@@ -2,7 +2,8 @@ import { COMPONENTS } from "c/componentReference";
 import { LightningElement, track } from "lwc";
 import { MessageChannelMixin } from "c/messageChannelMixin";
 import componentReferenceChannel from "@salesforce/messageChannel/ComponentReference__c";
-const sections = Object.freeze(
+import { clone } from "c/utils";
+const SECTIONS = Object.freeze(
   Object.values(COMPONENTS).reduce((acc, component) => {
     const group =
       acc.find((g) => g.label === component.type) ||
@@ -14,12 +15,13 @@ const sections = Object.freeze(
     return acc;
   }, [])
 );
+const MIN_LENGTH = 2;
 
 export default class ComponentReferenceList extends MessageChannelMixin(
   LightningElement
 ) {
-  @track navigationData = sections;
-  initiallySelected = sections[0].items[0].name;
+  @track navigationData = SECTIONS;
+  initiallySelected = SECTIONS[0].items[0].name;
 
   handleSelect(event) {
     this[MessageChannelMixin.Publish]({
@@ -33,8 +35,8 @@ export default class ComponentReferenceList extends MessageChannelMixin(
   handleInputChange(event) {
     const value = event.detail.value;
 
-    if (value?.length > 2) {
-      this.navigationData = structuredClone(sections).filter((section) => {
+    if (value?.length > MIN_LENGTH) {
+      this.navigationData = clone(SECTIONS).filter((section) => {
         const filteredComponents = section.items.filter((component) =>
           component.label.toLowerCase().includes(value.toLowerCase())
         );
@@ -47,7 +49,7 @@ export default class ComponentReferenceList extends MessageChannelMixin(
         return false;
       });
     } else {
-      this.navigationData = sections;
+      this.navigationData = SECTIONS;
     }
   }
 }

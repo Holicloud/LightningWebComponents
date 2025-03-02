@@ -43,3 +43,8 @@ $RECYCLE.BIN/
 **/__pycache__/
 **/.venv/
 **/venv/
+
+pmd/
+.pmdCache
+pmdLocalReport.txt
+pmd-dist-7.0.0-bin.zip
