@@ -13,11 +13,7 @@ public inherited sharing class LookupController {
    * @return A list of LookupResult that matches the selected IDs and payload.
    */
   @AuraEnabled(cacheable=true)
-  public static List<LookupResult> getSelection(
-    String apexClass,
-    List<String> selectedIds,
-    String payload
-  ) {
+  public static List<LookupResult> getSelection(LookupInput input) {
     try {
       List<LookupResult> result = new List<LookupResult>();
 
@@ -43,10 +39,7 @@ public inherited sharing class LookupController {
    * @return A list of default LookupResult based on the payload.
    */
   @AuraEnabled(cacheable=true)
-  public static List<LookupResult> getDefault(
-    String apexClass,
-    String payload
-  ) {
+  public static List<LookupResult> getDefault(LookupInput input) {
     try {
       LookupResult.ILookup lookupClass = (LookupResult.ILookup) Type.forName(
           apexClass
@@ -153,5 +146,21 @@ public inherited sharing class LookupController {
      */
     @AuraEnabled
     public List<String> selectedIds { get; set; }
+  }
+
+  @testVisible
+  private with sharing class TestClass implements LookupResult.ILookup {
+
+    public List<LookupResult> getSelection(List<String> selectedIds, String payload) {
+      return new List<LookupResult>();
+    }
+
+    public List<LookupResult> getDefault(String payload) {
+      return new List<LookupResult>();
+    }
+
+    public List<LookupResult> getMatching(String searchTerm, String rawSearchTerm, String payload) {
+      return new List<LookupResult>();
+    }
   }
 }
