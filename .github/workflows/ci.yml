@@ -41,9 +41,5 @@ jobs:
       - name: "Authenticate Dev Hub"
         run: sf org login sfdx-url -f ./DEVHUB_SFDX_URL.txt -a devhub -d
 
-      # Deploy source to scratch org
-      - name: "Validate Deployment"
-        run: sf project deploy start --dry-run --test-level RunAllTestInOrg
-
       - name: Deploy to Org
-        run: sf project deploy start --test-level RunAllTestsInOrg
+        run: sf project deploy start --test-level RunAllTestsInOrg --target-org devhub
