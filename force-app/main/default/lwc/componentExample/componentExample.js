@@ -4,7 +4,7 @@ import { classSet } from "c/utils";
 export const INVERSE_VARIANT = "inverse";
 
 export default class ComponentExample extends LightningElement {
-  @api title = "Example title";
+  @api title;
   @api variant;
 
   get bodyClasses() {
