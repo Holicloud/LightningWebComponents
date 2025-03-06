@@ -20,12 +20,12 @@ public inherited sharing class LookupController {
       if (input.selectedIds.isEmpty()) {
         return result;
       }
-      System.debug(input);
+
       LookupResult.ILookup lookupClass = (LookupResult.ILookup) Type.forName(
           input.apexClass
         )
         .newInstance();
-      System.debug(lookupClass);
+
       return lookupClass.getSelection(input.selectedIds, input.payload);
     } catch (Exception e) {
       AuraHandledException error = new AuraHandledException(e.getMessage());
