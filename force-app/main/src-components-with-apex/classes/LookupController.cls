@@ -7,9 +7,7 @@
 public inherited sharing class LookupController {
   /**
    * @description Retrieves a list of LookupResult based on the provided selected IDs and payload.
-   * @param apexClass The name of the Apex class implementing the ILookup interface.
-   * @param selectedIds A list of selected IDs to filter the LookupResult.
-   * @param payload Additional data required for the selection process.
+   * @param input The input containing apexClass, selectedIds, and payload.
    * @return A list of LookupResult that matches the selected IDs and payload.
    */
   @AuraEnabled(cacheable=true)
@@ -36,8 +34,7 @@ public inherited sharing class LookupController {
 
   /**
    * @description Retrieves a default list of LookupResult based on the provided payload.
-   * @param apexClass The name of the Apex class implementing the ILookup interface.
-   * @param payload Additional data required for retrieving the default LookupResult.
+   * @param input The input containing apexClass and payload.
    * @return A list of default LookupResult based on the payload.
    */
   @AuraEnabled(cacheable=true)
@@ -150,18 +147,42 @@ public inherited sharing class LookupController {
     public List<String> selectedIds { get; set; }
   }
 
+  /**
+   * @description This class is a test implementation of the ILookup interface.
+   */
   public with sharing class TestClass implements LookupResult.ILookup {
+    /**
+     * @description Retrieves a list of LookupResult based on the provided selected IDs and payload.
+     * @param selectedIds A list of selected IDs to filter the LookupResult.
+     * @param payload Additional data required for the selection process.
+     * @return A list of LookupResult that matches the selected IDs and payload.
+     */
     public List<LookupResult> getSelection(
+      /**
+       * @description A list of selected IDs to filter the LookupResult.
+       */
       List<String> selectedIds,
       String payload
     ) {
       return new List<LookupResult>();
     }
 
+    /**
+     * @description Retrieves a default list of LookupResult based on the provided payload.
+     * @param payload Additional data required for retrieving the default LookupResult.
+     * @return A list of default LookupResult based on the payload.
+     */
     public List<LookupResult> getDefault(String payload) {
       return new List<LookupResult>();
     }
 
+    /**
+     * @description Retrieves a list of LookupResult that matches the provided search terms and payload.
+     * @param searchTerm The search term entered by the user.
+     * @param rawSearchTerm The raw search term before any processing.
+     * @param payload Additional data required for the lookup operation.
+     * @return A list of LookupResult that matches the search terms and payload.
+     */
     public List<LookupResult> getMatching(
       String searchTerm,
       String rawSearchTerm,
