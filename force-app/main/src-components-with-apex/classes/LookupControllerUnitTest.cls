@@ -1,5 +1,5 @@
 @isTest
-private class LookupControllerTest {
+private class LookupControllerUnitTest {
   @isTest
   static void testMethodLookupController() {
     LookupController.LookupInput lookupInputs = new LookupController.LookupInput();
