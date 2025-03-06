@@ -1,0 +1,28 @@
+<template>
+  <c-component-example title="Default">
+    <c-errors-accordion errors={errors}></c-errors-accordion>
+  </c-component-example>
+  <c-component-example title="Non Dismissable">
+    <c-errors-accordion
+      title="Something went wrong"
+      is-non-dismissable
+      errors={errors}
+    ></c-errors-accordion>
+  </c-component-example>
+  <c-component-example title="Using Slots">
+    <c-errors-accordion errors={errors}>
+      <lightning-button
+        variant="Destructive"
+        label="Slot Item"
+      ></lightning-button>
+      <div slot="actions">
+        <lightning-button
+          variant="brand"
+          icon-name="utility:undo"
+          label="Return"
+        ></lightning-button>
+        <lightning-button variant="success" label="Ok"></lightning-button>
+      </div>
+    </c-errors-accordion>
+  </c-component-example>
+</template>

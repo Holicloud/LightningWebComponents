@@ -67,6 +67,11 @@ export const COMPONENTS = {
     type: COMPONENT_TYPES.COMPONENT,
     descriptor: "c/illustration",
     label: "illustration"
+  },
+  C_ERROR_ACCORDION: {
+    type: COMPONENT_TYPES.COMPONENT,
+    descriptor: "c/errorsAccordion",
+    label: "Error Accordion"
   }
 };
 
@@ -163,14 +168,22 @@ export const EXAMPLES = {
     {
       title: "Basic",
       description: "",
-      git: GIT_APEX_RELIANT_EXAMPLES + "illustrationBasic",
+      git: GIT_EXAMPLES + "illustrationBasic",
       constructor: () => import("c/illustrationBasic")
     },
     {
       title: "With custom title and colors",
       description: "custom title and colors",
-      git: GIT_APEX_RELIANT_EXAMPLES + "illustrationAdvanced",
+      git: GIT_EXAMPLES + "illustrationAdvanced",
       constructor: () => import("c/illustrationAdvanced")
+    }
+  ],
+  [COMPONENTS.C_ERROR_ACCORDION.descriptor]: [
+    {
+      title: "Basic",
+      description: `An "alert" like component that displays errors in a collapsible accordion`,
+      git: GIT_EXAMPLES + "errorsAccordionBasic",
+      constructor: () => import("c/errorsAccordionBasic")
     }
   ]
 };
@@ -245,6 +258,13 @@ export const HEADER_INFO = {
     description:
       "Illustrations should be used within other components, such as cards, to express the state of the component. An illustration image must be accompanied with heading text inline.",
     descriptor: COMPONENTS.C_ILLUSTRATION.descriptor,
+    targets: [TARGETS.LIGHTNING_EXPERIENCE]
+  },
+  [COMPONENTS.C_ERROR_ACCORDION.descriptor]: {
+    git: GIT_SOURCE_COMPONENTS + "errorsAccordion",
+    title: COMPONENTS.C_ERROR_ACCORDION.label,
+    description: "Displays And Array of Structured Errors",
+    descriptor: COMPONENTS.C_ERROR_ACCORDION.descriptor,
     targets: [TARGETS.LIGHTNING_EXPERIENCE]
   }
 };
