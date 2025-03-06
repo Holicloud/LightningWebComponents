@@ -1,0 +1,68 @@
+<template>
+  <lightning-card data-id="card" lwc:if={isVisible}>
+    <h3
+      slot="title"
+      data-id="title"
+      class="slds-text-heading_medium slds-align_absolute-center"
+    >
+      <lightning-icon
+        variant="error"
+        icon-name="utility:error"
+        size="small"
+        class="slds-m-right_x-small"
+      ></lightning-icon>
+      {title}
+    </h3>
+    <div slot="actions">
+      <lightning-button-group>
+        <lightning-button
+          data-id="collapse-all"
+          title={LABELS.buttons.collapseAll}
+          lwc:if={displayCollapseAll}
+          onclick={handleCollapseAll}
+          label={LABELS.buttons.collapseAll}
+        ></lightning-button>
+        <lightning-button
+          data-id="expand-all"
+          title={LABELS.buttons.expandAll}
+          lwc:if={displayExpandAll}
+          label={LABELS.buttons.expandAll}
+          onclick={handleExpandAll}
+        ></lightning-button>
+      </lightning-button-group>
+      <lightning-button-icon
+        data-id="dismiss"
+        lwc:if={isCollapsible}
+        icon-name="utility:close"
+        onclick={handleDismiss}
+        variant="bare"
+        class="slds-m-left_x-small"
+      ></lightning-button-icon>
+    </div>
+    <div class="slds-p-horizontal_small">
+      <lightning-accordion
+        allow-multiple-sections-open
+        active-section-name={activeSections}
+        onsectiontoggle={handleToggleSection}
+      >
+        <template for:each={sections} for:item="section">
+          <lightning-accordion-section
+            key={section.name}
+            name={section.name}
+            label={section.name}
+          >
+            <ul class="slds-list_dotted" style="list-style-type: disc">
+              <template for:each={section.errors} for:item="error">
+                <li key={error} data-id="error" class="slds-list__item">
+                  {error}
+                </li>
+              </template>
+            </ul>
+          </lightning-accordion-section>
+        </template>
+      </lightning-accordion>
+      <slot></slot>
+      <slot name="actions" class="slds-text-align_right"></slot>
+    </div>
+  </lightning-card>
+</template>
