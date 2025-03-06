@@ -17,7 +17,7 @@ private class LookupControllerTest {
       WHERE Name = 'System Administrator'
     ];
 
-    standarduser = new User(
+    User standarduser = new User(
       Alias = 'standt',
       Email = 'standarduser@testorg.com',
       EmailEncodingKey = 'UTF-8',
