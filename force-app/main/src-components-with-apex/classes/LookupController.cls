@@ -17,18 +17,20 @@ public inherited sharing class LookupController {
     try {
       List<LookupResult> result = new List<LookupResult>();
 
-      if (selectedIds.isEmpty()) {
+      if (input.selectedIds.isEmpty()) {
         return result;
       }
-
+      System.debug(input);
       LookupResult.ILookup lookupClass = (LookupResult.ILookup) Type.forName(
-          apexClass
+          input.apexClass
         )
         .newInstance();
-
-      return lookupClass.getSelection(selectedIds, payload);
+      System.debug(lookupClass);
+      return lookupClass.getSelection(input.selectedIds, input.payload);
     } catch (Exception e) {
-      throw new AuraHandledException(e.getMessage());
+      AuraHandledException error = new AuraHandledException(e.getMessage());
+      error.setMessage(e.getMessage());
+      throw error;
     }
   }
 
@@ -42,11 +44,11 @@ public inherited sharing class LookupController {
   public static List<LookupResult> getDefault(LookupInput input) {
     try {
       LookupResult.ILookup lookupClass = (LookupResult.ILookup) Type.forName(
-          apexClass
+          input.apexClass
         )
         .newInstance();
 
-      return lookupClass.getDefault(payload);
+      return lookupClass.getDefault(input.payload);
     } catch (Exception e) {
       throw new AuraHandledException(e.getMessage());
     }
@@ -87,7 +89,7 @@ public inherited sharing class LookupController {
    */
   @AuraEnabled
   public static List<LookupResult> getSelectionNonCacheable(LookupInput input) {
-    return getSelection(input.apexClass, input.selectedIds, input.payload);
+    return getSelection(input);
   }
 
   /**
@@ -100,7 +102,7 @@ public inherited sharing class LookupController {
    * @return A list of default LookupResult based on the payload.
    */
   public static List<LookupResult> getDefaultNonCacheable(LookupInput input) {
-    return getDefault(input.apexClass, input.payload);
+    return getDefault(input);
   }
 
   /**
@@ -148,10 +150,11 @@ public inherited sharing class LookupController {
     public List<String> selectedIds { get; set; }
   }
 
-  @testVisible
-  private with sharing class TestClass implements LookupResult.ILookup {
-
-    public List<LookupResult> getSelection(List<String> selectedIds, String payload) {
+  public with sharing class TestClass implements LookupResult.ILookup {
+    public List<LookupResult> getSelection(
+      List<String> selectedIds,
+      String payload
+    ) {
       return new List<LookupResult>();
     }
 
@@ -159,7 +162,11 @@ public inherited sharing class LookupController {
       return new List<LookupResult>();
     }
 
-    public List<LookupResult> getMatching(String searchTerm, String rawSearchTerm, String payload) {
+    public List<LookupResult> getMatching(
+      String searchTerm,
+      String rawSearchTerm,
+      String payload
+    ) {
       return new List<LookupResult>();
     }
   }
