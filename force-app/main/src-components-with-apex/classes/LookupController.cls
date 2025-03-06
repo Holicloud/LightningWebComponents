@@ -7,53 +7,45 @@
 public inherited sharing class LookupController {
   /**
    * @description Retrieves a list of LookupResult based on the provided selected IDs and payload.
-   * @param apexClass The name of the Apex class implementing the ILookup interface.
-   * @param selectedIds A list of selected IDs to filter the LookupResult.
-   * @param payload Additional data required for the selection process.
+   * @param input The input containing apexClass, selectedIds, and payload.
    * @return A list of LookupResult that matches the selected IDs and payload.
    */
   @AuraEnabled(cacheable=true)
-  public static List<LookupResult> getSelection(
-    String apexClass,
-    List<String> selectedIds,
-    String payload
-  ) {
+  public static List<LookupResult> getSelection(LookupInput input) {
     try {
       List<LookupResult> result = new List<LookupResult>();
 
-      if (selectedIds.isEmpty()) {
+      if (input.selectedIds.isEmpty()) {
         return result;
       }
 
       LookupResult.ILookup lookupClass = (LookupResult.ILookup) Type.forName(
-          apexClass
+          input.apexClass
         )
         .newInstance();
 
-      return lookupClass.getSelection(selectedIds, payload);
+      return lookupClass.getSelection(input.selectedIds, input.payload);
     } catch (Exception e) {
-      throw new AuraHandledException(e.getMessage());
+      AuraHandledException error = new AuraHandledException(e.getMessage());
+      error.setMessage(e.getMessage());
+      throw error;
     }
   }
 
   /**
    * @description Retrieves a default list of LookupResult based on the provided payload.
-   * @param apexClass The name of the Apex class implementing the ILookup interface.
-   * @param payload Additional data required for retrieving the default LookupResult.
+   * @param input The input containing apexClass and payload.
    * @return A list of default LookupResult based on the payload.
    */
   @AuraEnabled(cacheable=true)
-  public static List<LookupResult> getDefault(
-    String apexClass,
-    String payload
-  ) {
+  public static List<LookupResult> getDefault(LookupInput input) {
     try {
       LookupResult.ILookup lookupClass = (LookupResult.ILookup) Type.forName(
-          apexClass
+          input.apexClass
         )
         .newInstance();
 
-      return lookupClass.getDefault(payload);
+      return lookupClass.getDefault(input.payload);
     } catch (Exception e) {
       throw new AuraHandledException(e.getMessage());
     }
@@ -94,7 +86,7 @@ public inherited sharing class LookupController {
    */
   @AuraEnabled
   public static List<LookupResult> getSelectionNonCacheable(LookupInput input) {
-    return getSelection(input.apexClass, input.selectedIds, input.payload);
+    return getSelection(input);
   }
 
   /**
@@ -107,7 +99,7 @@ public inherited sharing class LookupController {
    * @return A list of default LookupResult based on the payload.
    */
   public static List<LookupResult> getDefaultNonCacheable(LookupInput input) {
-    return getDefault(input.apexClass, input.payload);
+    return getDefault(input);
   }
 
   /**
@@ -153,5 +145,50 @@ public inherited sharing class LookupController {
      */
     @AuraEnabled
     public List<String> selectedIds { get; set; }
+  }
+
+  /**
+   * @description This class is a test implementation of the ILookup interface.
+   */
+  public with sharing class TestClass implements LookupResult.ILookup {
+    /**
+     * @description Retrieves a list of LookupResult based on the provided selected IDs and payload.
+     * @param selectedIds A list of selected IDs to filter the LookupResult.
+     * @param payload Additional data required for the selection process.
+     * @return A list of LookupResult that matches the selected IDs and payload.
+     */
+    public List<LookupResult> getSelection(
+      /**
+       * @description A list of selected IDs to filter the LookupResult.
+       */
+      List<String> selectedIds,
+      String payload
+    ) {
+      return new List<LookupResult>();
+    }
+
+    /**
+     * @description Retrieves a default list of LookupResult based on the provided payload.
+     * @param payload Additional data required for retrieving the default LookupResult.
+     * @return A list of default LookupResult based on the payload.
+     */
+    public List<LookupResult> getDefault(String payload) {
+      return new List<LookupResult>();
+    }
+
+    /**
+     * @description Retrieves a list of LookupResult that matches the provided search terms and payload.
+     * @param searchTerm The search term entered by the user.
+     * @param rawSearchTerm The raw search term before any processing.
+     * @param payload Additional data required for the lookup operation.
+     * @return A list of LookupResult that matches the search terms and payload.
+     */
+    public List<LookupResult> getMatching(
+      String searchTerm,
+      String rawSearchTerm,
+      String payload
+    ) {
+      return new List<LookupResult>();
+    }
   }
 }
