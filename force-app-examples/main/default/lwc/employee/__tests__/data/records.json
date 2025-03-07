@@ -1,0 +1,32 @@
+{
+  "externalId": 1,
+  "firstName": "John",
+  "lastName": "Sample",
+  "gender": "Male",
+  "dateOfBirth": "10/14/1972",
+  "relationshipToPrimaryMember": "Self",
+  "zipCode": 10001,
+  "status": "Active",
+  "dependents": [
+    {
+      "externalId": 1,
+      "firstName": "John",
+      "lastName": "Sample",
+      "gender": "Male",
+      "dateOfBirth": "10/14/1972",
+      "relationshipToPrimaryMember": "Spouse",
+      "zipCode": 10001,
+      "status": "Active"
+    },
+    {
+      "externalId": 1,
+      "firstName": "John",
+      "lastName": "Sample",
+      "gender": "Male",
+      "dateOfBirth": "10/14/1972",
+      "relationshipToPrimaryMember": "Child",
+      "zipCode": 10001,
+      "status": "Active"
+    }
+  ]
+}
