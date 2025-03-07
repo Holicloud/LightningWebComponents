@@ -1,0 +1,13 @@
+:host {
+  --background-color: white;
+  --error-color: var(--slds-g-color-error-base-40);
+}
+
+.has-error {
+  --slds-c-card-color-border: var(--error-color, rgb(234, 0, 30));
+  box-shadow: var(--error-color, rgb(234, 0, 30)) 0 0 0 1px inset;
+}
+
+.default-background {
+  background-color: var(--background-color, white);
+}

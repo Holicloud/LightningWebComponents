@@ -67,6 +67,11 @@ export const COMPONENTS = {
     type: COMPONENT_TYPES.COMPONENT,
     descriptor: "c/illustration",
     label: "illustration"
+  },
+  C_PANEL: {
+    type: COMPONENT_TYPES.COMPONENT,
+    descriptor: "c/panel",
+    label: "panel"
   }
 };
 
@@ -172,6 +177,20 @@ export const EXAMPLES = {
       git: GIT_APEX_RELIANT_EXAMPLES + "illustrationAdvanced",
       constructor: () => import("c/illustrationAdvanced")
     }
+  ],
+  [COMPONENTS.C_PANEL.descriptor]: [
+    {
+      title: "Employee",
+      description: "Shows the usage of panel with input like validations",
+      git: GIT_EXAMPLES + "employee",
+      constructor: () => import("c/employee")
+    },
+    {
+      title: "Dependent",
+      description: "Basic Usage",
+      git: GIT_EXAMPLES + "employeeDependent",
+      constructor: () => import("c/employeeDependent")
+    }
   ]
 };
 
@@ -245,6 +264,14 @@ export const HEADER_INFO = {
     description:
       "Illustrations should be used within other components, such as cards, to express the state of the component. An illustration image must be accompanied with heading text inline.",
     descriptor: COMPONENTS.C_ILLUSTRATION.descriptor,
+    targets: [TARGETS.LIGHTNING_EXPERIENCE]
+  },
+  [COMPONENTS.C_PANEL.descriptor]: {
+    git: GIT_SOURCE_COMPONENTS + "panel",
+    title: COMPONENTS.C_PANEL.label,
+    description:
+      "a panel that can be used to validate inputs and display validations messages to end users",
+    descriptor: COMPONENTS.C_PANEL.descriptor,
     targets: [TARGETS.LIGHTNING_EXPERIENCE]
   }
 };
