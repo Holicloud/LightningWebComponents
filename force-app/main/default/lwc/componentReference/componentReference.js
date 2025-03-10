@@ -68,10 +68,10 @@ export const COMPONENTS = {
     descriptor: "c/illustration",
     label: "illustration"
   },
-  C_ERROR_ACCORDION: {
+  C_PANEL: {
     type: COMPONENT_TYPES.COMPONENT,
-    descriptor: "c/errorsAccordion",
-    label: "Error Accordion"
+    descriptor: "c/panel",
+    label: "panel"
   }
 };
 
@@ -178,12 +178,18 @@ export const EXAMPLES = {
       constructor: () => import("c/illustrationAdvanced")
     }
   ],
-  [COMPONENTS.C_ERROR_ACCORDION.descriptor]: [
+  [COMPONENTS.C_PANEL.descriptor]: [
     {
-      title: "Basic",
-      description: `An "alert" like component that displays errors in a collapsible accordion`,
-      git: GIT_EXAMPLES + "errorsAccordionBasic",
-      constructor: () => import("c/errorsAccordionBasic")
+      title: "Employee",
+      description: "Shows the usage of panel with input like validations",
+      git: GIT_EXAMPLES + "employee",
+      constructor: () => import("c/employee")
+    },
+    {
+      title: "Dependent",
+      description: "Basic Usage",
+      git: GIT_EXAMPLES + "employeeDependent",
+      constructor: () => import("c/employeeDependent")
     }
   ]
 };
@@ -260,11 +266,12 @@ export const HEADER_INFO = {
     descriptor: COMPONENTS.C_ILLUSTRATION.descriptor,
     targets: [TARGETS.LIGHTNING_EXPERIENCE]
   },
-  [COMPONENTS.C_ERROR_ACCORDION.descriptor]: {
-    git: GIT_SOURCE_COMPONENTS + "errorsAccordion",
-    title: COMPONENTS.C_ERROR_ACCORDION.label,
-    description: "Displays And Array of Structured Errors",
-    descriptor: COMPONENTS.C_ERROR_ACCORDION.descriptor,
+  [COMPONENTS.C_PANEL.descriptor]: {
+    git: GIT_SOURCE_COMPONENTS + "panel",
+    title: COMPONENTS.C_PANEL.label,
+    description:
+      "a panel that can be used to validate inputs and display validations messages to end users",
+    descriptor: COMPONENTS.C_PANEL.descriptor,
     targets: [TARGETS.LIGHTNING_EXPERIENCE]
   }
 };
