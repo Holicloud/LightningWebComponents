@@ -168,13 +168,13 @@ export const EXAMPLES = {
     {
       title: "Basic",
       description: "",
-      git: GIT_APEX_RELIANT_EXAMPLES + "illustrationBasic",
+      git: GIT_EXAMPLES + "illustrationBasic",
       constructor: () => import("c/illustrationBasic")
     },
     {
       title: "With custom title and colors",
       description: "custom title and colors",
-      git: GIT_APEX_RELIANT_EXAMPLES + "illustrationAdvanced",
+      git: GIT_EXAMPLES + "illustrationAdvanced",
       constructor: () => import("c/illustrationAdvanced")
     }
   ],
