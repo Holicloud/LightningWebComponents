@@ -33,7 +33,7 @@
     "jest-canvas-mock": "^2.5.2",
     "lint-staged": "^15.4.3",
     "prettier": "^3.2.5",
-    "prettier-plugin-apex": "^2.2.4"
+    "prettier-plugin-apex": "^2.2.5"
   },
   "lint-staged": {
     "**/*.{cls,css,html,js,json,md,trigger,xml,yaml,yml}": [
