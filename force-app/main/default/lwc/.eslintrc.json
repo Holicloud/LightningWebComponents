@@ -14,5 +14,19 @@
         "node": true
       }
     }
-  ]
+  ],
+  "rules": {
+    "prefer-const": ["error"],
+    "object-curly-spacing": ["error", "always"],
+    "array-bracket-spacing": ["error", "never"],
+    "no-prototype-builtins": "error",
+    // "no-underscore-dangle": "error",
+    // "max-lines": ["error", 500],
+    "complexity": ["warn", 15],
+    "no-console": "warn",
+    // "eqeqeq": "error",
+    // "semi": ["error", "always"],
+    // "arrow-parens": ["error", "always"],
+    "no-nested-ternary": "error"
+  }
 }

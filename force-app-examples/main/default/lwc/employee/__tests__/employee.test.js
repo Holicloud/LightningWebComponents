@@ -16,7 +16,7 @@ const elementBuilder = new ElementBuilder("c-employee", Employee).setConfig({
   }
 });
 
-let scrollIntoViewMock = jest.fn();
+const scrollIntoViewMock = jest.fn();
 window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
 jest.mock("c/panel");
 jest.mock("c/employeeDependent");
