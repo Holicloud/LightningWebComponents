@@ -75,7 +75,7 @@ class CsvProccessor {
         const record = {};
 
         headers.forEach((header, index) => {
-          let prop = this.#headerTransformations[header] || header;
+          const prop = this.#headerTransformations[header] || header;
           record[prop] = currentLine[index];
         });
 
