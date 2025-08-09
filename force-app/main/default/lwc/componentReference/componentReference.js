@@ -1,6 +1,6 @@
 const GIT_HUB_START =
   "https://github.com/santiagoparradev/LWC-RECIPES-SANTIAGO/tree/main";
-const GIT_SOURCE_COMPONENTS =
+export const GIT_SOURCE_COMPONENTS =
   GIT_HUB_START + "/force-app/main/src-components/lwc/";
 const GIT_APEX_RELIANT_SOURCE_COMPONENTS =
   GIT_HUB_START + "/force-app/main/src-components-with-apex/lwc/";
@@ -19,7 +19,8 @@ const TARGETS = Object.freeze({
 export const COMPONENT_TYPES = {
   MIXIN: "Mixin",
   COMPONENT: "Component",
-  APEX_RELIANT_COMPONENT: "Apex Reliant Component"
+  APEX_RELIANT_COMPONENT: "Apex Reliant Component",
+  OTHER: "Other"
 };
 
 export const COMPONENTS = {
@@ -72,6 +73,11 @@ export const COMPONENTS = {
     type: COMPONENT_TYPES.COMPONENT,
     descriptor: "c/panel",
     label: "panel"
+  },
+  C_FORMATTED_MARKDOWN: {
+    type: COMPONENT_TYPES.OTHER,
+    descriptor: "c/formattedMarkdown",
+    label: "Formatted Markdown"
   }
 };
 
@@ -191,6 +197,14 @@ export const EXAMPLES = {
       git: GIT_EXAMPLES + "employeeDependent",
       constructor: () => import("c/employeeDependent")
     }
+  ],
+  [COMPONENTS.C_FORMATTED_MARKDOWN.descriptor]: [
+    {
+      title: "Basic",
+      description: "Shows formatted markdown",
+      git: GIT_EXAMPLES + "formattedMarkdown",
+      constructor: () => import("c/formattedMarkdownBasic")
+    }
   ]
 };
 
@@ -272,6 +286,13 @@ export const HEADER_INFO = {
     description:
       "a panel that can be used to validate inputs and display validations messages to end users",
     descriptor: COMPONENTS.C_PANEL.descriptor,
+    targets: [TARGETS.LIGHTNING_EXPERIENCE]
+  },
+  [COMPONENTS.C_FORMATTED_MARKDOWN.descriptor]: {
+    git: GIT_SOURCE_COMPONENTS + "formattedMarkdown",
+    title: COMPONENTS.C_FORMATTED_MARKDOWN.label,
+    description: "displays markdown using custom css",
+    descriptor: COMPONENTS.C_FORMATTED_MARKDOWN.descriptor,
     targets: [TARGETS.LIGHTNING_EXPERIENCE]
   }
 };

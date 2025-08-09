@@ -1,15 +1,18 @@
-import Markdown from "c/markdown";
+import FormattedMarkdown from "c/formattedMarkdown";
 
 import { ElementBuilder, removeChildren, getByDataId } from "test/utils";
 
-const elementBuilder = new ElementBuilder("c-markdown", Markdown);
+const elementBuilder = new ElementBuilder(
+  "c-formatted-markdown",
+  FormattedMarkdown
+);
 const INNER_HTML = "<h1>Hello World</h1>";
 
 window.marked = {
   parse: jest.fn(() => INNER_HTML)
 };
 
-describe("c-markdown", () => {
+describe("c-formatted-markdown", () => {
   let element;
 
   const getContainer = () => getByDataId(element, "container");
