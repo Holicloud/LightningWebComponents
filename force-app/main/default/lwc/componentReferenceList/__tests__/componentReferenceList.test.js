@@ -1,7 +1,7 @@
 import ComponentReferenceList from "c/componentReferenceList";
-import { COMPONENTS, COMPONENT_TYPES } from "c/componentReference";
 import { publish } from "c/messageChannelMixin";
 import componentReference from "@salesforce/messageChannel/ComponentReference__c";
+import getComponents from "@salesforce/apex/ComponentReferenceController.getComponents";
 import {
   ElementBuilder,
   getByDataId,
@@ -9,8 +9,19 @@ import {
   removeChildren,
   flushPromises
 } from "test/utils";
+import COMPONENTS from "./data/components.json";
 
-const COMPONENT = Object.freeze(Object.values(COMPONENTS)[1]);
+jest.mock(
+  "@salesforce/apex/ComponentReferenceController.getComponents",
+  () => {
+    const { createApexTestWireAdapter } = require("@salesforce/sfdx-lwc-jest");
+    return {
+      default: createApexTestWireAdapter(jest.fn())
+    };
+  },
+  { virtual: true }
+);
+
 const elementBuilder = new ElementBuilder(
   "c-component-reference-list",
   ComponentReferenceList
@@ -19,7 +30,7 @@ const elementBuilder = new ElementBuilder(
 const mockEvent = (value) =>
   new CustomEvent("change", {
     detail: {
-      value: value
+      value
     }
   });
 
@@ -35,28 +46,35 @@ describe("c-component-reference-list", () => {
 
   afterEach(() => {
     removeChildren();
+    jest.clearAllMocks();
   });
 
   it("this should show when use quick find and the lenght is greater that expect", async () => {
     element = await elementBuilder.build();
+    getComponents.emit(COMPONENTS);
 
-    getInput().dispatchEvent(mockEvent(COMPONENT.descriptor));
+    await flushPromises();
+
+    getInput().dispatchEvent(mockEvent(COMPONENTS[0].DeveloperName));
     await flushPromises();
 
     const sectionTitle = getSections()[0].label;
     const sectionItem = getSectionItem().label;
 
-    expect(sectionTitle).toBe(COMPONENT.type);
-    expect(sectionItem).toBe(COMPONENT.descriptor);
+    expect(sectionTitle).toBe(COMPONENTS[0].Type__c);
+    expect(sectionItem).toBe("c/" + COMPONENTS[0].DeveloperName);
   });
 
   it("this should show when use quick fiend and the lenght is not greater that expect", async () => {
     element = await elementBuilder.build();
-    getInput().dispatchEvent(mockEvent("al"));
+    getComponents.emit(COMPONENTS);
+
+    await flushPromises();
+    getInput().dispatchEvent(mockEvent("wizard"));
 
     await flushPromises();
 
-    expect(getSections().length).toBe(Object.values(COMPONENT_TYPES).length);
+    expect(getSections().length).toBe(1);
   });
 
   it("this should not display anything component", async () => {
@@ -73,7 +91,7 @@ describe("c-component-reference-list", () => {
 
     const mock = new CustomEvent("select", {
       detail: {
-        name: COMPONENT.descriptor
+        name: COMPONENTS[0].DeveloperName
       }
     });
 
@@ -82,7 +100,7 @@ describe("c-component-reference-list", () => {
 
     expect(publish).toHaveBeenCalledWith({
       channel: componentReference,
-      payload: { descriptor: COMPONENT.descriptor }
+      payload: { descriptor: COMPONENTS[0].DeveloperName }
     });
   });
 });

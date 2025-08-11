@@ -19,12 +19,12 @@ module.exports = {
   testPathIgnorePatterns: [
     "/node_modules/",
     "<rootDir>/force-app-examples/",
-    "<rootDir>/force-app/main/default/lwc/componentReference/componentReference"
+    "<rootDir>/force-app-examples/main/examples-with-apex/lwc/apexLookupBasic/"
   ],
   coveragePathIgnorePatterns: [
     "/node_modules/",
     "<rootDir>/force-app-examples/",
-    "<rootDir>/force-app/main/default/lwc/componentReference/componentReference"
+    "<rootDir>/force-app-examples/main/examples-with-apex/lwc/apexLookupBasic/"
   ],
   coverageThreshold: {
     global: {

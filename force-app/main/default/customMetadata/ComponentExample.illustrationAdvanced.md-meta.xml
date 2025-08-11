@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomMetadata
+  xmlns="http://soap.sforce.com/2006/04/metadata"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+>
+    <label>IllustrationCustomTitleAndColors</label>
+    <protected>false</protected>
+    <values>
+        <field>Component__c</field>
+        <value xsi:type="xsd:string">illustration</value>
+    </values>
+    <values>
+        <field>Description__c</field>
+        <value
+      xsi:type="xsd:string"
+    >Illustration component with custom title and colors.</value>
+    </values>
+    <values>
+        <field>Title__c</field>
+        <value xsi:type="xsd:string">With custom title and colors</value>
+    </values>
+</CustomMetadata>

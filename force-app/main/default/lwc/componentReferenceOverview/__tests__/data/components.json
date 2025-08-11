@@ -1,0 +1,15 @@
+[
+  {
+    "Targets__c": "Lightning Experience",
+    "Label": "Wizard",
+    "MasterLabel": "Wizard",
+    "SystemModstamp": "2025-08-10 20:26:59",
+    "Language": "es_MX",
+    "Description__c": "A configurable guided setup.",
+    "Type__c": "Base",
+    "QualifiedApiName": "wizard",
+    "Id": "m01Hr0000002zh0",
+    "DeveloperName": "wizard",
+    "NamespacePrefix": null
+  }
+]

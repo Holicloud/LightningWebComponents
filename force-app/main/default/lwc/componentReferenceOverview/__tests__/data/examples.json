@@ -1,0 +1,28 @@
+[
+  {
+    "Label": "WizardBasic",
+    "MasterLabel": "WizardBasic",
+    "Component__c": "m01Hr0000002zh0",
+    "SystemModstamp": "2025-08-10 20:31:22",
+    "Title__c": "Basic",
+    "Language": "es_MX",
+    "Description__c": "Basic implementation of a guided setup.",
+    "QualifiedApiName": "wizardBasic",
+    "Id": "m02Hr000001MUEe",
+    "DeveloperName": "wizardBasic",
+    "NamespacePrefix": null
+  },
+  {
+    "Label": "WizardStepBasic",
+    "MasterLabel": "WizardStepBasic",
+    "Component__c": "m01Hr0000002zh0",
+    "SystemModstamp": "2025-08-10 20:31:22",
+    "Title__c": "Basic",
+    "Language": "es_MX",
+    "Description__c": "Basic implementation of a step in a guided setup.",
+    "QualifiedApiName": "wizardStepBasic",
+    "Id": "m02Hr000001MUEf",
+    "DeveloperName": "wizardStepBasic",
+    "NamespacePrefix": null
+  }
+]
