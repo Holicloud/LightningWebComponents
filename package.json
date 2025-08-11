@@ -41,7 +41,10 @@
     ],
     "**/lwc/**/*.js": [
       "eslint",
-      "sfdx-lwc-jest --skipApiVersionCheck -- --bail --findRelatedTests --passWithNoTests"
+      "sfdx-lwc-jest --skipApiVersionCheck -- --bail --findRelatedTests"
+    ],
+    "force-app-examples/**/lwc/**/*.js": [
+      "eslint"
     ]
   },
   "author": "Santiago Parra Guerrero",

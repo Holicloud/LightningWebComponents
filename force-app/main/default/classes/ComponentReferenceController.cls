@@ -4,6 +4,7 @@
 public with sharing class ComponentReferenceController {
   /**
    * @description Metadata for components.
+   * @return List<Component__mdt> list of component examples
    */
   @AuraEnabled(cacheable=true)
   public static List<Component__mdt> getComponents() {
@@ -12,6 +13,7 @@ public with sharing class ComponentReferenceController {
 
   /**
    * @description Metadata for component examples.
+   * @return List<ComponentExample__mdt> list of component examples
    */
   @AuraEnabled(cacheable=true)
   public static List<ComponentExample__mdt> getExamples() {
