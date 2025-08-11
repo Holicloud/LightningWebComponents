@@ -1,10 +1,17 @@
-import { HEADER_INFO, COMPONENTS } from "c/componentReference";
+// import { HEADER_INFO, COMPONENTS } from "c/componentReference";
 import componentReference from "@salesforce/messageChannel/ComponentReference__c";
 import { MessageChannelMixin } from "c/messageChannelMixin";
 import { NavigationMixin } from "lightning/navigation";
 import { Mixer } from "c/utils";
+import getComponents from "@salesforce/apex/ComponentReferenceController.getComponents";
+import { wire } from "lwc";
+import { reduceErrors } from "c/ldsUtils";
 
-const BASE_INFO = HEADER_INFO[Object.values(COMPONENTS)[0].descriptor];
+const BASE_PATH =
+  "https://github.com/santiagoparradev/LWC-RECIPES-SANTIAGO/tree/main/force-app/main/";
+const GIT_PATH_BY_TYPE = {
+  "Apex Reliant": "src-components-with-apex/lwc/"
+};
 
 export default class ComponentReferenceHeader extends new Mixer().mix(
   MessageChannelMixin,
@@ -15,25 +22,32 @@ export default class ComponentReferenceHeader extends new Mixer().mix(
   descriptor;
   targets = [];
   git;
+  error;
 
   handleMessage = (message) => {
-    const headerInformation = HEADER_INFO[message.descriptor];
-    this.setHeaderInformation(headerInformation);
+    const selected = this.components.find(
+      (component) => component.DeveloperName === message.descriptor
+    );
+    this.setHeaderInformation(selected);
   };
 
-  setHeaderInformation(headerInformation) {
-    if (headerInformation) {
-      this.title = headerInformation.title;
-      this.description = headerInformation.description;
-      this.descriptor = headerInformation.descriptor;
-      this.targets = headerInformation.targets;
-      this.git = headerInformation.git;
+  setHeaderInformation(component) {
+    if (component) {
+      this.title = component.Label;
+      this.description = component.Description__c;
+      this.descriptor = "c/" + component.DeveloperName;
+      this.targets = component.Targets__c.split(",");
+      this.git =
+        BASE_PATH +
+        (GIT_PATH_BY_TYPE[component.Type__c] || "src-components/lwc/") +
+        component.DeveloperName;
     } else {
       this.title = null;
       this.description = null;
       this.descriptor = null;
       this.targets = null;
       this.git = null;
+      this.error = null;
     }
   }
 
@@ -42,7 +56,19 @@ export default class ComponentReferenceHeader extends new Mixer().mix(
       listener: this.handleMessage,
       channel: componentReference
     });
-    this.setHeaderInformation(BASE_INFO);
+  }
+
+  components;
+
+  @wire(getComponents)
+  wiredData({ error, data }) {
+    if (data) {
+      this.components = data;
+      this.setHeaderInformation(this.components[0]);
+      this.error = null;
+    } else if (error) {
+      this.error = reduceErrors(error);
+    }
   }
 
   handleViewInGit() {

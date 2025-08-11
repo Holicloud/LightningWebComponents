@@ -4,7 +4,7 @@ import { isBlank, isNotBlank } from "c/utils";
 import { loadStyle, loadScript } from "lightning/platformResourceLoader";
 import markdown from "@salesforce/resourceUrl/markdown";
 
-export default class lightndown extends LightningElement {
+export default class FormattedMarkdown extends LightningElement {
   @api string;
   @api url;
 

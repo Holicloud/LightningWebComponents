@@ -15,14 +15,13 @@
           <lightning-combobox
             label="Example"
             data-id="example"
-            value={selectedExample.title}
+            value={selectedExample.DeveloperName}
             options={exampleOptions}
             onchange={handleChangeExample}
           ></lightning-combobox>
         </div>
         <div class="slds-col slds-grow-none">
           <lightning-button
-            lwc:if={selectedExample.git}
             onclick={handleViewInGit}
             label="View in Git"
             title="View in Git"
@@ -37,7 +36,7 @@
             >
             <div class="slds-form-element__control">
               <div id="form-element-01-356" data-id="description">
-                {selectedExample.description}
+                {selectedExample.Description__c}
               </div>
             </div>
           </div>
@@ -49,7 +48,7 @@
       >
         <lwc:component
           lwc:is={componentConstructor}
-          data-component={selectedExample.title}
+          data-component={selectedExample.DeveloperName}
         ></lwc:component>
       </div>
     </div>
