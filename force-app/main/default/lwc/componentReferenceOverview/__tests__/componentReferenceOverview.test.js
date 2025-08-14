@@ -1,5 +1,5 @@
 import ComponentReferenceOverview from "c/componentReferenceOverview";
-import componentReference from "@salesforce/messageChannel/ComponentReference__c";
+import messageChannel from "@salesforce/messageChannel/ComponentReferenceChannel__c";
 import { publish } from "c/messageChannelMixin";
 import { getNavigateCalledWith } from "lightning/navigation";
 import getExamples from "@salesforce/apex/ComponentReferenceController.getExamples";
@@ -62,7 +62,7 @@ describe("c-component-reference-overview", () => {
     await flushPromises();
 
     publish({
-      channel: componentReference,
+      channel: messageChannel,
       payload: { descriptor: COMPONENTS[0].DeveloperName }
     });
 

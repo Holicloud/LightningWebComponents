@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
+    <masterLabel>ComponentReferenceChannel</masterLabel>
+    <isExposed>true</isExposed>
+    <description
+  >Message Channel to pass component reference updates</description>
+     <lightningMessageFields>
+        <fieldName>component</fieldName>
+        <description>Selected string component</description>
+    </lightningMessageFields>
+</LightningMessageChannel>

@@ -1,5 +1,5 @@
 import ComponentReferenceHeader from "c/componentReferenceHeader";
-import componentReference from "@salesforce/messageChannel/ComponentReference__c";
+import messageChannel from "@salesforce/messageChannel/ComponentReferenceChannel__c";
 import { publish, isSubscribed } from "c/messageChannelMixin";
 import { getNavigateCalledWith } from "lightning/navigation";
 import getComponents from "@salesforce/apex/ComponentReferenceController.getComponents";
@@ -61,7 +61,7 @@ describe("c-component-reference-header", () => {
     await flushPromises();
 
     const firstComponent = COMPONENTS[0];
-    expect(isSubscribed(componentReference)).toBe(true);
+    expect(isSubscribed(messageChannel)).toBe(true);
     expect(getDescription().textContent).toContain(
       firstComponent.Description__c
     );
@@ -77,7 +77,7 @@ describe("c-component-reference-header", () => {
 
     const anotherComponent = COMPONENTS[1];
     publish({
-      channel: componentReference,
+      channel: messageChannel,
       payload: { descriptor: anotherComponent.DeveloperName }
     });
 

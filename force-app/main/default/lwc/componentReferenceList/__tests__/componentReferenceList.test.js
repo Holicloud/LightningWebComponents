@@ -1,6 +1,6 @@
 import ComponentReferenceList from "c/componentReferenceList";
 import { publish } from "c/messageChannelMixin";
-import componentReference from "@salesforce/messageChannel/ComponentReference__c";
+import messageChannel from "@salesforce/messageChannel/ComponentReferenceChannel__c";
 import getComponents from "@salesforce/apex/ComponentReferenceController.getComponents";
 import {
   ElementBuilder,
@@ -99,7 +99,7 @@ describe("c-component-reference-list", () => {
     await flushPromises();
 
     expect(publish).toHaveBeenCalledWith({
-      channel: componentReference,
+      channel: messageChannel,
       payload: { descriptor: COMPONENTS[0].DeveloperName }
     });
   });

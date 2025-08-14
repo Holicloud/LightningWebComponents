@@ -1,4 +1,4 @@
-import componentReference from "@salesforce/messageChannel/ComponentReference__c";
+import messageChannel from "@salesforce/messageChannel/ComponentReferenceChannel__c";
 import { MessageChannelMixin } from "c/messageChannelMixin";
 import { Mixer } from "c/utils";
 import { NavigationMixin } from "lightning/navigation";
@@ -63,7 +63,7 @@ export default class ComponentReferenceOverview extends new Mixer().mix(
   connectedCallback() {
     this[MessageChannelMixin.Subscribe]({
       listener: this.handleChangeComponent,
-      channel: componentReference
+      channel: messageChannel
     });
   }
 
