@@ -2,8 +2,11 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Targets__c</fullName>
     <defaultValue>&quot;Lightning Experience&quot;</defaultValue>
+    <description>comma separated list places component can be used</description>
     <externalId>false</externalId>
     <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText
+  >comma separated list places component can be used</inlineHelpText>
     <label>Targets</label>
     <length>255</length>
     <required>true</required>
