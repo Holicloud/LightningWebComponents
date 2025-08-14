@@ -14,9 +14,7 @@
     </values>
     <values>
         <field>Targets__c</field>
-        <value
-      xsi:type="xsd:string"
-    >Lightning Experience,Experience Builder Sites,Salesforce Mobile App,Standalone Lightning App,Mobile Offline</value>
+        <value xsi:type="xsd:string">Lightning Experience</value>
     </values>
     <values>
         <field>Type__c</field>
