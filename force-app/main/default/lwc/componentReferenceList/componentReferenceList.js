@@ -1,6 +1,6 @@
 import { LightningElement, track } from "lwc";
 import { MessageChannelMixin } from "c/messageChannelMixin";
-import componentReferenceChannel from "@salesforce/messageChannel/ComponentReference__c";
+import messageChannel from "@salesforce/messageChannel/ComponentReferenceChannel__c";
 import { clone } from "c/utils";
 import getComponents from "@salesforce/apex/ComponentReferenceController.getComponents";
 import { wire } from "lwc";
@@ -39,7 +39,7 @@ export default class ComponentReferenceList extends MessageChannelMixin(
 
   handleSelect(event) {
     this[MessageChannelMixin.Publish]({
-      channel: componentReferenceChannel,
+      channel: messageChannel,
       payload: {
         descriptor: event.detail.name
       }
