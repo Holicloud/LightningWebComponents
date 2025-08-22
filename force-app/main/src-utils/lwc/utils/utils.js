@@ -44,6 +44,7 @@ export {
   convertToISOString
 } from "./strings";
 export { isObject, deepMerge } from "./objects";
+export { flatObjectsInArray } from "./arrays";
 export { classSet } from "./classSet";
 export { CsvProccessor } from "./csv";
 export { classListMutation } from "./classListMutation";
