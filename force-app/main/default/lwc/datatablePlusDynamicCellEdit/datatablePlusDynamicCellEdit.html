@@ -1,0 +1,17 @@
+<template>
+  <div onkeydown={handleKeyDown}>
+    <lwc:component
+      lwc:is={renderedComponent}
+      lwc:spread={_props}
+      onblur={handleBlur}
+      onchange={handleChange}
+      onfocus={handleFocus}
+      variant="label-hidden"
+      value={_value}
+      data-id="input"
+    ></lwc:component>
+    <span lwc:if={isLookup} class="slds-text-body_small">
+      To remove the selected record, press Backspace or Del.
+    </span>
+  </div>
+</template>
