@@ -1,0 +1,15 @@
+<template>
+  <c-component-example title="Single">
+    <c-record value={currentUserId} display-field="User.Name"></c-record>
+  </c-component-example>
+  <c-component-example title="Multiple">
+    <c-record value={someUserIds} display-field="User.Name"></c-record>
+  </c-component-example>
+  <c-component-example title="With Separator">
+    <c-record
+      value={someUserIds}
+      separator=" | "
+      display-field="User.Name"
+    ></c-record>
+  </c-component-example>
+</template>
