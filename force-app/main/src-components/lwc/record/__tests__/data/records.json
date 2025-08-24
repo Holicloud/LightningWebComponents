@@ -1,0 +1,61 @@
+{
+  "results": [
+    {
+      "statusCode": 200,
+      "result": {
+        "apiName": "User",
+        "childRelationships": {},
+        "fields": {
+          "Name": {
+            "displayValue": null,
+            "value": "Nicolas Parra"
+          }
+        },
+        "id": "0058b00000Iu6pJAAR",
+        "lastModifiedById": "0058b00000GyOXGAA3",
+        "lastModifiedDate": "2025-02-12T14:52:08.000Z",
+        "recordTypeId": null,
+        "recordTypeInfo": null,
+        "systemModstamp": "2025-02-12T14:52:19.000Z"
+      }
+    },
+    {
+      "statusCode": 200,
+      "result": {
+        "apiName": "User",
+        "childRelationships": {},
+        "fields": {
+          "Name": {
+            "displayValue": null,
+            "value": "Integration User"
+          }
+        },
+        "id": "0058b00000HdFlMAAV",
+        "lastModifiedById": "0058b00000GyOXGAA3",
+        "lastModifiedDate": "2023-04-21T17:21:05.000Z",
+        "recordTypeId": null,
+        "recordTypeInfo": null,
+        "systemModstamp": "2024-11-07T01:01:46.000Z"
+      }
+    },
+    {
+      "statusCode": 200,
+      "result": {
+        "apiName": "User",
+        "childRelationships": {},
+        "fields": {
+          "Name": {
+            "displayValue": null,
+            "value": "Automated Process"
+          }
+        },
+        "id": "0058b00000HdFlNAAV",
+        "lastModifiedById": "0058b00000HdFlOAAV",
+        "lastModifiedDate": "2023-04-21T17:21:05.000Z",
+        "recordTypeId": null,
+        "recordTypeInfo": null,
+        "systemModstamp": "2023-04-21T18:00:13.000Z"
+      }
+    }
+  ]
+}
