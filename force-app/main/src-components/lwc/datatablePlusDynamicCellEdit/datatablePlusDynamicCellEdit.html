@@ -1,8 +1,8 @@
 <template>
-  <div onkeydown={handleKeyDown}>
+  <div data-id="container" onkeydown={handleKeyDown}>
     <lwc:component
       lwc:is={renderedComponent}
-      lwc:spread={_props}
+      lwc:spread={props}
       onblur={handleBlur}
       onchange={handleChange}
       onfocus={handleFocus}
@@ -10,7 +10,11 @@
       value={_value}
       data-id="input"
     ></lwc:component>
-    <span lwc:if={isLookup} class="slds-text-body_small">
+    <span
+      lwc:if={isLookup}
+      class="slds-text-body_small"
+      data-id="lookup-message"
+    >
       To remove the selected record, press Backspace or Del.
     </span>
   </div>

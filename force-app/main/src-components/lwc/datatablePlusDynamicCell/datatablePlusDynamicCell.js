@@ -13,54 +13,41 @@ const COMPONENTS = {
 };
 
 export default class DatatablePlusDynamicCell extends LightningElement {
-  _type = "lightning/formattedText";
   renderedComponent;
 
-  @api
-  get value() {
-    return this._value;
-  }
-  set value(value) {
-    this._value = value;
-  }
-
-  _value;
+  @api value;
   @api props = {};
+  @api type = "lightning/formattedText";
 
-  @api
-  get type() {
-    return this._type;
-  }
-  set type(type) {
-    if (!type) {
-      type = DEFAULT_TYPE;
+  async setType() {
+    if (this.renderedComponent) {
+      return;
     }
 
-    this.setType(type);
-  }
-
-  async setType(type) {
-    if (typeof type === "function") {
-      const value = await type();
-      this.renderedComponent = value.default;
-    } else if (typeof type === "string") {
-      if (COMPONENTS[type]) {
-        const { default: ctor } = await COMPONENTS[type]();
-        this.renderedComponent = ctor;
+    if (typeof this.type === "function") {
+      if (this.type.prototype instanceof LightningElement) {
+        this.renderedComponent = this.type;
       } else {
-        const { default: ctor } = await import(type);
+        const { default: ctor } = await this.type();
         this.renderedComponent = ctor;
       }
-    } else {
-      this.renderedComponent = type;
+    } else if (typeof this.type === "string") {
+      if (COMPONENTS[this.type]) {
+        const { default: ctor } = await COMPONENTS[this.type]();
+        this.renderedComponent = ctor;
+      } else {
+        const { default: ctor } = await import(this.type);
+        this.renderedComponent = ctor;
+      }
     }
 
-    if (
-      !this.renderedComponent ||
-      !(this.renderedComponent.prototype instanceof LightningElement)
-    ) {
-      const { default: ctor } = await import(DEFAULT_TYPE);
+    if (!this.renderedComponent) {
+      const { default: ctor } = await COMPONENTS[DEFAULT_TYPE]();
       this.renderedComponent = ctor;
     }
+  }
+
+  connectedCallback() {
+    this.setType();
   }
 }

@@ -1,4 +1,4 @@
-import { isObject, deepMerge } from "c/utils";
+import { isObject, deepMerge, flattenObject } from "c/utils";
 
 describe("isObject", () => {
   it("should return true for plain objects", () => {
@@ -55,5 +55,59 @@ describe("deepMerge", () => {
     const result = deepMerge(base, overwrite);
 
     expect(result).toEqual({ a: 1, b: { c: 2 } });
+  });
+});
+
+describe("flattenObject", () => {
+  test("flattens a simple nested object", () => {
+    const input = { a: { b: { c: 1 } } };
+    const result = flattenObject(input);
+    expect(result).toEqual({ "a.b.c": 1 });
+  });
+
+  test("handles multiple nested props", () => {
+    const input = { user: { name: "John", age: 30 } };
+    const result = flattenObject(input);
+    expect(result).toEqual({
+      "user.name": "John",
+      "user.age": 30
+    });
+  });
+
+  test("leaves top-level props intact", () => {
+    const input = { a: 1, b: { c: 2 } };
+    const result = flattenObject(input);
+    expect(result).toEqual({ a: 1, "b.c": 2 });
+  });
+
+  test("handles empty object", () => {
+    const input = {};
+    const result = flattenObject(input);
+    expect(result).toEqual({});
+  });
+
+  test("ignores arrays (treats them as values)", () => {
+    const input = { list: [1, 2, 3] };
+    const result = flattenObject(input);
+    expect(result).toEqual({ list: [1, 2, 3] });
+  });
+
+  test("ignores null values", () => {
+    const input = { a: null, b: { c: null } };
+    const result = flattenObject(input);
+    expect(result).toEqual({ a: null, "b.c": null });
+  });
+
+  test("does not mutate original object", () => {
+    const input = { a: { b: 2 } };
+    const copy = JSON.parse(JSON.stringify(input)); // snapshot
+    flattenObject(input);
+    expect(input).toEqual(copy);
+  });
+
+  test("flattens with custom separator", () => {
+    const input = { a: { b: { c: 1 } }, d: 2 };
+    const result = flattenObject(input, "/");
+    expect(result).toEqual({ "a/b/c": 1, d: 2 });
   });
 });

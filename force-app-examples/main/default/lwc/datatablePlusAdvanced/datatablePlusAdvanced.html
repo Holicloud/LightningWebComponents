@@ -1,18 +1,15 @@
 <template>
   <template lwc:if={lookupRecords.length}>
     <c-component-example title="Picklist and Record Picker">
-      <c-datatable-plus
-        key-field="Id"
-        records={data}
-        config={baseColumns}
-      ></c-datatable-plus>
+      <lightning-datatable key-field="Id" data={data} columns={baseColumns}>
+        <c-datatable-plus-extended-types
+          slot="customdatatypes"
+        ></c-datatable-plus-extended-types>
+      </lightning-datatable>
     </c-component-example>
     <c-component-example title="Lookup and MultiLookup">
-      <c-datatable-plus
-        key-field="Id"
-        records={data}
-        config={columnsLookup}
-      ></c-datatable-plus>
+      <c-datatable-plus key-field="Id" data={data} columns={columnsLookup}>
+      </c-datatable-plus>
     </c-component-example>
   </template>
 </template>
