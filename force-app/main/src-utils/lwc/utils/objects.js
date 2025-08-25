@@ -24,4 +24,23 @@ function deepMerge(base = {}, overwrite = {}) {
   return clonedBase;
 }
 
-export { isObject, deepMerge };
+function flattenObject(obj, separator = ".", path = "") {
+  const res = {};
+
+  for (const prop in obj) {
+    if (!Object.prototype.hasOwnProperty.call(obj, prop)) continue;
+
+    const curVal = obj[prop];
+    const key = path ? `${path}${separator}${prop}` : prop;
+
+    if (isObject(curVal)) {
+      Object.assign(res, flattenObject(curVal, separator, key));
+    } else {
+      res[key] = curVal;
+    }
+  }
+
+  return res;
+}
+
+export { isObject, deepMerge, flattenObject };

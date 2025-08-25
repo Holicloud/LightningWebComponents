@@ -43,8 +43,7 @@ export {
   isValidDate,
   convertToISOString
 } from "./strings";
-export { isObject, deepMerge } from "./objects";
-export { flatObjectsInArray } from "./arrays";
+export { isObject, deepMerge, flattenObject } from "./objects";
 export { classSet } from "./classSet";
 export { CsvProccessor } from "./csv";
 export { classListMutation } from "./classListMutation";

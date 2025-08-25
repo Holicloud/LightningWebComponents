@@ -11,18 +11,7 @@ const COMPONENTS = {
 };
 
 export default class DatatablePlusDynamicCellEdit extends LightningElement {
-  @api
-  get type() {
-    return this._type;
-  }
-  set type(value) {
-    if (!value) {
-      value = DEFAULT_TYPE;
-    }
-
-    this.setType(value);
-    this._type = value;
-  }
+  @api type = DEFAULT_TYPE;
 
   @api
   get value() {
@@ -32,17 +21,9 @@ export default class DatatablePlusDynamicCellEdit extends LightningElement {
     this._value = value;
   }
 
-  @api
-  get props() {
-    return this._props;
-  }
-  set props(value) {
-    // this._props = JSON.parse(value);
-    this._props = value;
-  }
+  @api props = {};
 
   _value;
-  _props = {};
   renderedComponent;
 
   @api
@@ -68,6 +49,10 @@ export default class DatatablePlusDynamicCellEdit extends LightningElement {
     this.inputElement?.focus();
   }
 
+  connectedCallback() {
+    this.setType();
+  }
+
   get isLightningRecordPicker() {
     return this.type === "lightning/recordPicker";
   }
@@ -76,20 +61,26 @@ export default class DatatablePlusDynamicCellEdit extends LightningElement {
     return this.type === "c/lookup" || this.isLightningRecordPicker;
   }
 
-  async setType(type) {
-    if (typeof type === "function") {
-      const { default: ctor } = await type();
-      this.renderedComponent = ctor;
-    } else if (typeof type === "string") {
-      if (COMPONENTS[type]) {
-        const { default: ctor } = await COMPONENTS[type]();
-        this.renderedComponent = ctor;
+  async setType() {
+    if (this.renderedComponent) {
+      return;
+    }
+
+    if (typeof this.type === "function") {
+      if (this.type.prototype instanceof LightningElement) {
+        this.renderedComponent = this.type;
       } else {
-        const { default: ctor } = await import(type);
+        const { default: ctor } = await this.type();
         this.renderedComponent = ctor;
       }
-    } else {
-      this.renderedComponent = type;
+    } else if (typeof this.type === "string") {
+      if (COMPONENTS[this.type]) {
+        const { default: ctor } = await COMPONENTS[this.type]();
+        this.renderedComponent = ctor;
+      } else {
+        const { default: ctor } = await import(this.type);
+        this.renderedComponent = ctor;
+      }
     }
 
     if (!this.renderedComponent) {
@@ -102,10 +93,6 @@ export default class DatatablePlusDynamicCellEdit extends LightningElement {
     if (this.isLightningRecordPicker) {
       e.detail.value = e.detail.recordId;
     }
-
-    //  else if (this.type === 'c/lookup') {
-    // e.detail.value = e.detail.value;
-    // }
 
     this._value = e.detail.value || null;
 
