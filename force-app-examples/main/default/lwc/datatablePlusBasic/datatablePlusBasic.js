@@ -6,7 +6,7 @@ import RECORDS from "./records.js";
 const COLUMNS = [
   {
     label: "Date time with formatting",
-    fieldName: "CreatedDate",
+    fieldName: "DateTime",
     type: TYPE,
     typeAttributes: {
       view: "lightning/formattedDateTime",
@@ -32,7 +32,7 @@ const COLUMNS = [
   {
     label: "Email with expected pattern",
     type: TYPE,
-    fieldName: "Email__c",
+    fieldName: "Email",
     typeAttributes: {
       view: "lightning/formattedEmail",
       edit: "lightning/input",
@@ -51,7 +51,7 @@ const COLUMNS = [
   },
   {
     label: "Text area with min length",
-    fieldName: "TextArea__c",
+    fieldName: "TextArea",
     type: TYPE,
     typeAttributes: {
       view: "lightning/formattedText",
@@ -65,7 +65,7 @@ const COLUMNS = [
   },
   {
     label: "Url With Tooltip And Validation",
-    fieldName: "Url__c",
+    fieldName: "Url",
     type: TYPE,
     typeAttributes: {
       view: "lightning/formattedUrl",

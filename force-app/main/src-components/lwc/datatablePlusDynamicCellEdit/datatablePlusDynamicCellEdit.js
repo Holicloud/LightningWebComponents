@@ -12,6 +12,7 @@ const COMPONENTS = {
 
 export default class DatatablePlusDynamicCellEdit extends LightningElement {
   @api type = DEFAULT_TYPE;
+  @api label;
 
   @api
   get value() {
