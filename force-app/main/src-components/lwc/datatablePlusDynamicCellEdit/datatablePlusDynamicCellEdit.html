@@ -2,11 +2,12 @@
   <div data-id="container" onkeydown={handleKeyDown}>
     <lwc:component
       lwc:is={renderedComponent}
+      variant="label-hidden"
+      label={label}
       lwc:spread={props}
       onblur={handleBlur}
       onchange={handleChange}
       onfocus={handleFocus}
-      variant="label-hidden"
       value={_value}
       data-id="input"
     ></lwc:component>
