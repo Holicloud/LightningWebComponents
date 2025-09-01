@@ -16,7 +16,7 @@
     "precommit": "lint-staged"
   },
   "devDependencies": {
-    "@babel/core": "^7.28.0",
+    "@babel/core": "^7.28.3",
     "@babel/eslint-parser": "^7.28.0",
     "@locker/eslint-config-locker": "^0.25.5",
     "@lwc/eslint-plugin-lwc": "^1.9.0",
