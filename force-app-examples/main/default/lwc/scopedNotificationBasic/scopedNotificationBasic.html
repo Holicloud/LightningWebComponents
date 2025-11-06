@@ -1,0 +1,40 @@
+<template>
+  <c-component-example title="Default Variant (info)">
+    <c-scoped-notification>message</c-scoped-notification>
+  </c-component-example>
+
+  <c-component-example title="Variant Warning">
+    <c-scoped-notification variant="warning">message</c-scoped-notification>
+  </c-component-example>
+
+  <c-component-example title="Variant Error">
+    <c-scoped-notification variant="error">message</c-scoped-notification>
+  </c-component-example>
+
+  <c-component-example title="Variant Success">
+    <c-scoped-notification variant="success">message</c-scoped-notification>
+  </c-component-example>
+
+  <c-component-example title="With Action">
+    <c-scoped-notification
+      action-message="More Information"
+      onaction={handleAction}
+    >
+      message
+    </c-scoped-notification>
+  </c-component-example>
+
+  <c-component-example title="Overwrite Icon">
+    <c-scoped-notification icon-name="utility:activity"
+      >message</c-scoped-notification
+    >
+  </c-component-example>
+
+  <c-component-example title="Hidden">
+    <lightning-button
+      label="Toggle Visibility"
+      onclick={handleToggleVisibility}
+    ></lightning-button>
+    <c-scoped-notification is-hidden={isHidden}>message</c-scoped-notification>
+  </c-component-example>
+</template>

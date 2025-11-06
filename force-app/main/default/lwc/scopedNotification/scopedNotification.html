@@ -1,0 +1,31 @@
+<template>
+  <div
+    lwc:if={isVisible}
+    data-id="scoped-notification"
+    class={classes}
+    role="status"
+  >
+    <div class="slds-media__figure">
+      <lightning-icon
+        size="x-small"
+        class="slds-button__icon"
+        icon-name={icon}
+        data-id="icon"
+        variant={variantProps.iconVariant}
+        alternative-text={variantProps.assistiveText}
+      ></lightning-icon>
+    </div>
+    <div class="slds-media__body">
+      <p>
+        <slot></slot>
+        <a
+          lwc:if={actionMessage}
+          data-id="action"
+          href="#"
+          onclick={handleAction}
+          >{actionMessage}</a
+        >
+      </p>
+    </div>
+  </div>
+</template>
