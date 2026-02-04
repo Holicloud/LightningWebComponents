@@ -1,7 +1,7 @@
 .lgc-bg {
-  background-color: rgb(242 242 242);
+  background-color: var(--slds-g-color-surface-1, white);
 }
 
 .lgc-bg-inverse {
-  background-color: white;
+  background-color: var(--slds-g-color-surface-1, white);
 }

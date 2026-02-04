@@ -18,7 +18,6 @@
 ## Documentation
 
 - ### Variants
-
   - #### Default Variant (Desert)
 
     ```html
@@ -32,7 +31,6 @@
     ```
 
 - ### Customization
-
   - #### Setting Title
 
     ```html

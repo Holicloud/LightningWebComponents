@@ -12,11 +12,6 @@ function assert(condition, message) {
   }
 }
 
-function executeAfterRender(callback) {
-  // eslint-disable-next-line @lwc/lwc/no-async-operation
-  setTimeout(callback, 0);
-}
-
 class Mixer {
   base;
 
@@ -35,7 +30,7 @@ class Mixer {
   }
 }
 
-export { clone, assert, executeAfterRender, Mixer };
+export { clone, assert, Mixer };
 
 export {
   isBlank,

@@ -24,7 +24,6 @@ describe("c-formatted-markdown", () => {
   it("should update html using markdown string", async () => {
     element = await elementBuilder.build({ string: "string" });
 
-    // eslint-disable-next-line @lwc/lwc/no-inner-html
     expect(getContainer().innerHTML).toBe(INNER_HTML);
   });
 
@@ -37,7 +36,6 @@ describe("c-formatted-markdown", () => {
       })
     );
 
-    // eslint-disable-next-line @lwc/lwc/no-inner-html
     expect(getContainer().innerHTML).toBe(INNER_HTML);
   });
 });

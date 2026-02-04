@@ -57,7 +57,7 @@ describe("c-scoped-notification", () => {
 
   it("overwrites icon", async () => {
     element = await elementBuilder.build({
-      iconName: "utility:custom"
+      iconName: "some:icon"
     });
     const icon = getIcon();
     expect(icon.iconName).toBe(element.iconName);
@@ -65,14 +65,11 @@ describe("c-scoped-notification", () => {
 
   it("can setup an action", async () => {
     element = await elementBuilder.build({
-      actionMessage: "some-action"
+      actionMessage: "message"
     });
     const actionMock = createMockedEventListener(element, "action");
-
-    expect(getAction()?.textContent).toBe("some-action");
-
+    expect(getAction()?.textContent).toBe("message");
     getAction().click();
-
     expect(actionMock).toHaveBeenCalled();
   });
 });

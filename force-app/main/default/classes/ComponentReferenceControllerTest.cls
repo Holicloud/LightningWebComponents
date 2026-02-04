@@ -1,4 +1,4 @@
-@isTest
+@IsTest
 private class ComponentReferenceControllerTest {
   static User standarduser;
 
@@ -25,7 +25,7 @@ private class ComponentReferenceControllerTest {
       UserName = uniqueUserName
     );
   }
-  @isTest
+  @IsTest
   static void testGetComponents() {
     setup();
     System.runAs(standarduser) {
@@ -40,7 +40,7 @@ private class ComponentReferenceControllerTest {
     }
   }
 
-  @isTest
+  @IsTest
   static void testGetExamples() {
     setup();
     System.runAs(standarduser) {

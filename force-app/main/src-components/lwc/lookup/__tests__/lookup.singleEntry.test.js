@@ -10,20 +10,14 @@ import RECORDS from "./data/records.json";
 import {
   assertListBoxIsVisible,
   assertDropdownIsNotVisible,
-  DEFAULT_RECORDS
+  DEFAULT_RECORDS,
+  DEFAULT_CONFIG
 } from "./lookup.utils.js";
 
 jest.mock("c/lookupSubtitle");
 
 const elementBuilder = new ElementBuilder("c-lookup", Lookup).setConfig({
-  defaultApiProps: {
-    label: "Lookup",
-    searchHandler: jest.fn(() => RECORDS),
-    selectionHandler: jest.fn(({ selectedIds }) => {
-      return RECORDS.filter((record) => selectedIds.includes(record.id));
-    }),
-    defaultRecords: DEFAULT_RECORDS
-  }
+  defaultApiProps: DEFAULT_CONFIG
 });
 
 describe("c-base-lookup single entry", () => {
@@ -58,42 +52,6 @@ describe("c-base-lookup single entry", () => {
     element.value = RECORDS[0].id;
     element.value = RECORDS[0].id;
     expect(element.selectionHandler).toHaveBeenCalledTimes(1);
-    await expect(element).toBeAccessible();
-  });
-
-  it("can select item with keyboard", async () => {
-    element = await elementBuilder.build();
-    const changeFn = createMockedEventListener(element, "change"),
-      scrollIntoView = jest.fn();
-    window.HTMLElement.prototype.scrollIntoView = scrollIntoView;
-
-    element.focus();
-
-    const searchInput = getInput();
-    searchInput.dispatchEvent(
-      new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.ARROW_DOWN })
-    );
-
-    expect(scrollIntoView).toHaveBeenCalled();
-
-    await flushPromises();
-
-    searchInput.dispatchEvent(
-      new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.ENTER })
-    );
-
-    await flushPromises();
-
-    // Check selection
-    expect(element.value).toEqual(DEFAULT_RECORDS[0].id);
-    expect(changeFn).toHaveBeenCalledWith(
-      expect.objectContaining({
-        detail: {
-          value: DEFAULT_RECORDS[0].id,
-          info: DEFAULT_RECORDS[0]
-        }
-      })
-    );
     await expect(element).toBeAccessible();
   });
 

@@ -12,9 +12,7 @@
     </values>
     <values>
         <field>Description__c</field>
-        <value
-      xsi:type="xsd:string"
-    >Usage of custom types.</value>
+        <value xsi:type="xsd:string">Usage of custom types.</value>
     </values>
     <values>
         <field>Title__c</field>

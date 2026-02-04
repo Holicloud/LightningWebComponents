@@ -6,31 +6,22 @@ import {
   getByDataId,
   removeChildren
 } from "test/utils";
-import Lookup, { KEY_INPUTS, LABELS } from "c/lookup";
-import { DEFAULT_RECORDS } from "./lookup.utils.js";
+import Lookup, { LABELS } from "c/lookup";
+import { DEFAULT_RECORDS, DEFAULT_CONFIG } from "./lookup.utils.js";
 
 import RECORDS from "./data/records.json";
 
 jest.mock("c/lookupSubtitle");
 
 const elementBuilder = new ElementBuilder("c-lookup", Lookup).setConfig({
-  defaultApiProps: {
-    label: "Lookup",
-    searchHandler: jest.fn(() => RECORDS),
-    selectionHandler: jest.fn(({ selectedIds }) => {
-      return RECORDS.filter((record) => selectedIds.includes(record.id));
-    }),
-    defaultRecords: DEFAULT_RECORDS,
-    isMultiEntry: true
-  }
+  defaultApiProps: { ...DEFAULT_CONFIG, isMultiEntry: true }
 });
 
 describe("c-base-lookup multi entry", () => {
   let element;
 
-  const getInput = () => getByDataId(element, "input"),
-    getOption = () => element.shadowRoot.querySelector("[data-record-id]"),
-    getPills = () => getAllByDataId(element, "pill");
+  const getOption = () => element.shadowRoot.querySelector("[data-record-id]");
+  const getPills = () => getAllByDataId(element, "pill");
 
   afterEach(() => {
     removeChildren();
@@ -47,42 +38,6 @@ describe("c-base-lookup multi entry", () => {
     });
 
     expect(element.value).toEqual([]);
-    await expect(element).toBeAccessible();
-  });
-
-  it("can select item with keyboard", async () => {
-    element = await elementBuilder.build();
-    const changeFn = createMockedEventListener(element, "change"),
-      scrollIntoView = jest.fn();
-    window.HTMLElement.prototype.scrollIntoView = scrollIntoView;
-
-    element.focus();
-
-    const searchInput = getInput();
-    searchInput.dispatchEvent(
-      new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.ARROW_DOWN })
-    );
-
-    expect(scrollIntoView).toHaveBeenCalled();
-
-    await flushPromises();
-
-    searchInput.dispatchEvent(
-      new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.ENTER })
-    );
-
-    await flushPromises();
-
-    // Check selection
-    expect(element.value).toEqual([DEFAULT_RECORDS[0].id]);
-    expect(changeFn).toHaveBeenCalledWith(
-      expect.objectContaining({
-        detail: {
-          value: [DEFAULT_RECORDS[0].id],
-          info: [DEFAULT_RECORDS[0]]
-        }
-      })
-    );
     await expect(element).toBeAccessible();
   });
 

@@ -29,3 +29,4 @@
 
 - for testing on disconnectedCallback use removeFromDOM
 - Refactor the test file to use ElementBuilder for creating the wizard component.
+- do not defined multiple properties in a single line

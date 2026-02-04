@@ -21,7 +21,6 @@
 ## Documentation
 
 - ### Variants
-
   - #### Default Variant
 
     ```html
@@ -47,7 +46,6 @@
     ```
 
 - ### More
-
   - #### Action
 
     ```html

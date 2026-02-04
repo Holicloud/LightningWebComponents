@@ -5,7 +5,7 @@ name: Validate Pull Request
 on:
   workflow_dispatch:
   pull_request:
-    types: [opened, edited, synchronize, reopened]
+    types: [opened, edited, synchronize, reopened, ready_for_review]
 
 # Jobs to be executed
 jobs:
@@ -19,48 +19,116 @@ jobs:
           echo "Skipping CI run for automated PRs."
 
   # Formatting and linting only runs on human-submitted PRs
-  format-lint-lwc-tests:
+  validate-pull-request:
+    permissions:
+      pull-requests: write
+      contents: read
+      actions: read
     runs-on: ubuntu-latest
     steps:
-      # Checkout the source code
-      - name: "Checkout source code"
-        uses: actions/checkout@v4
+      - name: Checkout source code
+        uses: actions/checkout@v5
 
-      # Install Volta to enforce proper node and package manager versions
-      - name: "Install Volta"
+      - name: Install Volta
         uses: volta-cli/action@v4
 
-      # Cache node_modules to speed up the process
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 18
+          node-version: ">=20.x"
           cache: "npm"
 
       - name: Install dependencies
         run: HUSKY=0 npm ci # Prefer `npm ci` for reproducible build
 
-      # Prettier formatting
-      - name: "Code formatting verification with Prettier"
+      - name: Verify Prettier
         run: npm run prettier:verify
 
-      # Lint LWC / Aura
-      - name: "Lint Lightning Web Components / Aura Components"
-        run: npm run lint
+      - name: Verify EsLint
+        run: npm run lint:verify
 
-      # LWC unit tests
-      - name: "Unit test Lightning Web Components"
+      - name: Run Lightning Web Components Unit Test
         run: npm run test:unit:coverage
 
-      # Run PMD scan
-      - name: Install PMD
-        run: |
-          wget https://github.com/pmd/pmd/releases/download/pmd_releases%2F7.0.0/pmd-dist-7.0.0-bin.zip
-          unzip pmd-dist-7.0.0-bin.zip
+      - name: Ensure java v11 or greater
+        uses: actions/setup-java@v5
+        with:
+          java-version: ">=11"
+          distribution: "zulu"
 
-      - name: Validate with PMD
+      - name: Ensure python v3.10 or greater
+        uses: actions/setup-python@v6
+        with:
+          python-version: ">=3.10"
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli@latest
+
+      - name: Create unsigned plugin allowlist for Salesforce CLI
         run: |
-          PMD_APEX_ROOT_DIRECTORY=$(pwd) ./pmd-bin-7.0.0/bin/pmd check -R .pmd/rulesets/apex.xml --no-cache --dir force-app,force-app-examples --no-progress
+          mkdir -p $HOME/.config/sf
+          echo '["@salesforce/plugin-code-analyzer"]' > $HOME/.config/sf/unsignedPlugingAlloList.json
+
+      - name: Install Latest Salesforce Code Analyzer CLI Plugin
+        run: sf plugins install code-analyzer@latest
+
+      - name: Run Salesforce Code Analyzer
+        id: run-code-analyzer
+        uses: forcedotcom/run-code-analyzer@v2
+        with:
+          run-arguments: --workspace . --view detail --output-file sfca_results.html --output-file sfca_results.json
+          results-artifact-name: salesforce-code-analyzer-results
+          github-token: ${{ github.token }}
+
+      - name: "Check the ouputs To Determine Whether to Fail"
+        if: |
+          steps.run-code-analyzer.outputs.exit-code > 0 ||
+          steps.run-code-analyzer.outputs.num-sev1-violations > 10 ||
+          steps.run-code-analyzer.outputs.num-sev2-violations > 10 ||
+          steps.run-code-analyzer.outputs.num-violations > 10
+        run: exit 1
+
+      - name: "Populate auth file with DEVHUB_SFDX_URL secret"
+        shell: bash
+        run: |
+          echo ${{ secrets.DEVHUB_SFDX_URL }} > ./DEVHUB_SFDX_URL.txt
+          secretFileSize=$(wc -c "./DEVHUB_SFDX_URL.txt" | awk '{print $1}')
+          if [ $secretFileSize == 1 ]; then
+              echo "Missing DEVHUB_SFDX_URL secret. Is this workflow running on a fork?";
+              exit 1;
+          fi
+
+      # Authenticate dev hub
+      - name: "Authenticate Dev Hub"
+        run: sf org login sfdx-url -f ./DEVHUB_SFDX_URL.txt -a devhub -d
+
+      # Create scratch org
+      - name: "Create scratch org"
+        run: sf org create scratch -f config/project-scratch-def.json -a scratch-org -d -y 1
+
+      # Deploy source to scratch org
+      - name: "Push source to scratch org"
+        run: sf project deploy start
+
+      # Assign permissionset
+      - name: "Assign permissionset to default user"
+        run: sf org assign permset -n LWCRecipes
+
+      # Run Apex tests in scratch org
+      - name: "Run Apex tests"
+        run: sf apex test run -c -r human -d ./tests/apex -w 20
+
+      # Upload code coverage data
+      - name: "Upload code coverage for Apex to Codecov.io"
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: Apex
+
+      # Housekeeping
+      - name: "Delete scratch org"
+        if: always()
+        run: sf org delete scratch -p -o scratch-org
 
       # Upload code coverage data
       - name: "Upload code coverage for LWC to Codecov.io"
@@ -76,7 +144,6 @@ jobs:
     # Only run for Dependabot PRs
     if: github.actor == 'dependabot[bot]'
     runs-on: ubuntu-latest
-    needs: format-lint-lwc-tests
     permissions:
       pull-requests: write
       contents: write
@@ -105,67 +172,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_URL: ${{ github.event.pull_request.html_url }}
-
-  scratch-org-test:
-    runs-on: ubuntu-latest
-    needs: format-lint-lwc-tests
-    if: github.actor != 'dependabot[bot]'
-    steps:
-      # Checkout the source code
-      - name: "Checkout source code"
-        uses: actions/checkout@v4
-
-      # Install Salesforce CLI
-      - name: "Install Salesforce CLI"
-        run: |
-          npm install @salesforce/cli --location=global
-          nodeInstallPath=$(npm config get prefix)
-          echo "$nodeInstallPath/bin" >> $GITHUB_PATH
-          sf --version
-
-      # Store secret for dev hub
-      - name: "Populate auth file with DEVHUB_SFDX_URL secret"
-        shell: bash
-        run: |
-          echo ${{ secrets.DEVHUB_SFDX_URL }} > ./DEVHUB_SFDX_URL.txt
-          secretFileSize=$(wc -c "./DEVHUB_SFDX_URL.txt" | awk '{print $1}')
-          if [ $secretFileSize == 1 ]; then
-              echo "Missing DEVHUB_SFDX_URL secret. Is this workflow running on a fork?";
-              exit 1;
-          fi
-
-      # Authenticate dev hub
-      - name: "Authenticate Dev Hub"
-        run: sf org login sfdx-url -f ./DEVHUB_SFDX_URL.txt -a devhub -d
-
-      # Create scratch org
-      - name: "Create scratch org"
-        run: sf org create scratch -f config/project-scratch-def.json -a scratch-org -d -y 1
-
-      # Deploy source to scratch org
-      - name: "Push source to scratch org"
-        run: sf project deploy start
-
-      # Assign permissionset
-      - name: "Assign permissionset to default user"
-        run: sf org assign permset -n LWCRecipes
-
-      # # Import sample data
-      # - name: "Import sample data"
-      #   run: sf data tree import -p ./data/data-plan.json
-
-      # Run Apex tests in scratch org
-      - name: "Run Apex tests"
-        run: sf apex test run -c -r human -d ./tests/apex -w 20
-
-      # Upload code coverage data
-      - name: "Upload code coverage for Apex to Codecov.io"
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          flags: Apex
-
-      # Housekeeping
-      - name: "Delete scratch org"
-        if: always()
-        run: sf org delete scratch -p -o scratch-org

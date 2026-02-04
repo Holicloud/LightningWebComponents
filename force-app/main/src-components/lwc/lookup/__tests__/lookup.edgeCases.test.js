@@ -5,24 +5,17 @@ import {
   removeChildren
 } from "test/utils";
 import Lookup, { KEY_INPUTS, LABELS } from "c/lookup";
-import RECORDS from "./data/records.json";
 import {
   assertDropdownIsNotVisible,
   assertDropdownIsVisible,
   assertListBoxIsVisible,
   DEFAULT_RECORDS,
+  DEFAULT_CONFIG,
   inputSearchTerm
 } from "./lookup.utils.js";
 
 const elementBuilder = new ElementBuilder("c-lookup", Lookup).setConfig({
-    defaultApiProps: {
-      label: "Lookup",
-      searchHandler: jest.fn(() => RECORDS),
-      selectionHandler: jest.fn(({ selectedIds }) => {
-        return RECORDS.filter((record) => selectedIds.includes(record.id));
-      }),
-      defaultRecords: DEFAULT_RECORDS
-    }
+    defaultApiProps: DEFAULT_CONFIG
   }),
   multiEntry = elementBuilder.setConfig({
     defaultApiProps: { isMultiEntry: true }
