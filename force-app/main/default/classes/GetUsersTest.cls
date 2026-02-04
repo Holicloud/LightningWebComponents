@@ -1,4 +1,4 @@
-@isTest
+@IsTest
 private class GetUsersTest {
   static User standardUser;
 
@@ -30,7 +30,7 @@ private class GetUsersTest {
     }
   }
 
-  @isTest
+  @IsTest
   static void testGetActiveUsers() {
     setup();
     System.runAs(standardUser) {

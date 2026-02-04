@@ -5,8 +5,7 @@ import {
   clone,
   assert,
   isBlank,
-  isNotBlank,
-  executeAfterRender
+  isNotBlank
 } from "c/utils";
 
 const INPUT_SEARCH_DELAY = 300;
@@ -74,6 +73,8 @@ export default class Lookup extends LightningElement {
   _minSearchTermLength = MIN_SEARCH_TERM_LENGTH;
   _scrollAfterNItems = SCROLL_AFTER_N;
   _variant = VARIANTS.LABEL_STACKED;
+  _shouldFocus = false;
+  _shouldBlur = false;
 
   cancelBlur = false;
   cleanSearchTerm;
@@ -183,26 +184,18 @@ export default class Lookup extends LightningElement {
   @api
   focus() {
     if (this.refs.input) {
-      this.refs.input.focus();
-      this.refs.input.dispatchEvent(new CustomEvent("focus"));
+      this.applyFocus();
     } else {
-      executeAfterRender(() => {
-        this.refs.input.focus();
-        this.refs.input.dispatchEvent(new CustomEvent("focus"));
-      });
+      this._shouldFocus = true;
     }
   }
 
   @api
   blur() {
     if (this.refs.input) {
-      this.refs.input.blur();
-      this.refs.input.dispatchEvent(new CustomEvent("blur"));
+      this.applyBlur();
     } else {
-      executeAfterRender(() => {
-        this.refs.input.blur();
-        this.refs.input.dispatchEvent(new CustomEvent("blur"));
-      });
+      this._shouldBlur = true;
     }
   }
 
@@ -435,7 +428,6 @@ export default class Lookup extends LightningElement {
     if (this.searchThrottlingTimeout) {
       clearTimeout(this.searchThrottlingTimeout);
     }
-    // eslint-disable-next-line @lwc/lwc/no-async-operation
     this.searchThrottlingTimeout = setTimeout(async () => {
       // Send search event if search term is long enougth
       if (this.cleanSearchTerm.length >= this.minSearchTermLength) {
@@ -477,7 +469,7 @@ export default class Lookup extends LightningElement {
 
           this.displayMatching = true;
           this.displayListBox = true;
-        } catch (error) {
+        } catch {
           this.setCustomValidity(LABELS.errors.errorFetchingData);
           this.reportValidity();
           this.displayMatching = false;
@@ -658,6 +650,16 @@ export default class Lookup extends LightningElement {
     this.focus();
   }
 
+  applyFocus() {
+    this.refs.input.focus();
+    this.refs.input.dispatchEvent(new CustomEvent("focus"));
+  }
+
+  applyBlur() {
+    this.refs.input.blur();
+    this.refs.input.dispatchEvent(new CustomEvent("blur"));
+  }
+
   // hooks
 
   async connectedCallback() {
@@ -669,6 +671,18 @@ export default class Lookup extends LightningElement {
       this.updateDropdownOfRecords();
       this.hasInit = true;
       this.isLoading = false;
+    }
+  }
+
+  renderedCallback() {
+    if (this._shouldFocus && this.refs?.input) {
+      this._shouldFocus = false;
+      this.applyFocus();
+    }
+
+    if (this._shouldBlur && this.refs?.input) {
+      this._shouldBlur = false;
+      this.applyBlur();
     }
   }
 
@@ -794,7 +808,7 @@ export default class Lookup extends LightningElement {
           }
         });
       }
-    } catch (error) {
+    } catch {
       this.setCustomValidity(LABELS.errors.errorFetchingData);
       this.reportValidity();
     }

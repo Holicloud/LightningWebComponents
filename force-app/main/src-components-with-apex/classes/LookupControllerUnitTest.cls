@@ -1,6 +1,6 @@
-@isTest
+@IsTest
 private class LookupControllerUnitTest {
-  @isTest
+  @IsTest
   static void testMethodLookupController() {
     LookupController.LookupInput lookupInputs = new LookupController.LookupInput();
     lookupInputs.selectedIds = new List<String>{ 'id' };

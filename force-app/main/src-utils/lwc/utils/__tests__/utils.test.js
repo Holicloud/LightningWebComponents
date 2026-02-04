@@ -1,4 +1,4 @@
-import { clone, assert, executeAfterRender } from "c/utils";
+import { clone, assert } from "c/utils";
 
 describe("clone", () => {
   it("should clone an object", () => {
@@ -31,17 +31,5 @@ describe("assert", () => {
 
   it("should throw a default error message if none is provided", () => {
     expect(() => assert(false)).toThrow("Assertion failed");
-  });
-});
-
-describe("executeAfterRender", () => {
-  it("should execute the callback after render", () => {
-    jest.useFakeTimers();
-    const callback = jest.fn();
-
-    executeAfterRender(callback);
-
-    jest.runAllTimers();
-    expect(callback).toHaveBeenCalled();
   });
 });

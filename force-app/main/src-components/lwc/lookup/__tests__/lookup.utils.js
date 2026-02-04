@@ -2,6 +2,15 @@ import { getByDataId, flushPromises } from "test/utils";
 import RECORDS from "./data/records.json";
 const DEFAULT_RECORDS = RECORDS.slice(0, 5);
 
+const DEFAULT_CONFIG = {
+  label: "Lookup",
+  searchHandler: jest.fn(() => RECORDS),
+  selectionHandler: jest.fn(({ selectedIds }) => {
+    return RECORDS.filter((record) => selectedIds.includes(record.id));
+  }),
+  defaultRecords: DEFAULT_RECORDS
+};
+
 async function inputSearchTerm(element, searchTerm) {
   // Sets input search term and force input change
   const searchInput = getByDataId(element, "input");
@@ -82,6 +91,7 @@ function assertDropdownIsNotVisible(element) {
 export {
   inputSearchTerm,
   DEFAULT_RECORDS,
+  DEFAULT_CONFIG,
   assertListBoxIsVisible,
   assertDropdownIsVisible,
   assertDropdownIsNotVisible

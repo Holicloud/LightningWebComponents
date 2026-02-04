@@ -1,4 +1,6 @@
 import { LightningElement, api } from "lwc";
+import { renderComponent } from "c/datatablePlusExtendedTypes";
+
 const REMOVE_INPUT_KEYS = [8, 46];
 const DEFAULT_TYPE = "lightning/input";
 const COMPONENTS = {
@@ -67,27 +69,11 @@ export default class DatatablePlusDynamicCellEdit extends LightningElement {
       return;
     }
 
-    if (typeof this.type === "function") {
-      if (this.type.prototype instanceof LightningElement) {
-        this.renderedComponent = this.type;
-      } else {
-        const { default: ctor } = await this.type();
-        this.renderedComponent = ctor;
-      }
-    } else if (typeof this.type === "string") {
-      if (COMPONENTS[this.type]) {
-        const { default: ctor } = await COMPONENTS[this.type]();
-        this.renderedComponent = ctor;
-      } else {
-        const { default: ctor } = await import(this.type);
-        this.renderedComponent = ctor;
-      }
-    }
-
-    if (!this.renderedComponent) {
-      const { default: ctor } = await COMPONENTS[DEFAULT_TYPE]();
-      this.renderedComponent = ctor;
-    }
+    this.renderedComponent = await renderComponent(
+      this.type,
+      COMPONENTS,
+      DEFAULT_TYPE
+    );
   }
 
   handleChange(e) {

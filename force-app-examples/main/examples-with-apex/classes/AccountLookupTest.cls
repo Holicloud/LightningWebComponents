@@ -1,7 +1,7 @@
 /**
  * @description test AccountLookup methods
  */
-@isTest
+@IsTest
 private class AccountLookupTest {
   static User standardUser;
   static List<Account> setupAccounts = new List<Account>();

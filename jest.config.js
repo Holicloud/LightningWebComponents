@@ -10,7 +10,7 @@ setupFilesAfterEnv.push("<rootDir>/test/setupFiles/jest-sa11y-setup.js");
 module.exports = {
   ...jestConfig,
   testTimeout: testTimeoutInSeconds * 1000,
-  setupFiles: ["<rootDir>/test/setupFiles/setEnvVars.js"],
+  setupFiles: ["<rootDir>/test/setupFiles/setEnvVars.js", "jest-canvas-mock"],
   moduleNameMapper: {
     "^test/utils$": "<rootDir>/force-app/test/jest/utils",
     "^lightning/navigation$":
@@ -48,7 +48,6 @@ module.exports = {
       lines: 75
     }
   },
-  setupFiles: ["jest-canvas-mock"],
   testMatch: ["**/__tests__/**/*.test.js"],
   setupFilesAfterEnv
 };

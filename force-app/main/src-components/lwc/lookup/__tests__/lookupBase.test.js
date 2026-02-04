@@ -12,29 +12,24 @@ import {
   DEFAULT_RECORDS,
   assertListBoxIsVisible,
   assertDropdownIsVisible,
-  assertDropdownIsNotVisible
+  assertDropdownIsNotVisible,
+  DEFAULT_CONFIG
 } from "./lookup.utils.js";
 
-const BASE_LABEL = "Lookup",
-  SAMPLE_SEARCH_TOO_SHORT_WHITESPACE = "A ",
-  SAMPLE_SEARCH_TOO_SHORT_SPECIAL = "a*",
-  SAMPLE_SEARCH_RAW = "Sample search* ",
-  SAMPLE_SEARCH_CLEAN = "Sample search?",
-  elementBuilder = new ElementBuilder("c-lookup", Lookup).setConfig({
-    defaultApiProps: {
-      label: "Lookup",
-      searchHandler: jest.fn(() => RECORDS),
-      selectionHandler: jest.fn(({ selectedIds }) => {
-        return RECORDS.filter((record) => selectedIds.includes(record.id));
-      }),
-      defaultRecords: DEFAULT_RECORDS
-    }
-  }),
-  multiEntry = elementBuilder.setConfig({
-    defaultApiProps: { isMultiEntry: true }
-  }),
-  singleEntry = elementBuilder.setConfig({ isMultiEntry: false }),
-  modes = [multiEntry, singleEntry];
+const BASE_LABEL = "Lookup";
+const SAMPLE_SEARCH_TOO_SHORT_WHITESPACE = "A ";
+const SAMPLE_SEARCH_TOO_SHORT_SPECIAL = "a*";
+const SAMPLE_SEARCH_RAW = "Sample search* ";
+const SAMPLE_SEARCH_CLEAN = "Sample search?";
+
+const elementBuilder = new ElementBuilder("c-lookup", Lookup).setConfig({
+  defaultApiProps: DEFAULT_CONFIG
+});
+const multiEntry = elementBuilder.setConfig({
+  defaultApiProps: { isMultiEntry: true }
+});
+const singleEntry = elementBuilder.setConfig({ isMultiEntry: false });
+const modes = [multiEntry, singleEntry];
 
 jest.mock("c/lookupSubtitle");
 
@@ -407,6 +402,49 @@ describe("c-lookup", () => {
     assertDropdownIsVisible(element);
 
     expect(element).not.toBeNull();
+    await isAccessible();
+  });
+
+  it.each(modes)("can select item with keyboard", async (builder) => {
+    element = await builder.build();
+    const changeFn = createMockedEventListener(element, "change");
+    const scrollIntoView = jest.fn();
+    window.HTMLElement.prototype.scrollIntoView = scrollIntoView;
+
+    element.focus();
+
+    const searchInput = getInput();
+    searchInput.dispatchEvent(
+      new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.ARROW_DOWN })
+    );
+
+    expect(scrollIntoView).toHaveBeenCalled();
+
+    await flushPromises();
+
+    searchInput.dispatchEvent(
+      new KeyboardEvent("keydown", { keyCode: KEY_INPUTS.ENTER })
+    );
+
+    await flushPromises();
+
+    const info = element.isMultiEntry
+      ? [DEFAULT_RECORDS[0]]
+      : DEFAULT_RECORDS[0];
+    const value = element.isMultiEntry
+      ? [DEFAULT_RECORDS[0].id]
+      : DEFAULT_RECORDS[0].id;
+
+    // Check selection
+    expect(element.value).toEqual(value);
+    expect(changeFn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        detail: {
+          value: value,
+          info: info
+        }
+      })
+    );
     await isAccessible();
   });
 });

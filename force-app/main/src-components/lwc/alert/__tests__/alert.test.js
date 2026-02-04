@@ -65,11 +65,8 @@ describe("c-alert", () => {
       actionMessage: "some-action"
     });
     const actionMock = createMockedEventListener(element, "action");
-
     expect(getAction()?.textContent).toBe("some-action");
-
     getAction().click();
-
     expect(actionMock).toHaveBeenCalled();
   });
 
