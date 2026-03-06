@@ -48,3 +48,6 @@ pmd/
 .pmdCache
 pmdLocalReport.txt
 pmd-dist-7.0.0-bin.zip
+
+force-app/main/default/profiles/*
+force-app/main/default/appMenus/AppSwitcher.appMenu-meta.xml

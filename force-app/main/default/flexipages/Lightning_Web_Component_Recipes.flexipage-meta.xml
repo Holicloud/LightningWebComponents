@@ -30,9 +30,9 @@
         <name>region3</name>
         <type>Region</type>
     </flexiPageRegions>
-    <masterLabel>Component Reference</masterLabel>
+    <masterLabel>Lightning Web Component Recipes</masterLabel>
     <template>
-        <name>flowsapp:homePageTemplateHeaderTwoColumnLeftSidebar</name>
+        <name>flexipage:appHomeTemplateHeaderTwoColumnsLeftSidebar</name>
     </template>
-    <type>HomePage</type>
+    <type>AppPage</type>
 </FlexiPage>
