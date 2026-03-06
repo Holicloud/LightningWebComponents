@@ -1,0 +1,65 @@
+<template>
+  <c-component-example title="Basic Usage">
+    <lightning-layout multiple-rows>
+      <!-- Left Side -->
+      <lightning-layout-item size="6" padding="around-small">
+        <lightning-input
+          type="text"
+          label="Type Your Conditional Expression here"
+          value={expression}
+          lwc:ref="input"
+          required
+          onchange={handleExpresssionChange}
+        ></lightning-input>
+
+        <div class="slds-m-top_medium">
+          <p>
+            Evaluated value:
+            <span class="slds-m-left_small">
+              <lightning-icon
+                lwc:if={isValid}
+                icon-name="utility:like"
+                alternative-text="Valid"
+                size="large"
+                variant="success"
+              ></lightning-icon>
+              <lightning-icon
+                lwc:else
+                icon-name="utility:dislike"
+                alternative-text="Invalid"
+                size="large"
+                variant="error"
+              ></lightning-icon>
+            </span>
+          </p>
+        </div>
+      </lightning-layout-item>
+
+      <!-- Right Side -->
+      <lightning-layout-item size="6" padding="around-small">
+        <lightning-checkbox-group
+          name="Values"
+          label="Conditions"
+          options={options}
+          value={selected}
+          onchange={handleChecboxGroupChange}
+        ></lightning-checkbox-group>
+
+        <div class="slds-m-top_medium">
+          <lightning-button-group>
+            <lightning-button
+              label="Add Condition"
+              icon-name="utility:add"
+              onclick={addOption}
+            ></lightning-button>
+            <lightning-button
+              label="Remove Condition"
+              icon-name="utility:dash"
+              onclick={removeOption}
+            ></lightning-button>
+          </lightning-button-group>
+        </div>
+      </lightning-layout-item>
+    </lightning-layout>
+  </c-component-example>
+</template>
