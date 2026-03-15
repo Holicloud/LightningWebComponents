@@ -1,4 +1,7 @@
+import RECORD from "./data/records.json";
 import Employee, { LABELS } from "c/employee";
+import { clone } from "c/utils";
+import LightningConfirm from "lightning/confirm";
 import {
   removeChildren,
   ElementBuilder,
@@ -6,9 +9,6 @@ import {
   flushPromises,
   createMockedEventListener
 } from "test/utils";
-import { clone } from "c/utils";
-import LightningConfirm from "lightning/confirm";
-import RECORD from "./data/records.json";
 
 const elementBuilder = new ElementBuilder("c-employee", Employee).setConfig({
   defaultApiProps: {

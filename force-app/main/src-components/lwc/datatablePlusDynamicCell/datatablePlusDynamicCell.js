@@ -1,7 +1,6 @@
-import { LightningElement, api } from "lwc";
 import { renderComponent } from "c/datatablePlusExtendedTypes";
+import { LightningElement, api } from "lwc";
 
-const DEFAULT_TYPE = "lightning/formattedText";
 const COMPONENTS = {
   "c/entry": () => import("c/entry"),
   "c/record": () => import("c/record"),
@@ -12,13 +11,14 @@ const COMPONENTS = {
   "lightning/formattedTime": () => import("lightning/formattedTime"),
   "lightning/formattedUrl": () => import("lightning/formattedUrl")
 };
+const DEFAULT_TYPE = "lightning/formattedText";
 
 export default class DatatablePlusDynamicCell extends LightningElement {
-  renderedComponent;
-
-  @api value;
   @api props = {};
+
   @api type = "lightning/formattedText";
+  @api value;
+  renderedComponent;
 
   async setType() {
     if (this.renderedComponent) {

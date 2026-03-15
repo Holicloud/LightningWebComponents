@@ -1,15 +1,20 @@
-import { LightningElement, api, wire, track } from "lwc";
 import { getRecords, getFieldValue } from "lightning/uiRecordApi";
+import { LightningElement, api, wire, track } from "lwc";
 
 export default class Records extends LightningElement {
-  @api separator = ",";
   @api displayField;
+  @api separator = ",";
+
+  @track fetchedLabels = {};
   _value = [];
+
+  fetched = false;
 
   @api
   get value() {
     return this._value;
   }
+
   set value(val) {
     if (Array.isArray(val)) {
       this._value = val;
@@ -18,32 +23,6 @@ export default class Records extends LightningElement {
     } else {
       this._value = [];
     }
-  }
-
-  @track fetchedLabels = {};
-  fetched = false;
-
-  get valueToDisplay() {
-    if (!this._value.length) {
-      return "";
-    }
-
-    if (this.fetched) {
-      return this._value
-        .map((value) => this.fetchedLabels[value])
-        .join(this.separator);
-    }
-
-    return this._value.join(this.separator);
-  }
-
-  get payload() {
-    return [
-      {
-        recordIds: Array.isArray(this._value) ? this._value : [],
-        fields: this.displayField ? [this.displayField] : []
-      }
-    ];
   }
 
   @wire(getRecords, { records: "$payload" })
@@ -59,5 +38,28 @@ export default class Records extends LightningElement {
       }
       this.fetched = true;
     }
+  }
+
+  get payload() {
+    return [
+      {
+        recordIds: Array.isArray(this._value) ? this._value : [],
+        fields: this.displayField ? [this.displayField] : []
+      }
+    ];
+  }
+
+  get valueToDisplay() {
+    if (!this._value.length) {
+      return "";
+    }
+
+    if (this.fetched) {
+      return this._value
+        .map((value) => this.fetchedLabels[value])
+        .join(this.separator);
+    }
+
+    return this._value.join(this.separator);
   }
 }

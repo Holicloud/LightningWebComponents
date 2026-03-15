@@ -9,13 +9,13 @@ const LABELS = Object.freeze({
 });
 
 export default class ErrorsAccordion extends LightningElement {
-  @api title = LABELS.error;
-  @api isNonDismissable = false;
   @api errors = [];
+  @api isNonDismissable = false;
+  @api title = LABELS.error;
 
-  LABELS = LABELS;
   _isHidden = false;
   activeSections = [];
+  LABELS = LABELS;
 
   @api
   get isHidden() {
@@ -26,14 +26,6 @@ export default class ErrorsAccordion extends LightningElement {
     this._isHidden = !!value;
   }
 
-  get isVisible() {
-    return !this.isHidden;
-  }
-
-  get isCollapsible() {
-    return !this.isNonDismissable;
-  }
-
   get displayCollapseAll() {
     return !!this.activeSections.length;
   }
@@ -42,8 +34,32 @@ export default class ErrorsAccordion extends LightningElement {
     return this.activeSections.length !== Object.keys(this.errors).length;
   }
 
+  get isCollapsible() {
+    return !this.isNonDismissable;
+  }
+
+  get isVisible() {
+    return !this.isHidden;
+  }
+
+  get sections() {
+    return Object.entries(this.errors).map(([key, value]) => ({
+      name: key,
+      errors: value
+    }));
+  }
+
+  expandAll() {
+    this.activeSections = Object.keys(this.errors);
+  }
+
   handleCollapseAll() {
     this.activeSections = [];
+  }
+
+  handleDismiss() {
+    this._isHidden = true;
+    this.dispatchEvent(new CustomEvent("dismiss"));
   }
 
   handleExpandAll() {
@@ -56,21 +72,5 @@ export default class ErrorsAccordion extends LightningElement {
 
   connectedCallback() {
     this.expandAll();
-  }
-
-  handleDismiss() {
-    this._isHidden = true;
-    this.dispatchEvent(new CustomEvent("dismiss"));
-  }
-
-  expandAll() {
-    this.activeSections = Object.keys(this.errors);
-  }
-
-  get sections() {
-    return Object.entries(this.errors).map(([key, value]) => ({
-      name: key,
-      errors: value
-    }));
   }
 }

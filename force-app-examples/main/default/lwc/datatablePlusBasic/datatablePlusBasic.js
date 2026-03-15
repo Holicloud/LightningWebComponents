@@ -1,7 +1,7 @@
-import { LightningElement } from "lwc";
+import RECORDS from "./records.js";
 import TIME_ZONE from "@salesforce/i18n/timeZone";
 import { TYPE } from "c/datatablePlus";
-import RECORDS from "./records.js";
+import { LightningElement } from "lwc";
 
 const COLUMNS = [
   {

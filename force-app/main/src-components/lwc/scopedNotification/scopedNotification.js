@@ -1,5 +1,6 @@
-import { LightningElement, api } from "lwc";
 import { classSet } from "c/utils";
+
+import { LightningElement, api } from "lwc";
 
 const DEFAULT_VARIANT = "info";
 
@@ -60,16 +61,16 @@ export default class ScopedNotification extends LightningElement {
     });
   }
 
-  get variantProps() {
-    return VARIANTS[this.variant] || VARIANTS[DEFAULT_VARIANT];
-  }
-
   get icon() {
     return this.iconName || this.variantProps.iconName;
   }
 
   get isVisible() {
     return !this.isHidden;
+  }
+
+  get variantProps() {
+    return VARIANTS[this.variant] || VARIANTS[DEFAULT_VARIANT];
   }
 
   handleAction(event) {

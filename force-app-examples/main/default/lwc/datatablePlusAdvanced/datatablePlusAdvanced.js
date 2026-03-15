@@ -1,7 +1,7 @@
-import { LightningElement, wire } from "lwc";
-import { TYPE } from "c/datatablePlus";
 import RECORDS from "./records.js";
 import getActiveUsers from "@salesforce/apex/GetUsers.getActiveUsers";
+import { TYPE } from "c/datatablePlus";
+import { LightningElement, wire } from "lwc";
 
 const PICKLIST_INPUT = [
   { label: "New", value: "new" },
@@ -69,36 +69,38 @@ const BASE_COLUMNS = [
 ];
 
 export default class DatatablePlusAdvanced extends LightningElement {
-  lookupRecords = [];
   baseColumns = BASE_COLUMNS;
 
-  getMatching = ({ rawSearchTerm, searchTerm }) => {
-    // fetch your records using rawSearchTerm or searchTerm
-    return this.lookupRecords.filter((record) => {
-      const raw = rawSearchTerm?.toLowerCase() || "";
-      const term = searchTerm?.toLowerCase() || "";
-      const title = record.title?.toLowerCase() || "";
+  data = RECORDS.slice(0, 7);
+  lookupRecords = [];
 
-      if (title.includes(raw) || title.includes(term)) {
-        return true;
+  @wire(getActiveUsers)
+  wiredUsers({ data }) {
+    if (data) {
+      this.lookupRecords = [];
+      for (const record of data) {
+        this.lookupRecords.push({
+          id: record.Id,
+          title: record.Name,
+          icon: {
+            iconName: "standard:user"
+          },
+          subtitles: [
+            {
+              subtitleLabel: "Profile",
+              subtitleType: "lightning/formattedRichText",
+              value: record.Profile?.Name
+            },
+            {
+              subtitleLabel: "Email",
+              subtitleType: "lightning/email",
+              value: record.Email
+            }
+          ]
+        });
       }
-
-      const firstSubtitle = record.subtitles?.at(0)?.value?.toLowerCase();
-
-      if (firstSubtitle) {
-        return firstSubtitle.includes(raw) || firstSubtitle.includes(term);
-      }
-
-      return false;
-    });
-  };
-
-  getSelection = ({ selectedIds }) => {
-    // fetch your data using the selectedIds
-    return this.lookupRecords.filter((record) =>
-      selectedIds.includes(record.id)
-    );
-  };
+    }
+  }
 
   get columnsLookup() {
     return [
@@ -168,33 +170,31 @@ export default class DatatablePlusAdvanced extends LightningElement {
     ];
   }
 
-  @wire(getActiveUsers)
-  wiredUsers({ data }) {
-    if (data) {
-      this.lookupRecords = [];
-      for (const record of data) {
-        this.lookupRecords.push({
-          id: record.Id,
-          title: record.Name,
-          icon: {
-            iconName: "standard:user"
-          },
-          subtitles: [
-            {
-              subtitleLabel: "Profile",
-              subtitleType: "lightning/formattedRichText",
-              value: record.Profile?.Name
-            },
-            {
-              subtitleLabel: "Email",
-              subtitleType: "lightning/email",
-              value: record.Email
-            }
-          ]
-        });
-      }
-    }
-  }
+  getMatching = ({ rawSearchTerm, searchTerm }) => {
+    // fetch your records using rawSearchTerm or searchTerm
+    return this.lookupRecords.filter((record) => {
+      const raw = rawSearchTerm?.toLowerCase() || "";
+      const term = searchTerm?.toLowerCase() || "";
+      const title = record.title?.toLowerCase() || "";
 
-  data = RECORDS.slice(0, 7);
+      if (title.includes(raw) || title.includes(term)) {
+        return true;
+      }
+
+      const firstSubtitle = record.subtitles?.at(0)?.value?.toLowerCase();
+
+      if (firstSubtitle) {
+        return firstSubtitle.includes(raw) || firstSubtitle.includes(term);
+      }
+
+      return false;
+    });
+  };
+
+  getSelection = ({ selectedIds }) => {
+    // fetch your data using the selectedIds
+    return this.lookupRecords.filter((record) =>
+      selectedIds.includes(record.id)
+    );
+  };
 }

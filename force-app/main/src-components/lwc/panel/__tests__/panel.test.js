@@ -1,11 +1,11 @@
 import Panel, { LABELS } from "c/panel";
+import LightningInput from "lightning/input";
 import {
   ElementBuilder,
   getByDataId,
   removeChildren,
   flushPromises
 } from "test/utils";
-import LightningInput from "lightning/input";
 
 const elementBuilder = new ElementBuilder("c-expandable-section", Panel);
 

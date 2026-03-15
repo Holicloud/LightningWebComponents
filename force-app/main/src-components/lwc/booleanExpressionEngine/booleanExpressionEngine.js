@@ -6,6 +6,115 @@ const OPERATORS = {
   OR: { precedence: 1, associativity: "left", arity: 2 }
 };
 
+function evaluateRPN(values, rpnTokens) {
+  const stack = [];
+
+  for (const token of rpnTokens) {
+    if (/^\d+$/.test(token)) {
+      const index = Number(token) - 1;
+
+      if (index < 0 || index >= values.length) {
+        throw new Error(`Index out of range: ${token}`);
+      }
+
+      stack.push(values[index]);
+      continue;
+    }
+
+    if (token === "NOT") {
+      const operand = stack.pop();
+      stack.push(!operand);
+      continue;
+    }
+
+    if (token === "AND" || token === "OR") {
+      const right = stack.pop();
+      const left = stack.pop();
+
+      stack.push(token === "AND" ? left && right : left || right);
+    }
+  }
+
+  if (stack.length !== 1) {
+    throw new Error("Invalid expression.");
+  }
+
+  return stack[0];
+}
+
+/* =========================
+   INTERNALS
+========================= */
+
+function toRPN(expression) {
+  const output = [];
+  const operatorStack = [];
+  const tokens = expression.match(/\d+|AND|OR|NOT|\(|\)/g);
+
+  if (!tokens) {
+    throw new Error("Invalid expression.");
+  }
+
+  for (const token of tokens) {
+    if (/^\d+$/.test(token)) {
+      output.push(token);
+      continue;
+    }
+
+    if (OPERATORS[token]) {
+      const o1 = OPERATORS[token];
+
+      while (operatorStack.length) {
+        const top = operatorStack[operatorStack.length - 1];
+        if (!OPERATORS[top]) break;
+
+        const o2 = OPERATORS[top];
+
+        const shouldPop =
+          (o1.associativity === "left" && o1.precedence <= o2.precedence) ||
+          (o1.associativity === "right" && o1.precedence < o2.precedence);
+
+        if (!shouldPop) break;
+
+        output.push(operatorStack.pop());
+      }
+
+      operatorStack.push(token);
+      continue;
+    }
+
+    if (token === "(") {
+      operatorStack.push(token);
+      continue;
+    }
+
+    if (token === ")") {
+      while (
+        operatorStack.length &&
+        operatorStack[operatorStack.length - 1] !== "("
+      ) {
+        output.push(operatorStack.pop());
+      }
+
+      if (!operatorStack.length) {
+        throw new Error("Mismatched parentheses.");
+      }
+
+      operatorStack.pop();
+    }
+  }
+
+  while (operatorStack.length) {
+    const op = operatorStack.pop();
+    if (op === "(") {
+      throw new Error("Mismatched parentheses.");
+    }
+    output.push(op);
+  }
+
+  return output;
+}
+
 /* =========================
    PUBLIC API
 ========================= */
@@ -145,113 +254,4 @@ export function evaluateExpression(values, expression) {
 
   const rpn = toRPN(expression);
   return evaluateRPN(values, rpn);
-}
-
-/* =========================
-   INTERNALS
-========================= */
-
-function toRPN(expression) {
-  const output = [];
-  const operatorStack = [];
-  const tokens = expression.match(/\d+|AND|OR|NOT|\(|\)/g);
-
-  if (!tokens) {
-    throw new Error("Invalid expression.");
-  }
-
-  for (const token of tokens) {
-    if (/^\d+$/.test(token)) {
-      output.push(token);
-      continue;
-    }
-
-    if (OPERATORS[token]) {
-      const o1 = OPERATORS[token];
-
-      while (operatorStack.length) {
-        const top = operatorStack[operatorStack.length - 1];
-        if (!OPERATORS[top]) break;
-
-        const o2 = OPERATORS[top];
-
-        const shouldPop =
-          (o1.associativity === "left" && o1.precedence <= o2.precedence) ||
-          (o1.associativity === "right" && o1.precedence < o2.precedence);
-
-        if (!shouldPop) break;
-
-        output.push(operatorStack.pop());
-      }
-
-      operatorStack.push(token);
-      continue;
-    }
-
-    if (token === "(") {
-      operatorStack.push(token);
-      continue;
-    }
-
-    if (token === ")") {
-      while (
-        operatorStack.length &&
-        operatorStack[operatorStack.length - 1] !== "("
-      ) {
-        output.push(operatorStack.pop());
-      }
-
-      if (!operatorStack.length) {
-        throw new Error("Mismatched parentheses.");
-      }
-
-      operatorStack.pop();
-    }
-  }
-
-  while (operatorStack.length) {
-    const op = operatorStack.pop();
-    if (op === "(") {
-      throw new Error("Mismatched parentheses.");
-    }
-    output.push(op);
-  }
-
-  return output;
-}
-
-function evaluateRPN(values, rpnTokens) {
-  const stack = [];
-
-  for (const token of rpnTokens) {
-    if (/^\d+$/.test(token)) {
-      const index = Number(token) - 1;
-
-      if (index < 0 || index >= values.length) {
-        throw new Error(`Index out of range: ${token}`);
-      }
-
-      stack.push(values[index]);
-      continue;
-    }
-
-    if (token === "NOT") {
-      const operand = stack.pop();
-      stack.push(!operand);
-      continue;
-    }
-
-    if (token === "AND" || token === "OR") {
-      const right = stack.pop();
-      const left = stack.pop();
-
-      stack.push(token === "AND" ? left && right : left || right);
-    }
-  }
-
-  if (stack.length !== 1) {
-    throw new Error("Invalid expression.");
-  }
-
-  return stack[0];
 }

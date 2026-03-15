@@ -1,9 +1,3 @@
-function isObject(value) {
-  return (
-    typeof value === "object" && value !== null && value.constructor === Object
-  );
-}
-
 function deepMerge(base = {}, overwrite = {}) {
   // Create a clone of base to avoid mutating it directly
   const clonedBase = Object.assign({}, base);
@@ -41,6 +35,12 @@ function flattenObject(obj, separator = ".", path = "") {
   }
 
   return res;
+}
+
+function isObject(value) {
+  return (
+    typeof value === "object" && value !== null && value.constructor === Object
+  );
 }
 
 export { isObject, deepMerge, flattenObject };

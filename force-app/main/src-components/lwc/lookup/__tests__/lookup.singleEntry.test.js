@@ -1,11 +1,3 @@
-import {
-  ElementBuilder,
-  removeChildren,
-  getByDataId,
-  flushPromises,
-  createMockedEventListener
-} from "test/utils";
-import Lookup, { KEY_INPUTS } from "c/lookup";
 import RECORDS from "./data/records.json";
 import {
   assertListBoxIsVisible,
@@ -14,11 +6,20 @@ import {
   DEFAULT_CONFIG
 } from "./lookup.utils.js";
 
-jest.mock("c/lookupSubtitle");
+import Lookup, { KEY_INPUTS } from "c/lookup";
+import {
+  ElementBuilder,
+  removeChildren,
+  getByDataId,
+  flushPromises,
+  createMockedEventListener
+} from "test/utils";
 
 const elementBuilder = new ElementBuilder("c-lookup", Lookup).setConfig({
   defaultApiProps: DEFAULT_CONFIG
 });
+
+jest.mock("c/lookupSubtitle");
 
 describe("c-base-lookup single entry", () => {
   let element;

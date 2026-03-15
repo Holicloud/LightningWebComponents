@@ -1,5 +1,7 @@
-import { LightningElement, api } from "lwc";
-import { ElementBuilder, removeChildren } from "test/utils";
+import messageChannelA from "@salesforce/messageChannel/MessageChannelA__c";
+import messageChannelB from "@salesforce/messageChannel/MessageChannelB__c";
+
+import { MessageChannelMixin } from "c/messageChannelMixin";
 import {
   publish,
   subscribe,
@@ -7,13 +9,27 @@ import {
   APPLICATION_SCOPE,
   MessageContext
 } from "lightning/messageService";
-import { MessageChannelMixin } from "c/messageChannelMixin";
-import messageChannelA from "@salesforce/messageChannel/MessageChannelA__c";
-import messageChannelB from "@salesforce/messageChannel/MessageChannelB__c";
+import { LightningElement, api } from "lwc";
+import { ElementBuilder, removeChildren } from "test/utils";
 
 const disconect = jest.fn();
 
+const MessageContextData = Symbol("MessageContextData");
+
+function assertUnsub() {
+  expect(unsubscribe).toHaveBeenNthCalledWith(1, Symbol.for("firstSub"));
+  expect(unsubscribe).toHaveBeenNthCalledWith(2, Symbol.for("secondSub"));
+}
+
 class Component extends MessageChannelMixin(LightningElement) {
+  disconnectedCallback() {
+    disconect();
+  }
+
+  @api publish(params) {
+    this[MessageChannelMixin.Publish](params);
+  }
+
   @api sub(params) {
     this[MessageChannelMixin.Subscribe](params);
   }
@@ -21,21 +37,6 @@ class Component extends MessageChannelMixin(LightningElement) {
   @api unsub(channel) {
     this[MessageChannelMixin.Unsubscribe](channel);
   }
-
-  @api publish(params) {
-    this[MessageChannelMixin.Publish](params);
-  }
-
-  disconnectedCallback() {
-    disconect();
-  }
-}
-
-const MessageContextData = Symbol("MessageContextData");
-
-function assertUnsub() {
-  expect(unsubscribe).toHaveBeenNthCalledWith(1, Symbol.for("firstSub"));
-  expect(unsubscribe).toHaveBeenNthCalledWith(2, Symbol.for("secondSub"));
 }
 
 describe("c-message-channel-mixing", () => {

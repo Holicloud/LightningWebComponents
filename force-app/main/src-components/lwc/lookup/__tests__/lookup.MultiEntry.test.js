@@ -1,3 +1,8 @@
+import RECORDS from "./data/records.json";
+
+import { DEFAULT_RECORDS, DEFAULT_CONFIG } from "./lookup.utils.js";
+
+import Lookup, { LABELS } from "c/lookup";
 import {
   createMockedEventListener,
   ElementBuilder,
@@ -6,16 +11,12 @@ import {
   getByDataId,
   removeChildren
 } from "test/utils";
-import Lookup, { LABELS } from "c/lookup";
-import { DEFAULT_RECORDS, DEFAULT_CONFIG } from "./lookup.utils.js";
-
-import RECORDS from "./data/records.json";
-
-jest.mock("c/lookupSubtitle");
 
 const elementBuilder = new ElementBuilder("c-lookup", Lookup).setConfig({
   defaultApiProps: { ...DEFAULT_CONFIG, isMultiEntry: true }
 });
+
+jest.mock("c/lookupSubtitle");
 
 describe("c-base-lookup multi entry", () => {
   let element;

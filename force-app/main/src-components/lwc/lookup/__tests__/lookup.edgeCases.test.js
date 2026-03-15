@@ -1,11 +1,4 @@
 import {
-  ElementBuilder,
-  flushPromises,
-  getByDataId,
-  removeChildren
-} from "test/utils";
-import Lookup, { KEY_INPUTS, LABELS } from "c/lookup";
-import {
   assertDropdownIsNotVisible,
   assertDropdownIsVisible,
   assertListBoxIsVisible,
@@ -13,6 +6,13 @@ import {
   DEFAULT_CONFIG,
   inputSearchTerm
 } from "./lookup.utils.js";
+import Lookup, { KEY_INPUTS, LABELS } from "c/lookup";
+import {
+  ElementBuilder,
+  flushPromises,
+  getByDataId,
+  removeChildren
+} from "test/utils";
 
 const elementBuilder = new ElementBuilder("c-lookup", Lookup).setConfig({
     defaultApiProps: DEFAULT_CONFIG

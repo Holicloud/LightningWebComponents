@@ -1,7 +1,10 @@
-import { LightningElement, api, track } from "lwc";
-import LightningConfirm from "lightning/confirm";
 import { DEFAULT_VALUES as DEFAULT_DEPENDENT_VALUES } from "c/employeeDependent";
 import { deepMerge, clone, isObject } from "c/utils";
+
+import LightningConfirm from "lightning/confirm";
+import { LightningElement, api, track } from "lwc";
+
+const ALLOWED_NUMBER_OF_SPOUSES = 1;
 
 export const LABELS = Object.freeze({
   title: "Employee",
@@ -43,8 +46,6 @@ export const LABELS = Object.freeze({
   }
 });
 
-const ALLOWED_NUMBER_OF_SPOUSES = 1;
-
 export const DEFAULT_VALUES = Object.freeze({
   gender: LABELS.genders.male,
   relationship: LABELS.relationships.self,
@@ -56,13 +57,13 @@ export const DEFAULT_VALUES = Object.freeze({
 export default class Employee extends LightningElement {
   @track _record = clone(DEFAULT_VALUES);
 
-  LABELS = LABELS;
-  invalidNumberOfSpouses = false;
-
   genders = [
     { value: LABELS.genders.female, label: LABELS.genders.female },
     { value: LABELS.genders.male, label: LABELS.genders.male }
   ];
+  invalidNumberOfSpouses = false;
+
+  LABELS = LABELS;
 
   statusOptions = [
     { value: LABELS.status.active, label: LABELS.status.active },
@@ -80,6 +81,107 @@ export default class Employee extends LightningElement {
       this._record = clone(record);
       this.rebuildIndexes();
     }
+  }
+
+  get todaysDate() {
+    return new Date().toISOString().split("T")[0];
+  }
+
+  handleAddDependent() {
+    const record = DEFAULT_DEPENDENT_VALUES
+      ? clone(DEFAULT_DEPENDENT_VALUES)
+      : {};
+    record.status = this.record.status;
+    this.record.dependents.push(record);
+    this.rebuildIndexes();
+    this.sendChangeEvent();
+  }
+
+  handleChange(event) {
+    const value = event.target.value;
+    const field = event.target.dataset.input;
+
+    this.record[field] = value;
+    this.refs.panel.reportValidity();
+    this.sendChangeEvent();
+  }
+
+  handleDependentChange(event) {
+    const dependentIndex = parseInt(event.target.dataset.dependentId, 10);
+    this.record.dependents[dependentIndex] = deepMerge(
+      this.record.dependents[dependentIndex],
+      event.detail.record
+    );
+
+    this.validateNumberOfSpouses();
+    this.sendChangeEvent();
+  }
+
+  async handleRemove() {
+    if (!this.record?.dependents?.length) {
+      this.dispatchEvent(new CustomEvent("remove"));
+    } else if (
+      await LightningConfirm.open({
+        message: LABELS.removeEmployeeAndDependents,
+        theme: "warning"
+      })
+    ) {
+      this.dispatchEvent(new CustomEvent("remove"));
+    }
+  }
+
+  handleRemovedDependent(event) {
+    const dependentIndex = parseInt(event.target.dataset.dependentId, 10);
+    const dependents = clone(this.record.dependents);
+    dependents.splice(dependentIndex, 1);
+    this.record.dependents = dependents;
+    this.rebuildIndexes();
+    this.sendChangeEvent();
+  }
+
+  hasMoreSpousesThanAllowed() {
+    const spouses = this.record.dependents.filter(
+      (dependent) => dependent.relationship === LABELS.relationships.spouse
+    );
+
+    return spouses.length > ALLOWED_NUMBER_OF_SPOUSES;
+  }
+
+  rebuildIndexes() {
+    this.record.dependents.forEach((record, index) => {
+      record.index = index;
+    });
+  }
+
+  sendChangeEvent() {
+    this.dispatchEvent(
+      new CustomEvent("update", {
+        detail: {
+          record: clone(this.record)
+        }
+      })
+    );
+  }
+
+  validateNumberOfSpouses() {
+    if (this.hasMoreSpousesThanAllowed()) {
+      this.invalidNumberOfSpouses = true;
+      this.setCustomValidity(LABELS.errors.invalidNumberOfSpouses);
+      this.refs.panel.reportValidity();
+    } else if (this.invalidNumberOfSpouses) {
+      this.invalidNumberOfSpouses = false;
+      this.setCustomValidity("");
+      this.refs.panel.reportValidity();
+    }
+  }
+
+  @api checkValidity() {
+    return !!(this.reportValidity() && this.refs.panel.checkValidity());
+  }
+
+  @api reportValidity() {
+    this.validateNumberOfSpouses();
+    return !!this.refs.panel.reportValidity();
   }
 
   @api scrollInViewOnError() {
@@ -100,108 +202,7 @@ export default class Employee extends LightningElement {
     }
   }
 
-  @api reportValidity() {
-    this.validateNumberOfSpouses();
-    return !!this.refs.panel.reportValidity();
-  }
-
-  @api checkValidity() {
-    return !!(this.reportValidity() && this.refs.panel.checkValidity());
-  }
-
   @api setCustomValidity(errorMessage, field) {
     this.refs.panel.setCustomValidity(errorMessage, field);
-  }
-
-  get todaysDate() {
-    return new Date().toISOString().split("T")[0];
-  }
-
-  handleChange(event) {
-    const value = event.target.value;
-    const field = event.target.dataset.input;
-
-    this.record[field] = value;
-    this.refs.panel.reportValidity();
-    this.sendChangeEvent();
-  }
-
-  async handleRemove() {
-    if (!this.record?.dependents?.length) {
-      this.dispatchEvent(new CustomEvent("remove"));
-    } else if (
-      await LightningConfirm.open({
-        message: LABELS.removeEmployeeAndDependents,
-        theme: "warning"
-      })
-    ) {
-      this.dispatchEvent(new CustomEvent("remove"));
-    }
-  }
-
-  handleAddDependent() {
-    const record = DEFAULT_DEPENDENT_VALUES
-      ? clone(DEFAULT_DEPENDENT_VALUES)
-      : {};
-    record.status = this.record.status;
-    this.record.dependents.push(record);
-    this.rebuildIndexes();
-    this.sendChangeEvent();
-  }
-
-  handleDependentChange(event) {
-    const dependentIndex = parseInt(event.target.dataset.dependentId, 10);
-    this.record.dependents[dependentIndex] = deepMerge(
-      this.record.dependents[dependentIndex],
-      event.detail.record
-    );
-
-    this.validateNumberOfSpouses();
-    this.sendChangeEvent();
-  }
-
-  handleRemovedDependent(event) {
-    const dependentIndex = parseInt(event.target.dataset.dependentId, 10);
-    const dependents = clone(this.record.dependents);
-    dependents.splice(dependentIndex, 1);
-    this.record.dependents = dependents;
-    this.rebuildIndexes();
-    this.sendChangeEvent();
-  }
-
-  rebuildIndexes() {
-    this.record.dependents.forEach((record, index) => {
-      record.index = index;
-    });
-  }
-
-  sendChangeEvent() {
-    this.dispatchEvent(
-      new CustomEvent("update", {
-        detail: {
-          record: clone(this.record)
-        }
-      })
-    );
-  }
-
-  hasMoreSpousesThanAllowed() {
-    const spouses = this.record.dependents.filter(
-      (dependent) => dependent.relationship === LABELS.relationships.spouse
-    );
-
-    return spouses.length > ALLOWED_NUMBER_OF_SPOUSES;
-  }
-
-  validateNumberOfSpouses() {
-    if (this.hasMoreSpousesThanAllowed()) {
-      this.invalidNumberOfSpouses = true;
-      this.setCustomValidity(LABELS.errors.invalidNumberOfSpouses);
-      this.refs.panel.reportValidity();
-    } else if (this.invalidNumberOfSpouses) {
-      this.invalidNumberOfSpouses = false;
-      this.setCustomValidity("");
-      this.refs.panel.reportValidity();
-    }
   }
 }

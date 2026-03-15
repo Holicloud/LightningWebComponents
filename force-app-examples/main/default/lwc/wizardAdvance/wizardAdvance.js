@@ -1,6 +1,6 @@
-import { LightningElement } from "lwc";
-import LightningAlert from "lightning/alert";
 import { validateStep } from "c/wizardStepBasic";
+import LightningAlert from "lightning/alert";
+import { LightningElement } from "lwc";
 
 export default class WizardAdvance extends LightningElement {
   validateStep = (name) => {

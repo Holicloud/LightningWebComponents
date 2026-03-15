@@ -1,15 +1,21 @@
-import ComponentReferenceHeader from "c/componentReferenceHeader";
+import COMPONENTS from "./data/components.json";
+
+import getComponents from "@salesforce/apex/ComponentReferenceController.getComponents";
 import messageChannel from "@salesforce/messageChannel/ComponentReferenceChannel__c";
+import ComponentReferenceHeader from "c/componentReferenceHeader";
 import { publish, isSubscribed } from "c/messageChannelMixin";
 import { getNavigateCalledWith } from "lightning/navigation";
-import getComponents from "@salesforce/apex/ComponentReferenceController.getComponents";
 import {
   ElementBuilder,
   getByDataId,
   removeChildren,
   flushPromises
 } from "test/utils";
-import COMPONENTS from "./data/components.json";
+
+const elementBuilder = new ElementBuilder(
+  "c-component-reference-header",
+  ComponentReferenceHeader
+);
 
 jest.mock(
   "@salesforce/apex/ComponentReferenceController.getComponents",
@@ -20,11 +26,6 @@ jest.mock(
     };
   },
   { virtual: true }
-);
-
-const elementBuilder = new ElementBuilder(
-  "c-component-reference-header",
-  ComponentReferenceHeader
 );
 
 jest.mock("c/messageChannelMixin");

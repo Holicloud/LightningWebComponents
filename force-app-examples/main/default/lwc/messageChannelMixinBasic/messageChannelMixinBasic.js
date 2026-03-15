@@ -1,21 +1,23 @@
-import { LightningElement } from "lwc";
-import { MessageChannelMixin } from "c/messageChannelMixin";
 import channel from "@salesforce/messageChannel/PrimaryMessageChannel__c";
+import { MessageChannelMixin } from "c/messageChannelMixin";
+import { LightningElement } from "lwc";
 
 export default class MessageChannelMixinBasic extends MessageChannelMixin(
   LightningElement
 ) {
   message = "";
 
-  connectedCallback() {
-    this[MessageChannelMixin.Subscribe]({
-      listener: this.handleMessage.bind(this),
-      channel
-    });
-  }
-
   handleMessage(payload) {
     this.message = payload.value;
+  }
+
+  handlePublishMessage() {
+    this[MessageChannelMixin.Publish]({
+      channel: channel,
+      payload: {
+        value: this.template.querySelector("lightning-input").value
+      }
+    });
   }
 
   handleSubscribe() {
@@ -29,12 +31,10 @@ export default class MessageChannelMixinBasic extends MessageChannelMixin(
     this[MessageChannelMixin.Unsubscribe](channel);
   }
 
-  handlePublishMessage() {
-    this[MessageChannelMixin.Publish]({
-      channel: channel,
-      payload: {
-        value: this.template.querySelector("lightning-input").value
-      }
+  connectedCallback() {
+    this[MessageChannelMixin.Subscribe]({
+      listener: this.handleMessage.bind(this),
+      channel
     });
   }
 }

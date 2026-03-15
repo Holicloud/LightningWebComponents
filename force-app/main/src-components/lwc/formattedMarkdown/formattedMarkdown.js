@@ -1,8 +1,8 @@
-/* eslint-disable @lwc/lwc/no-inner-html */
-import { LightningElement, api } from "lwc";
+import markdown from "@salesforce/resourceUrl/markdown";
 import { isBlank, isNotBlank } from "c/utils";
 import { loadStyle, loadScript } from "lightning/platformResourceLoader";
-import markdown from "@salesforce/resourceUrl/markdown";
+/* eslint-disable @lwc/lwc/no-inner-html */
+import { LightningElement, api } from "lwc";
 
 export default class FormattedMarkdown extends LightningElement {
   @api string;

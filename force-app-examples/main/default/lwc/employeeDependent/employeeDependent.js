@@ -1,5 +1,6 @@
-import { LightningElement, api, track } from "lwc";
 import { clone } from "c/utils";
+
+import { LightningElement, api, track } from "lwc";
 
 const LABELS = Object.freeze({
   title: "Dependent",
@@ -48,12 +49,12 @@ export const DEFAULT_VALUES = Object.freeze({
 export default class EmployeeDependent extends LightningElement {
   @track _record = clone(DEFAULT_VALUES);
 
-  LABELS = LABELS;
-
   genders = [
     { value: LABELS.genders.female, label: LABELS.genders.female },
     { value: LABELS.genders.male, label: LABELS.genders.male }
   ];
+
+  LABELS = LABELS;
 
   relationships = [
     { value: LABELS.relationships.child, label: LABELS.relationships.child },
@@ -80,18 +81,6 @@ export default class EmployeeDependent extends LightningElement {
     this._record = clone(record);
   }
 
-  @api reportValidity() {
-    return this.refs.panel.reportValidity();
-  }
-
-  @api checkValidity() {
-    return this.refs.panel.checkValidity();
-  }
-
-  @api setCustomValidity(errorMessage, field) {
-    this.refs.panel.setCustomValidity(errorMessage, field);
-  }
-
   get todaysDate() {
     return new Date().toISOString().split("T")[0];
   }
@@ -116,5 +105,17 @@ export default class EmployeeDependent extends LightningElement {
 
   handleRemove() {
     this.dispatchEvent(new CustomEvent("remove"));
+  }
+
+  @api checkValidity() {
+    return this.refs.panel.checkValidity();
+  }
+
+  @api reportValidity() {
+    return this.refs.panel.reportValidity();
+  }
+
+  @api setCustomValidity(errorMessage, field) {
+    this.refs.panel.setCustomValidity(errorMessage, field);
   }
 }
