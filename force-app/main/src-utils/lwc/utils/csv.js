@@ -1,61 +1,18 @@
-const MAX_FILE_SIZE_IN_BYTES = 2000000; // aprox 2.0 MB
-const DEFAULT_SEPARATOR = ",";
 import { assert } from "c/utils";
+
+const DEFAULT_SEPARATOR = ",";
+const MAX_FILE_SIZE_IN_BYTES = 2000000; // aprox 2.0 MB
 
 const toMegaBytes = (bytes) => bytes / (1024 * 1024);
 
+export { CsvProccessor };
+
 class CsvProccessor {
   #file;
+  #headerTransformations = {};
   #maxSize = MAX_FILE_SIZE_IN_BYTES;
   #separator = DEFAULT_SEPARATOR;
-  #headerTransformations = {};
   #forEachRecord = () => {};
-
-  doForEachRecord(forEachRecord) {
-    this.#forEachRecord = forEachRecord;
-    return this;
-  }
-
-  setHeaderTranformations(headerTransformations) {
-    this.#headerTransformations = headerTransformations;
-    return this;
-  }
-
-  setMaxSize(maxSize) {
-    assert(
-      typeof maxSize === "number" && !isNaN(maxSize) && maxSize > 0,
-      "Max Size Must Be A Positive Number"
-    );
-    this.#maxSize = maxSize;
-    return this;
-  }
-
-  setSeparator(separator) {
-    this.#separator = separator;
-    return this;
-  }
-
-  constructor(file = []) {
-    this.#file = file;
-  }
-
-  async getRecords() {
-    const result = {};
-
-    if (!this.#file) {
-      return result;
-    }
-
-    if (this.#file.size > this.#maxSize) {
-      throw new Error(
-        `File Cannot Be Larger Than ${toMegaBytes(this.#maxSize)}`
-      );
-    }
-
-    const csvAsString = await this.#read(this.#file);
-
-    return this.#getCsvData(csvAsString);
-  }
 
   #getCsvData = (csvString) => {
     const result = {};
@@ -113,6 +70,50 @@ class CsvProccessor {
       reader.readAsText(file);
     });
   };
-}
 
-export { CsvProccessor };
+  doForEachRecord(forEachRecord) {
+    this.#forEachRecord = forEachRecord;
+    return this;
+  }
+
+  async getRecords() {
+    const result = {};
+
+    if (!this.#file) {
+      return result;
+    }
+
+    if (this.#file.size > this.#maxSize) {
+      throw new Error(
+        `File Cannot Be Larger Than ${toMegaBytes(this.#maxSize)}`
+      );
+    }
+
+    const csvAsString = await this.#read(this.#file);
+
+    return this.#getCsvData(csvAsString);
+  }
+
+  setHeaderTranformations(headerTransformations) {
+    this.#headerTransformations = headerTransformations;
+    return this;
+  }
+
+  setMaxSize(maxSize) {
+    assert(
+      typeof maxSize === "number" && !isNaN(maxSize) && maxSize > 0,
+      "Max Size Must Be A Positive Number"
+    );
+    this.#maxSize = maxSize;
+    return this;
+  }
+
+  setSeparator(separator) {
+    this.#separator = separator;
+    return this;
+  }
+
+  constructor(file = []) {
+    this.#file = file;
+  }
+}

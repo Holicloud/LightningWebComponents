@@ -1,18 +1,41 @@
-import { LightningElement, api } from "lwc";
 import { classSet, isNotBlank } from "c/utils";
+
+import { LightningElement, api } from "lwc";
 
 export const LABELS = {
   reviewYourInputs: "Review your inputs"
 };
 
 export default class Panel extends LightningElement {
+  @api classes;
   @api icon = "utility:user";
   @api title;
-  @api classes;
 
-  errorMessage = "";
   areInputsInvalid = false;
+  errorMessage = "";
   showError = false;
+
+  get cardClass() {
+    return classSet("slds-card")
+      .add("default-background")
+      .add(this.classes)
+      .add({
+        "slds-card_boundary has-error": this.displayError
+      })
+      .toString();
+  }
+
+  get displayError() {
+    return this.message && this.showError;
+  }
+
+  get message() {
+    return this.areInputsInvalid ? LABELS.reviewYourInputs : this.errorMessage;
+  }
+
+  @api checkValidity() {
+    return this.reportValidity();
+  }
 
   @api reportValidity() {
     this.showError = false;
@@ -43,10 +66,6 @@ export default class Panel extends LightningElement {
     return true;
   }
 
-  @api checkValidity() {
-    return this.reportValidity();
-  }
-
   @api setCustomValidity(errorMessage, field) {
     if (field) {
       this.querySelector(`[data-input="${field}"]`)?.setCustomValidity(
@@ -55,23 +74,5 @@ export default class Panel extends LightningElement {
     }
 
     this.errorMessage = errorMessage;
-  }
-
-  get message() {
-    return this.areInputsInvalid ? LABELS.reviewYourInputs : this.errorMessage;
-  }
-
-  get displayError() {
-    return this.message && this.showError;
-  }
-
-  get cardClass() {
-    return classSet("slds-card")
-      .add("default-background")
-      .add(this.classes)
-      .add({
-        "slds-card_boundary has-error": this.displayError
-      })
-      .toString();
   }
 }

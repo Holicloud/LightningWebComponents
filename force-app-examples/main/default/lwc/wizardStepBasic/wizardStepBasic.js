@@ -1,5 +1,5 @@
-import { LightningElement } from "lwc";
 import LightningConfirm from "lightning/confirm";
+import { LightningElement } from "lwc";
 
 const validateStep = (step) => {
   const isValid = [...step.querySelectorAll("lightning-input")].reduce(
@@ -18,6 +18,12 @@ const validateStep = (step) => {
 };
 
 export default class WizardStepBasic extends LightningElement {
+  validateStep = (name) => {
+    const step = [...this.template.querySelectorAll(`c-wizard-step`)].find(
+      (stepElement) => stepElement.name === name
+    );
+    return validateStep(step);
+  };
   async navigateToNextStep() {
     const shouldNavigateTo = await LightningConfirm.open({
       message: "Want to Go to the Next step?",
@@ -29,13 +35,6 @@ export default class WizardStepBasic extends LightningElement {
       this.refs.firstWizard.currentStep = "step-2";
     }
   }
-
-  validateStep = (name) => {
-    const step = [...this.template.querySelectorAll(`c-wizard-step`)].find(
-      (stepElement) => stepElement.name === name
-    );
-    return validateStep(step);
-  };
 }
 
 export { validateStep };

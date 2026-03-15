@@ -1,25 +1,32 @@
-import { LightningElement, api } from "lwc";
-import { classSet, isNotBlank } from "c/utils";
-import goingCamping from "./goingCamping.html";
-import maintenance from "./maintenance.html";
 import desert from "./desert.html";
-import openRoad from "./openRoad.html";
-import noAccess from "./noAccess.html";
-import noConnection from "./noConnection.html";
-import notAvailableInLightning from "./notAvailableInLightning.html";
-import pageNotAvailable from "./pageNotAvailable.html";
-import walkthroughNotAvailable from "./walkthroughNotAvailable.html";
 import fishingDeals from "./fishingDeals.html";
-import lakeMountain from "./lakeMountain.html";
-import noEvents from "./noEvents.html";
-import noTask from "./noTask.html";
-import setup from "./setup.html";
+import goingCamping from "./goingCamping.html";
 import goneFishing from "./goneFishing.html";
+import lakeMountain from "./lakeMountain.html";
+import maintenance from "./maintenance.html";
+import noAccess from "./noAccess.html";
 import noAccess2 from "./noAccess2.html";
+import noConnection from "./noConnection.html";
 import noContent from "./noContent.html";
+import noEvents from "./noEvents.html";
 import noPreview from "./noPreview.html";
+import noTask from "./noTask.html";
+import notAvailableInLightning from "./notAvailableInLightning.html";
+import openRoad from "./openRoad.html";
+import pageNotAvailable from "./pageNotAvailable.html";
 import preview from "./preview.html";
 import research from "./research.html";
+import setup from "./setup.html";
+import walkthroughNotAvailable from "./walkthroughNotAvailable.html";
+import { classSet, isNotBlank } from "c/utils";
+import { LightningElement, api } from "lwc";
+
+const DEFAULT_VARIANT = "desert";
+
+const SIZES = Object.freeze({
+  SMALL: "small",
+  LARGE: "large"
+});
 
 const TEMPLATE_BY_VARIANT = Object.freeze({
   "going-camping": goingCamping,
@@ -44,31 +51,26 @@ const TEMPLATE_BY_VARIANT = Object.freeze({
   research: research
 });
 
-const DEFAULT_VARIANT = "desert";
-
-const SIZES = Object.freeze({
-  SMALL: "small",
-  LARGE: "large"
-});
-
 export default class Illustration extends LightningElement {
-  @api title;
-  @api size;
   @api hideIllustration = false;
   @api primaryColor;
-  @api secondaryColor;
   @api primaryStroke;
+  @api secondaryColor;
   @api secondaryStroke;
+
+  @api size;
+  @api title;
+
+  _variant = DEFAULT_VARIANT;
 
   @api
   get variant() {
     return this._variant;
   }
+
   set variant(value) {
     this._variant = TEMPLATE_BY_VARIANT[value] ? value : DEFAULT_VARIANT;
   }
-
-  _variant = DEFAULT_VARIANT;
 
   get classes() {
     return classSet("slds-illustration")
@@ -87,6 +89,14 @@ export default class Illustration extends LightningElement {
     return classSet("slds-text-heading_medium")
       .add({ "slds-illustration__header": this.size === SIZES.LARGE })
       .toString();
+  }
+
+  setProperty(value, target, property) {
+    [...this.template.querySelectorAll(target)].forEach((element) => {
+      if (isNotBlank(value)) {
+        element.style.setProperty(property, value);
+      }
+    });
   }
 
   render() {
@@ -117,14 +127,6 @@ export default class Illustration extends LightningElement {
         "stroke"
       );
     }
-  }
-
-  setProperty(value, target, property) {
-    [...this.template.querySelectorAll(target)].forEach((element) => {
-      if (isNotBlank(value)) {
-        element.style.setProperty(property, value);
-      }
-    });
   }
 }
 

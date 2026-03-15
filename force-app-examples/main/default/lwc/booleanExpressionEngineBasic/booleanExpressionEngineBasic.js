@@ -1,18 +1,21 @@
-import { LightningElement, track } from "lwc";
 import {
   validateExpression,
   evaluateExpression
 } from "c/booleanExpressionEngine";
+import { LightningElement, track } from "lwc";
 
 export default class BooleanExpressionEngineBasic extends LightningElement {
+  @track options = [
+    { label: "Condition Number 1", value: "0" },
+    { label: "Condition Number 2", value: "1" },
+    { label: "Condition Number 3", value: "2" }
+  ];
+
   expression = "NOT(1 OR 2) AND 3";
 
   isValidExpression = true;
 
-  handleExpresssionChange(event) {
-    this.expression = event.detail.value;
-    this.validateInput();
-  }
+  selected = ["2"];
 
   get isValid() {
     if (!this.isValidExpression) {
@@ -24,14 +27,6 @@ export default class BooleanExpressionEngineBasic extends LightningElement {
     );
     return evaluateExpression(evaluations, this.expression);
   }
-
-  selected = ["2"];
-
-  @track options = [
-    { label: "Condition Number 1", value: "0" },
-    { label: "Condition Number 2", value: "1" },
-    { label: "Condition Number 3", value: "2" }
-  ];
 
   addOption() {
     const nextIndex = this.options.length + 1;
@@ -45,16 +40,13 @@ export default class BooleanExpressionEngineBasic extends LightningElement {
     this.validateInput();
   }
 
-  validateInput() {
-    const { valid, message } = validateExpression(
-      this.expression,
-      this.options.length
-    );
+  handleChecboxGroupChange(event) {
+    this.selected = event.detail.value;
+  }
 
-    this.isValidExpression = valid;
-
-    this.refs.input.setCustomValidity(!this.isValidExpression ? message : "");
-    this.refs.input.reportValidity();
+  handleExpresssionChange(event) {
+    this.expression = event.detail.value;
+    this.validateInput();
   }
 
   removeOption() {
@@ -66,7 +58,15 @@ export default class BooleanExpressionEngineBasic extends LightningElement {
     this.validateInput();
   }
 
-  handleChecboxGroupChange(event) {
-    this.selected = event.detail.value;
+  validateInput() {
+    const { valid, message } = validateExpression(
+      this.expression,
+      this.options.length
+    );
+
+    this.isValidExpression = valid;
+
+    this.refs.input.setCustomValidity(!this.isValidExpression ? message : "");
+    this.refs.input.reportValidity();
   }
 }

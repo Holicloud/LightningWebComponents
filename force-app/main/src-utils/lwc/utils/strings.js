@@ -1,3 +1,13 @@
+function convertToISOString(dateString) {
+  const date = new Date(dateString);
+
+  if (Number.isNaN(date.valueOf())) {
+    throw new Error("Invalid Date");
+  }
+
+  return date.toISOString(dateString);
+}
+
 function isBlank(value) {
   return (
     value === undefined ||
@@ -9,16 +19,6 @@ function isBlank(value) {
 
 function isNotBlank(value) {
   return !isBlank(value);
-}
-
-function convertToISOString(dateString) {
-  const date = new Date(dateString);
-
-  if (Number.isNaN(date.valueOf())) {
-    throw new Error("Invalid Date");
-  }
-
-  return date.toISOString(dateString);
 }
 
 function isValidDate(dateStr) {

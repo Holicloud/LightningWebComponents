@@ -14,14 +14,6 @@ const Subscribe = Symbol("Subscribe"),
   Context = Symbol("UniqueMessageContext"),
   MISSING_CHANNEL = "Missing parameter: channel is required";
 
-function isLightningElementSubclass(Base) {
-  const baseProto = Base.prototype;
-
-  if (typeof baseProto.dispatchEvent !== "function") {
-    throw new TypeError(`${Base} must be an Element type`);
-  }
-}
-
 const MessageChannelMixin = (Base) => {
   isLightningElementSubclass(Base);
   return class extends Base {
@@ -90,10 +82,18 @@ const MessageChannelMixin = (Base) => {
   };
 };
 
+function isLightningElementSubclass(Base) {
+  const baseProto = Base.prototype;
+
+  if (typeof baseProto.dispatchEvent !== "function") {
+    throw new TypeError(`${Base} must be an Element type`);
+  }
+}
+
+export { MessageChannelMixin };
+
 MessageChannelMixin.Context = Context;
 MessageChannelMixin.Publish = Publish;
 MessageChannelMixin.Subscribe = Subscribe;
 MessageChannelMixin.Subscriptions = Subscriptions;
 MessageChannelMixin.Unsubscribe = Unsubscribe;
-
-export { MessageChannelMixin };

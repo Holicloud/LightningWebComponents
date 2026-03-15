@@ -1,5 +1,5 @@
-import { getByDataId, flushPromises } from "test/utils";
 import RECORDS from "./data/records.json";
+import { getByDataId, flushPromises } from "test/utils";
 const DEFAULT_RECORDS = RECORDS.slice(0, 5);
 
 const DEFAULT_CONFIG = {
@@ -11,15 +11,14 @@ const DEFAULT_CONFIG = {
   defaultRecords: DEFAULT_RECORDS
 };
 
-async function inputSearchTerm(element, searchTerm) {
-  // Sets input search term and force input change
-  const searchInput = getByDataId(element, "input");
-  searchInput.focus();
-  searchInput.value = searchTerm;
-  searchInput.dispatchEvent(new CustomEvent("input"));
-  // Disable search throttling
-  jest.runOnlyPendingTimers();
-  await flushPromises();
+function assertDropdownIsNotVisible(element) {
+  expect(getByDataId(element, "dropdown")?.classList).not.toContain(
+    "slds-is-open"
+  );
+}
+
+function assertDropdownIsVisible(element) {
+  expect(getByDataId(element, "dropdown")?.classList).toContain("slds-is-open");
 }
 
 function assertListBoxIsVisible(element, recordsToValidate, inputValue) {
@@ -78,14 +77,15 @@ function assertListBoxIsVisible(element, recordsToValidate, inputValue) {
   }
 }
 
-function assertDropdownIsVisible(element) {
-  expect(getByDataId(element, "dropdown")?.classList).toContain("slds-is-open");
-}
-
-function assertDropdownIsNotVisible(element) {
-  expect(getByDataId(element, "dropdown")?.classList).not.toContain(
-    "slds-is-open"
-  );
+async function inputSearchTerm(element, searchTerm) {
+  // Sets input search term and force input change
+  const searchInput = getByDataId(element, "input");
+  searchInput.focus();
+  searchInput.value = searchTerm;
+  searchInput.dispatchEvent(new CustomEvent("input"));
+  // Disable search throttling
+  jest.runOnlyPendingTimers();
+  await flushPromises();
 }
 
 export {

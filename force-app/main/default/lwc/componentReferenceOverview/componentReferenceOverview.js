@@ -1,11 +1,11 @@
+import getComponents from "@salesforce/apex/ComponentReferenceController.getComponents";
+import getExamples from "@salesforce/apex/ComponentReferenceController.getExamples";
 import messageChannel from "@salesforce/messageChannel/ComponentReferenceChannel__c";
+import { reduceErrors } from "c/ldsUtils";
 import { MessageChannelMixin } from "c/messageChannelMixin";
 import { Mixer } from "c/utils";
 import { NavigationMixin } from "lightning/navigation";
-import getExamples from "@salesforce/apex/ComponentReferenceController.getExamples";
-import getComponents from "@salesforce/apex/ComponentReferenceController.getComponents";
 import { wire } from "lwc";
-import { reduceErrors } from "c/ldsUtils";
 const BASE_PATH =
   "https://github.com/santiagoparradev/LWC-RECIPES-SANTIAGO/tree/main/force-app-examples/main/";
 const GIT_PATH_BY_TYPE = {
@@ -16,18 +16,15 @@ export default class ComponentReferenceOverview extends new Mixer().mix(
   MessageChannelMixin,
   NavigationMixin
 ) {
-  selectedExample;
-  componentConstructor;
-  examples = [];
   allExamples = [];
-  isLoading = true;
-  error;
+  componentConstructor;
   components;
+  error;
+  examples = [];
+  isLoading = true;
   selectedComponent;
 
-  get hasExamples() {
-    return this.examples?.length;
-  }
+  selectedExample;
 
   @wire(getComponents)
   wiredData({ error, data }) {
@@ -47,6 +44,17 @@ export default class ComponentReferenceOverview extends new Mixer().mix(
     }
   }
 
+  get exampleOptions() {
+    return this.examples?.map((example) => ({
+      label: example.Title__c,
+      value: example.DeveloperName
+    }));
+  }
+
+  get hasExamples() {
+    return this.examples?.length;
+  }
+
   handleChangeComponent = async (message) => {
     if (this.components && this.allExamples) {
       this.isLoading = true;
@@ -59,31 +67,6 @@ export default class ComponentReferenceOverview extends new Mixer().mix(
       this.setSelectedExample();
     }
   };
-
-  connectedCallback() {
-    this[MessageChannelMixin.Subscribe]({
-      listener: this.handleChangeComponent,
-      channel: messageChannel
-    });
-  }
-
-  async setSelectedExample(selectedIndex) {
-    this.selectedExample = selectedIndex
-      ? this.examples[selectedIndex]
-      : this.examples[0];
-    const { default: ctor } = await import(
-      "c/" + this.selectedExample.DeveloperName
-    );
-    this.componentConstructor = ctor;
-    this.isLoading = false;
-  }
-
-  get exampleOptions() {
-    return this.examples?.map((example) => ({
-      label: example.Title__c,
-      value: example.DeveloperName
-    }));
-  }
 
   handleChangeExample(event) {
     this.setSelectedExample(
@@ -102,6 +85,24 @@ export default class ComponentReferenceOverview extends new Mixer().mix(
           (GIT_PATH_BY_TYPE[this.selectedComponent.Type__c] || "default/lwc/") +
           this.selectedExample.DeveloperName
       }
+    });
+  }
+
+  async setSelectedExample(selectedIndex) {
+    this.selectedExample = selectedIndex
+      ? this.examples[selectedIndex]
+      : this.examples[0];
+    const { default: ctor } = await import(
+      "c/" + this.selectedExample.DeveloperName
+    );
+    this.componentConstructor = ctor;
+    this.isLoading = false;
+  }
+
+  connectedCallback() {
+    this[MessageChannelMixin.Subscribe]({
+      listener: this.handleChangeComponent,
+      channel: messageChannel
     });
   }
 }

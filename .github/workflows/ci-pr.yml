@@ -44,6 +44,9 @@ jobs:
       - name: Verify Prettier
         run: npm run prettier:verify
 
+      - name: Verify LWC Structure
+        run: node validate-lwc.js .
+
       - name: Verify EsLint
         run: npm run lint:verify
 

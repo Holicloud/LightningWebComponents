@@ -1,5 +1,6 @@
-import { LightningElement, api } from "lwc";
 import { classSet } from "c/utils";
+
+import { LightningElement, api } from "lwc";
 
 export const VARIANTS = Object.freeze({
   error: {
@@ -53,34 +54,34 @@ export default class Alert extends LightningElement {
     });
   }
 
-  get variantProps() {
-    return VARIANTS[this.variant];
+  get closeButtonVariant() {
+    return "bare" + (this.variant !== "warning" ? `-inverse` : "");
   }
 
   get icon() {
     return this.iconName || this.variantProps.iconName;
   }
 
-  get closeButtonVariant() {
-    return "bare" + (this.variant !== "warning" ? `-inverse` : "");
+  get isCollapsible() {
+    return !this.isNonCollapsible;
   }
 
   get isVisible() {
     return !this.isHidden;
   }
 
-  hideAlert(event) {
-    event.preventDefault();
-    this._isHidden = true;
-    this.dispatchEvent(new CustomEvent("collapsed"));
-  }
-
-  get isCollapsible() {
-    return !this.isNonCollapsible;
+  get variantProps() {
+    return VARIANTS[this.variant];
   }
 
   handleAction(event) {
     event.preventDefault();
     this.dispatchEvent(new CustomEvent("action"));
+  }
+
+  hideAlert(event) {
+    event.preventDefault();
+    this._isHidden = true;
+    this.dispatchEvent(new CustomEvent("collapsed"));
   }
 }

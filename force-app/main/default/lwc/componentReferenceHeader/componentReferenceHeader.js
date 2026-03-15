@@ -1,10 +1,10 @@
-import messageChannel from "@salesforce/messageChannel/ComponentReferenceChannel__c";
-import { MessageChannelMixin } from "c/messageChannelMixin";
-import { NavigationMixin } from "lightning/navigation";
-import { Mixer } from "c/utils";
 import getComponents from "@salesforce/apex/ComponentReferenceController.getComponents";
-import { wire } from "lwc";
+import messageChannel from "@salesforce/messageChannel/ComponentReferenceChannel__c";
 import { reduceErrors } from "c/ldsUtils";
+import { MessageChannelMixin } from "c/messageChannelMixin";
+import { Mixer } from "c/utils";
+import { NavigationMixin } from "lightning/navigation";
+import { wire } from "lwc";
 
 const BASE_PATH =
   "https://github.com/santiagoparradev/LWC-RECIPES-SANTIAGO/tree/main/force-app/main/";
@@ -16,12 +16,26 @@ export default class ComponentReferenceHeader extends new Mixer().mix(
   MessageChannelMixin,
   NavigationMixin
 ) {
-  title;
+  components;
+
   description;
   descriptor;
-  targets = [];
-  git;
   error;
+
+  git;
+  targets = [];
+  title;
+
+  @wire(getComponents)
+  wiredData({ error, data }) {
+    if (data) {
+      this.components = data;
+      this.setHeaderInformation(this.components[0]);
+      this.error = null;
+    } else if (error) {
+      this.error = reduceErrors(error);
+    }
+  }
 
   handleMessage = (message) => {
     const selected = this.components.find(
@@ -29,6 +43,15 @@ export default class ComponentReferenceHeader extends new Mixer().mix(
     );
     this.setHeaderInformation(selected);
   };
+
+  handleViewInGit() {
+    this[NavigationMixin.Navigate]({
+      type: "standard__webPage",
+      attributes: {
+        url: this.git
+      }
+    });
+  }
 
   setHeaderInformation(component) {
     if (component) {
@@ -54,28 +77,6 @@ export default class ComponentReferenceHeader extends new Mixer().mix(
     this[MessageChannelMixin.Subscribe]({
       listener: this.handleMessage,
       channel: messageChannel
-    });
-  }
-
-  components;
-
-  @wire(getComponents)
-  wiredData({ error, data }) {
-    if (data) {
-      this.components = data;
-      this.setHeaderInformation(this.components[0]);
-      this.error = null;
-    } else if (error) {
-      this.error = reduceErrors(error);
-    }
-  }
-
-  handleViewInGit() {
-    this[NavigationMixin.Navigate]({
-      type: "standard__webPage",
-      attributes: {
-        url: this.git
-      }
     });
   }
 }

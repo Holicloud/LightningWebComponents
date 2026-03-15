@@ -1,3 +1,4 @@
+import ERRORS from "./data/errors.json";
 import ErrorsAccordion from "c/errorsAccordion";
 import {
   removeChildren,
@@ -6,7 +7,6 @@ import {
   flushPromises,
   getAllByDataId
 } from "test/utils";
-import ERRORS from "./data/errors.json";
 
 const elementBuilder = new ElementBuilder(
   "c-errors-accordion",

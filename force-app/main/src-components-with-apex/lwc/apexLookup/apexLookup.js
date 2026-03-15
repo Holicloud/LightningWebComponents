@@ -1,11 +1,11 @@
-import { LightningElement, api } from "lwc";
-import { assert, isNotBlank } from "c/utils";
 import getDefault from "@salesforce/apex/LookupController.getDefault";
 import getDefaultNonCacheable from "@salesforce/apex/LookupController.getDefaultNonCacheable";
 import getMatching from "@salesforce/apex/LookupController.getMatching";
 import getMatchingNonCacheable from "@salesforce/apex/LookupController.getMatchingNonCacheable";
 import getSelection from "@salesforce/apex/LookupController.getSelection";
 import getSelectionNonCacheable from "@salesforce/apex/LookupController.getSelectionNonCacheable";
+import { assert, isNotBlank } from "c/utils";
+import { LightningElement, api } from "lwc";
 
 export default class ApexLookup extends LightningElement {
   @api actions;
@@ -14,10 +14,10 @@ export default class ApexLookup extends LightningElement {
   @api fieldLevelHelp;
   @api highlightTittleOnMatch;
   @api isMultiEntry;
+  @api isNonCacheable = false;
   @api label;
   @api messageWhenValueMissing;
   @api minSearchTermLength;
-  @api isNonCacheable = false;
   @api payload = {};
   @api placeholder;
   @api required;
@@ -33,47 +33,37 @@ export default class ApexLookup extends LightningElement {
     return this.refs.lookup.validity;
   }
 
-  @api
-  focus() {
-    this.refs.lookup.focus();
-  }
-
-  @api
-  blur() {
-    this.refs.lookup.blur();
-  }
-
-  @api
-  checkValidity() {
-    return this.refs.lookup.checkValidity();
-  }
-
-  @api
-  reportValidity() {
-    return this.refs.lookup.reportValidity();
-  }
-
-  @api
-  setCustomValidity(message) {
-    this.refs.lookup.setCustomValidity(message);
-  }
-
-  @api
-  showHelpMessageIfInvalid() {
-    this.refs.lookup.showHelpMessageIfInvalid();
-  }
-
   get getDefaultImplementation() {
     return this.isNonCacheable ? getDefaultNonCacheable : getDefault;
+  }
+
+  get getMatchingImplementation() {
+    return this.isNonCacheable ? getMatchingNonCacheable : getMatching;
   }
 
   get getSelectionImplementation() {
     return this.isNonCacheable ? getSelectionNonCacheable : getSelection;
   }
 
-  get getMatchingImplementation() {
-    return this.isNonCacheable ? getMatchingNonCacheable : getMatching;
-  }
+  searchHandler = async ({ rawSearchTerm = "", searchTerm = "" } = {}) => {
+    const result = await this.getMatchingImplementation({
+      apexClass: this.apexClass,
+      searchTerm,
+      rawSearchTerm,
+      payload: JSON.stringify(this.payload)
+    });
+    return result;
+  };
+
+  selectionHandler = async ({ selectedIds } = {}) => {
+    const result = await this.getSelectionImplementation({
+      apexClass: this.apexClass,
+      selectedIds,
+      payload: JSON.stringify(this.payload)
+    });
+
+    return result;
+  };
 
   async renderedCallback() {
     if (!this.hasRender) {
@@ -103,23 +93,33 @@ export default class ApexLookup extends LightningElement {
     }
   }
 
-  searchHandler = async ({ rawSearchTerm = "", searchTerm = "" } = {}) => {
-    const result = await this.getMatchingImplementation({
-      apexClass: this.apexClass,
-      searchTerm,
-      rawSearchTerm,
-      payload: JSON.stringify(this.payload)
-    });
-    return result;
-  };
+  @api
+  blur() {
+    this.refs.lookup.blur();
+  }
 
-  selectionHandler = async ({ selectedIds } = {}) => {
-    const result = await this.getSelectionImplementation({
-      apexClass: this.apexClass,
-      selectedIds,
-      payload: JSON.stringify(this.payload)
-    });
+  @api
+  checkValidity() {
+    return this.refs.lookup.checkValidity();
+  }
 
-    return result;
-  };
+  @api
+  focus() {
+    this.refs.lookup.focus();
+  }
+
+  @api
+  reportValidity() {
+    return this.refs.lookup.reportValidity();
+  }
+
+  @api
+  setCustomValidity(message) {
+    this.refs.lookup.setCustomValidity(message);
+  }
+
+  @api
+  showHelpMessageIfInvalid() {
+    this.refs.lookup.showHelpMessageIfInvalid();
+  }
 }

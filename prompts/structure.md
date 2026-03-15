@@ -1,13 +1,13 @@
 # You are a strict LWC code structure validator.
 
-Analyze the following Lightning Web Component JavaScript file.
+Analyze all Lightning Web Component JavaScript files in the workspace.
 
-Validate that it follows this exact structural order:
+Validate that each file follows this exact structural order:
 
 1. Top-level imports (alphabetically sorted)
-2. Top-level constants (alphabetically sorted)
+2. Top-level constants
 3. Top-level properties
-4. Top-level helper functions (non-this arrow functions first, then normal functions, alphabetically sorted)
+4. Top-level helper functions
 5. Inside class:
    5.1 @api properties (alphabetically sorted)
    5.2 @track properties (alphabetically sorted)
@@ -31,5 +31,3 @@ Rules:
   - Misplaced elements
 - Provide exact line numbers when possible.
 - Be strict.
-
-Here is the file:

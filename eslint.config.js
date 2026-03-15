@@ -56,7 +56,12 @@ module.exports = defineConfig([
     }
   },
   {
-    files: ["jest.config.js", "test/setupFiles/setEnvVars.js"],
+    files: [
+      "jest.config.js",
+      "test/setupFiles/setEnvVars.js",
+      "fix-lwc.js",
+      "validate-lwc.js"
+    ],
     rules: {
       "@lwc/lwc-platform/no-process-env": "off"
     }

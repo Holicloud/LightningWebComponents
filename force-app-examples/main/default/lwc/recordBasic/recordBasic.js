@@ -1,6 +1,6 @@
-import { LightningElement, wire } from "lwc";
 import getActiveUsers from "@salesforce/apex/GetUsers.getActiveUsers";
 import userId from "@salesforce/user/Id";
+import { LightningElement, wire } from "lwc";
 
 export default class RecordBasic extends LightningElement {
   currentUserId = userId;

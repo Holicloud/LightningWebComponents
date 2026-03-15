@@ -1,7 +1,7 @@
-import Record from "c/record";
-import { ElementBuilder, removeChildren, flushPromises } from "test/utils";
 import RECORDS from "./data/records.json";
+import Record from "c/record";
 import { getRecords } from "lightning/uiRecordApi";
+import { ElementBuilder, removeChildren, flushPromises } from "test/utils";
 
 const elementBuilder = new ElementBuilder("c-record", Record);
 

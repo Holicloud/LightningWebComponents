@@ -1,8 +1,7 @@
-import LightningDatatable from "lightning/datatable";
-import { flattenObject } from "c/utils";
-import { api } from "lwc";
 import { TYPE, TYPES } from "c/datatablePlusExtendedTypes";
-export { TYPE };
+import { flattenObject } from "c/utils";
+import LightningDatatable from "lightning/datatable";
+import { api } from "lwc";
 
 export default class DatatablePlus extends LightningDatatable {
   static customTypes = TYPES;
@@ -15,3 +14,4 @@ export default class DatatablePlus extends LightningDatatable {
     this.data = value.map((record) => flattenObject(record));
   }
 }
+export { TYPE };
