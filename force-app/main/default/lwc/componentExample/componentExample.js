@@ -1,7 +1,8 @@
-import { LightningElement, api } from "lwc";
 import { classSet } from "c/utils";
 
-export const INVERSE_VARIANT = "inverse";
+import { LightningElement, api } from "lwc";
+
+const INVERSE_VARIANT = "inverse";
 
 export default class ComponentExample extends LightningElement {
   @api title = "Example title";
@@ -14,3 +15,5 @@ export default class ComponentExample extends LightningElement {
       .toString();
   }
 }
+
+export { INVERSE_VARIANT };

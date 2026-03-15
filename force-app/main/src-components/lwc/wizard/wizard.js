@@ -9,15 +9,12 @@ export const VARIANTS = Object.freeze({
 export const CURRENT_STEP_ATTRIBUTE = "current-step";
 
 export default class Wizard extends LightningElement {
-  @api variant = "base";
-  @api previousLabel = "Previous";
-  @api nextLabel = "Next";
   @api finishLabel = "Finish";
   @api header = "";
 
-  labels = {
-    error: "Error"
-  };
+  @api nextLabel = "Next";
+  @api previousLabel = "Previous";
+  @api variant = "base";
 
   @api
   get currentStep() {
@@ -28,77 +25,22 @@ export default class Wizard extends LightningElement {
     this.setCurrentStep(value);
   }
 
-  @track steps = {};
   @track flow = [];
+
+  @track steps = {};
   _currentStep = null;
-  hasError = false;
   errorMessage = null;
+
+  hasError = false;
+
+  hasRender = false;
+
+  labels = {
+    error: "Error"
+  };
 
   get variantProps() {
     return VARIANTS[this.variant] || VARIANTS.base;
-  }
-
-  setCurrentStep(value) {
-    this.setAttribute(CURRENT_STEP_ATTRIBUTE, value);
-    this._currentStep = value;
-
-    if (this.hasRender) {
-      this.dispatchChange(value);
-      this.setActiveStep(value);
-    }
-  }
-
-  handleSlotChange() {
-    this.configSteps();
-    this.setActiveStep();
-  }
-
-  handleRegister(event) {
-    event.stopPropagation();
-    event.preventDefault();
-    const step = event.detail;
-    this.steps[step.name] = step;
-    step.methods.config({
-      labels: {
-        next: this.nextLabel,
-        previous: this.previousLabel,
-        finish: this.finishLabel
-      }
-    });
-  }
-
-  handleUnregister(event) {
-    event.stopPropagation();
-    event.preventDefault();
-    delete this.steps[event.detail];
-    if (event.detail === this._currentStep) {
-      this._currentStep = null;
-    }
-    this.handleSlotChange();
-  }
-
-  dispatchChange(stepName) {
-    this.dispatchEvent(
-      new CustomEvent("change", {
-        detail: {
-          oldStep: this._currentStep,
-          currentStep: stepName
-        }
-      })
-    );
-  }
-
-  setActiveStep(stepName) {
-    if (stepName) {
-      this.setAttribute(CURRENT_STEP_ATTRIBUTE, stepName);
-      this._currentStep = stepName;
-    }
-
-    if (Object.values(this.steps).length) {
-      Object.values(this.steps).forEach((step) =>
-        step.methods.setActive(step.name === this._currentStep)
-      );
-    }
   }
 
   configSteps() {
@@ -119,6 +61,17 @@ export default class Wizard extends LightningElement {
     if (!this._currentStep && this.flow?.length) {
       this.setActiveStep(this.flow[0].name);
     }
+  }
+
+  dispatchChange(stepName) {
+    this.dispatchEvent(
+      new CustomEvent("change", {
+        detail: {
+          oldStep: this._currentStep,
+          currentStep: stepName
+        }
+      })
+    );
   }
 
   async handleNext(event) {
@@ -153,6 +106,58 @@ export default class Wizard extends LightningElement {
     }
   }
 
+  handleRegister(event) {
+    event.stopPropagation();
+    event.preventDefault();
+    const step = event.detail;
+    this.steps[step.name] = step;
+    step.methods.config({
+      labels: {
+        next: this.nextLabel,
+        previous: this.previousLabel,
+        finish: this.finishLabel
+      }
+    });
+  }
+
+  handleSlotChange() {
+    this.configSteps();
+    this.setActiveStep();
+  }
+
+  handleUnregister(event) {
+    event.stopPropagation();
+    event.preventDefault();
+    delete this.steps[event.detail];
+    if (event.detail === this._currentStep) {
+      this._currentStep = null;
+    }
+    this.handleSlotChange();
+  }
+
+  setActiveStep(stepName) {
+    if (stepName) {
+      this.setAttribute(CURRENT_STEP_ATTRIBUTE, stepName);
+      this._currentStep = stepName;
+    }
+
+    if (Object.values(this.steps).length) {
+      Object.values(this.steps).forEach((step) =>
+        step.methods.setActive(step.name === this._currentStep)
+      );
+    }
+  }
+
+  setCurrentStep(value) {
+    this.setAttribute(CURRENT_STEP_ATTRIBUTE, value);
+    this._currentStep = value;
+
+    if (this.hasRender) {
+      this.dispatchChange(value);
+      this.setActiveStep(value);
+    }
+  }
+
   validateStep(step) {
     return new Promise((resolve) => {
       try {
@@ -168,7 +173,6 @@ export default class Wizard extends LightningElement {
     });
   }
 
-  hasRender = false;
   renderedCallback() {
     if (!this.hasRender) {
       this.hasRender = true;

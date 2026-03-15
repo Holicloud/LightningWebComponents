@@ -1,5 +1,6 @@
-import { LightningElement, api, track } from "lwc";
 import { clone } from "c/utils";
+
+import { LightningElement, api, track } from "lwc";
 
 const LABELS = Object.freeze({
   title: "Dependent",
@@ -46,14 +47,33 @@ export const DEFAULT_VALUES = Object.freeze({
 });
 
 export default class EmployeeDependent extends LightningElement {
-  @track _record = clone(DEFAULT_VALUES);
+  @api
+  get record() {
+    return this._record;
+  }
+  set record(record) {
+    this._record = clone(record);
+  }
 
-  LABELS = LABELS;
+  @api checkValidity() {
+    return this.refs.panel.checkValidity();
+  }
+
+  @api reportValidity() {
+    return this.refs.panel.reportValidity();
+  }
+
+  @api setCustomValidity(errorMessage, field) {
+    this.refs.panel.setCustomValidity(errorMessage, field);
+  }
+  @track _record = clone(DEFAULT_VALUES);
 
   genders = [
     { value: LABELS.genders.female, label: LABELS.genders.female },
     { value: LABELS.genders.male, label: LABELS.genders.male }
   ];
+
+  LABELS = LABELS;
 
   relationships = [
     { value: LABELS.relationships.child, label: LABELS.relationships.child },
@@ -71,26 +91,6 @@ export default class EmployeeDependent extends LightningElement {
     { value: LABELS.status.retiree, label: LABELS.status.retiree },
     { value: LABELS.status.waived, label: LABELS.status.waived }
   ];
-
-  @api
-  get record() {
-    return this._record;
-  }
-  set record(record) {
-    this._record = clone(record);
-  }
-
-  @api reportValidity() {
-    return this.refs.panel.reportValidity();
-  }
-
-  @api checkValidity() {
-    return this.refs.panel.checkValidity();
-  }
-
-  @api setCustomValidity(errorMessage, field) {
-    this.refs.panel.setCustomValidity(errorMessage, field);
-  }
 
   get todaysDate() {
     return new Date().toISOString().split("T")[0];

@@ -1,6 +1,6 @@
-import { LightningElement, api } from "lwc";
-import template from "./template.html";
 import editTemplate from "./editTemplate.html";
+import template from "./template.html";
+import { LightningElement, api } from "lwc";
 const TYPE = "datatable-plus";
 const TYPES = {
   [TYPE]: {
@@ -39,10 +39,10 @@ async function renderComponent(type, components, defaultType) {
   return result;
 }
 
-export { TYPE, template, editTemplate, TYPES, renderComponent };
-
 export default class DatatablePlusExtendedTypes extends LightningElement {
   @api getDataTypes() {
     return TYPES;
   }
 }
+
+export { TYPE, template, editTemplate, TYPES, renderComponent };

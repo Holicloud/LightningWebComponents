@@ -1,4 +1,3 @@
-import { LightningElement, api, track } from "lwc";
 import {
   classSet,
   classListMutation,
@@ -7,6 +6,12 @@ import {
   isBlank,
   isNotBlank
 } from "c/utils";
+import { LightningElement, api, track } from "lwc";
+
+// HTML formatting for matched search terms
+const BOLD_MATCHER_REGEX = "<strong>$1</strong>";
+
+const DEFAULT_LABEL = "Select";
 
 const INPUT_SEARCH_DELAY = 300;
 
@@ -20,21 +25,6 @@ const KEY_INPUTS = {
   SPACE: 32
 };
 
-// HTML formatting for matched search terms
-const BOLD_MATCHER_REGEX = "<strong>$1</strong>";
-
-// Variants for label styling
-const VARIANTS = {
-  LABEL_STACKED: "label-stacked",
-  LABEL_INLINE: "label-inline",
-  LABEL_HIDDEN: "label-hidden"
-};
-
-// Regex for filtering out special SOSL characters
-const REGEX_SOSL_RESERVED =
-  /(\?|&|\||!|\{|\}|\[|\]|\(|\)|\^|~|\*|:|"|\+|-|\\)/g;
-const REGEX_EXTRA_TRAP = /(\$|\\)/g;
-
 const LABELS = {
   noResults: "No results.",
   loading: "Loading...",
@@ -46,11 +36,21 @@ const LABELS = {
     errorFetchingData: "Error Fetching Data"
   }
 };
-
 const MIN_SEARCH_TERM_LENGTH = 2;
+
+const REGEX_EXTRA_TRAP = /(\$|\\)/g;
+
+// Regex for filtering out special SOSL characters
+const REGEX_SOSL_RESERVED =
+  /(\?|&|\||!|\{|\}|\[|\]|\(|\)|\^|~|\*|:|"|\+|-|\\)/g;
 const SCROLL_AFTER_N = "*";
 
-const DEFAULT_LABEL = "Select";
+// Variants for label styling
+const VARIANTS = {
+  LABEL_STACKED: "label-stacked",
+  LABEL_INLINE: "label-inline",
+  LABEL_HIDDEN: "label-hidden"
+};
 
 export default class Lookup extends LightningElement {
   @api actions = [];
@@ -65,31 +65,6 @@ export default class Lookup extends LightningElement {
   @api scrollAfterNItems = SCROLL_AFTER_N;
   @api searchHandler = () => [];
   @api selectionHandler = () => [];
-
-  @track recordsDropdown = [];
-
-  _defaultRecords = [];
-  _label = DEFAULT_LABEL;
-  _minSearchTermLength = MIN_SEARCH_TERM_LENGTH;
-  _scrollAfterNItems = SCROLL_AFTER_N;
-  _variant = VARIANTS.LABEL_STACKED;
-  _shouldFocus = false;
-  _shouldBlur = false;
-
-  cancelBlur = false;
-  cleanSearchTerm;
-  displayListBox = false;
-  displayMatching = false;
-  focusedResultIndex = null;
-  hasFocus = false;
-  hasInit = false;
-  helpMessage;
-  isLoading = true;
-  labels = LABELS;
-  records = new Map();
-  searchTerm = "";
-  searchThrottlingTimeout;
-  showHelpMessage = false;
 
   @api
   get defaultRecords() {
@@ -126,22 +101,16 @@ export default class Lookup extends LightningElement {
   }
 
   @api
-  get variant() {
-    return this._variant;
+  get validity() {
+    return { valid: Boolean(!this.hasMissingValue() && !this.helpMessage) };
   }
-  set variant(value) {
-    this._variant = Object.values(VARIANTS).includes(value)
-      ? value
-      : VARIANTS.LABEL_STACKED;
-    this.updateClassList();
-  }
-
   @api
   get value() {
     return this.isMultiEntry
       ? this.selectedRecords.map((record) => record.id)
       : this.selectedRecords[0]?.id;
   }
+
   set value(value) {
     const currentValue = this.isMultiEntry
       ? clone(this.value).sort().toString()
@@ -175,19 +144,16 @@ export default class Lookup extends LightningElement {
       this.updateValue();
     }
   }
-
   @api
-  get validity() {
-    return { valid: Boolean(!this.hasMissingValue() && !this.helpMessage) };
+  get variant() {
+    return this._variant;
   }
 
-  @api
-  focus() {
-    if (this.refs.input) {
-      this.applyFocus();
-    } else {
-      this._shouldFocus = true;
-    }
+  set variant(value) {
+    this._variant = Object.values(VARIANTS).includes(value)
+      ? value
+      : VARIANTS.LABEL_STACKED;
+    this.updateClassList();
   }
 
   @api
@@ -208,6 +174,15 @@ export default class Lookup extends LightningElement {
     }
 
     return valid;
+  }
+
+  @api
+  focus() {
+    if (this.refs.input) {
+      this.applyFocus();
+    } else {
+      this._shouldFocus = true;
+    }
   }
 
   @api
@@ -235,6 +210,66 @@ export default class Lookup extends LightningElement {
   @api
   showHelpMessageIfInvalid() {
     this.reportValidity();
+  }
+
+  @track recordsDropdown = [];
+
+  _defaultRecords = [];
+  _label = DEFAULT_LABEL;
+  _minSearchTermLength = MIN_SEARCH_TERM_LENGTH;
+  _scrollAfterNItems = SCROLL_AFTER_N;
+  _shouldBlur = false;
+  _shouldFocus = false;
+  _variant = VARIANTS.LABEL_STACKED;
+
+  cancelBlur = false;
+  cleanSearchTerm;
+  displayListBox = false;
+  displayMatching = false;
+  focusedResultIndex = null;
+  hasFocus = false;
+  hasInit = false;
+  helpMessage;
+  isLoading = true;
+  labels = LABELS;
+  records = new Map();
+  searchTerm = "";
+  searchThrottlingTimeout;
+  showHelpMessage = false;
+
+  get computedLabelClass() {
+    return classSet("slds-form-element__label")
+      .add({ "slds-assistive-text": this.variant === VARIANTS.LABEL_HIDDEN })
+      .toString();
+  }
+
+  get displayHelpMessage() {
+    return this.showHelpMessage && this.helpMessage;
+  }
+
+  get doneLoading() {
+    return !this.isLoading;
+  }
+
+  get getClearSelectionButtonClass() {
+    return classSet("slds-button")
+      .add("slds-button_icon")
+      .add("slds-input__icon")
+      .add("slds-input__icon_right")
+      .add({ "slds-hide": !this.hasSelection() })
+      .toString();
+  }
+
+  get getComboboxClass() {
+    const iconClass =
+      this.isMultiEntry || !this.hasSelection()
+        ? "slds-input-has-icon_right"
+        : "slds-input-has-icon_left-right";
+
+    return classSet("slds-combobox__form-element")
+      .add("slds-input-has-icon")
+      .add(iconClass)
+      .toString();
   }
 
   // template getters
@@ -280,38 +315,16 @@ export default class Lookup extends LightningElement {
     return css.toString();
   }
 
-  get getComboboxClass() {
-    const iconClass =
-      this.isMultiEntry || !this.hasSelection()
-        ? "slds-input-has-icon_right"
-        : "slds-input-has-icon_left-right";
-
-    return classSet("slds-combobox__form-element")
-      .add("slds-input-has-icon")
-      .add(iconClass)
-      .toString();
+  get getInputTitle() {
+    return this.isMultiEntry || !this.hasSelection()
+      ? ""
+      : this.selectedRecords[0].title;
   }
 
-  get getSearchIconClass() {
-    return classSet("slds-input__icon")
-      .add("slds-input__icon_right")
-      .add({ "slds-hide": this.isSingleEntry && this.hasSelection() })
-      .toString();
-  }
-
-  get getClearSelectionButtonClass() {
-    return classSet("slds-button")
-      .add("slds-button_icon")
-      .add("slds-input__icon")
-      .add("slds-input__icon_right")
-      .add({ "slds-hide": !this.hasSelection() })
-      .toString();
-  }
-
-  get getSelectIconClass() {
-    return classSet("slds-combobox__input-entity-icon")
-      .add({ "slds-hide": !this.hasSelection() })
-      .toString();
+  get getInputValue() {
+    return this.isMultiEntry || !this.hasSelection()
+      ? this.searchTerm
+      : this.selectedRecords[0].title;
   }
 
   get getListboxClass() {
@@ -325,18 +338,17 @@ export default class Lookup extends LightningElement {
       .toString();
   }
 
-  get computedLabelClass() {
-    return classSet("slds-form-element__label")
-      .add({ "slds-assistive-text": this.variant === VARIANTS.LABEL_HIDDEN })
+  get getSearchIconClass() {
+    return classSet("slds-input__icon")
+      .add("slds-input__icon_right")
+      .add({ "slds-hide": this.isSingleEntry && this.hasSelection() })
       .toString();
   }
 
-  get isSingleEntry() {
-    return !this.isMultiEntry;
-  }
-
-  get doneLoading() {
-    return !this.isLoading;
+  get getSelectIconClass() {
+    return classSet("slds-combobox__input-entity-icon")
+      .add({ "slds-hide": !this.hasSelection() })
+      .toString();
   }
 
   get getSelectIconName() {
@@ -345,20 +357,22 @@ export default class Lookup extends LightningElement {
       : "standard:default";
   }
 
-  get getInputValue() {
-    return this.isMultiEntry || !this.hasSelection()
-      ? this.searchTerm
-      : this.selectedRecords[0].title;
-  }
-
-  get getInputTitle() {
-    return this.isMultiEntry || !this.hasSelection()
-      ? ""
-      : this.selectedRecords[0].title;
-  }
-
   get isInputReadonly() {
     return this.isMultiEntry ? false : this.hasSelection();
+  }
+
+  get isSingleEntry() {
+    return !this.isMultiEntry;
+  }
+
+  get selectedRecords() {
+    const result = [];
+    for (const { record, selected } of Array.from(this.records.values())) {
+      if (selected) {
+        result.push(record);
+      }
+    }
+    return result;
   }
 
   get showClearIcon() {
@@ -372,18 +386,119 @@ export default class Lookup extends LightningElement {
     return !this.showClearIcon;
   }
 
-  get displayHelpMessage() {
-    return this.showHelpMessage && this.helpMessage;
+  applyBlur() {
+    this.refs.input.blur();
+    this.refs.input.dispatchEvent(new CustomEvent("blur"));
   }
 
-  get selectedRecords() {
-    const result = [];
-    for (const { record, selected } of Array.from(this.records.values())) {
-      if (selected) {
-        result.push(record);
+  applyFocus() {
+    this.refs.input.focus();
+    this.refs.input.dispatchEvent(new CustomEvent("focus"));
+  }
+
+  handleActionClick(event) {
+    const name = event.currentTarget.dataset.name;
+    this.dispatchEvent(new CustomEvent("action", { detail: name }));
+  }
+
+  handleAddSelectedRecord(event) {
+    const recordId = event.currentTarget.dataset.recordId;
+    this.upsertRecord(recordId, { selected: true });
+    this.updateDropdownOfRecords();
+    this.processSelectionUpdate(true);
+  }
+
+  handleArrowDown(event, getFocusableElement) {
+    this.focusedResultIndex++;
+    if (this.focusedResultIndex >= this.recordsDropdown.length) {
+      this.focusedResultIndex = 0;
+    }
+
+    getFocusableElement(this.focusedResultIndex)?.scrollIntoView({
+      block: "nearest",
+      inline: "nearest"
+    });
+    event.preventDefault();
+  }
+
+  handleArrowUp(event, getFocusableElement) {
+    this.focusedResultIndex--;
+    if (this.focusedResultIndex < 0) {
+      this.focusedResultIndex = this.recordsDropdown.length - 1;
+    }
+    getFocusableElement(this.focusedResultIndex)?.scrollIntoView({
+      block: "nearest",
+      inline: "nearest"
+    });
+    event.preventDefault();
+  }
+
+  handleBackspaceOrDelete() {
+    if (this.hasSelection() && this.isSingleEntry) {
+      this.displayListBox = false;
+      this.cancelDisplayListBoxOnFocus = true;
+      this.template.querySelector(`[data-id="remove"]`).click();
+    }
+  }
+
+  handleBlur() {
+    if (this.cancelBlur) {
+      this.cancelBlur = false;
+      return;
+    }
+    this.hasFocus = false;
+    this.displayListBox = false;
+    this.showHelpMessageIfInvalid();
+    this.dispatchEvent(new CustomEvent("blur"));
+  }
+
+  handleClearSearchTerm() {
+    this.cleanSearchTerm = "";
+    this.searchTerm = "";
+    this.displayMatching = false;
+    this.focus();
+  }
+
+  handleComboboxMouseDown(event) {
+    const mainButton = 0;
+    if (event.button === mainButton) {
+      this.cancelBlur = true;
+    }
+  }
+
+  handleComboboxMouseUp() {
+    this.cancelBlur = false;
+    this.focus();
+  }
+
+  handleEnter(event, getFocusableElement) {
+    if (this.hasFocus && this.focusedResultIndex >= 0) {
+      if (this.isSingleEntry) {
+        if (!this.hasSelection()) {
+          getFocusableElement(this.focusedResultIndex)?.click();
+          event.preventDefault();
+        }
+      } else {
+        getFocusableElement(this.focusedResultIndex)?.click();
+        event.preventDefault();
       }
     }
-    return result;
+  }
+
+  handleEscape() {
+    this.displayListBox = false;
+  }
+
+  handleFocus() {
+    if (!this.cancelDisplayListBoxOnFocus) {
+      this.displayListBox = true;
+    } else {
+      this.cancelDisplayListBoxOnFocus = false;
+    }
+    this.hasFocus = true;
+    this.focusedResultIndex = null;
+    this.updateDropdownOfRecords();
+    this.dispatchEvent(new CustomEvent("focus"));
   }
 
   // event handlers
@@ -518,106 +633,6 @@ export default class Lookup extends LightningElement {
     }
   }
 
-  handleBackspaceOrDelete() {
-    if (this.hasSelection() && this.isSingleEntry) {
-      this.displayListBox = false;
-      this.cancelDisplayListBoxOnFocus = true;
-      this.template.querySelector(`[data-id="remove"]`).click();
-    }
-  }
-
-  handleEscape() {
-    this.displayListBox = false;
-  }
-
-  handleArrowDown(event, getFocusableElement) {
-    this.focusedResultIndex++;
-    if (this.focusedResultIndex >= this.recordsDropdown.length) {
-      this.focusedResultIndex = 0;
-    }
-
-    getFocusableElement(this.focusedResultIndex)?.scrollIntoView({
-      block: "nearest",
-      inline: "nearest"
-    });
-    event.preventDefault();
-  }
-
-  handleArrowUp(event, getFocusableElement) {
-    this.focusedResultIndex--;
-    if (this.focusedResultIndex < 0) {
-      this.focusedResultIndex = this.recordsDropdown.length - 1;
-    }
-    getFocusableElement(this.focusedResultIndex)?.scrollIntoView({
-      block: "nearest",
-      inline: "nearest"
-    });
-    event.preventDefault();
-  }
-
-  handleEnter(event, getFocusableElement) {
-    if (this.hasFocus && this.focusedResultIndex >= 0) {
-      if (this.isSingleEntry) {
-        if (!this.hasSelection()) {
-          getFocusableElement(this.focusedResultIndex)?.click();
-          event.preventDefault();
-        }
-      } else {
-        getFocusableElement(this.focusedResultIndex)?.click();
-        event.preventDefault();
-      }
-    }
-  }
-
-  handleSpace() {
-    if (!this.hasSelection() && isBlank(this.searchTerm)) {
-      this.hasFocus = true;
-      this.displayListBox = true;
-    }
-  }
-
-  handleAddSelectedRecord(event) {
-    const recordId = event.currentTarget.dataset.recordId;
-    this.upsertRecord(recordId, { selected: true });
-    this.updateDropdownOfRecords();
-    this.processSelectionUpdate(true);
-  }
-
-  handleComboboxMouseDown(event) {
-    const mainButton = 0;
-    if (event.button === mainButton) {
-      this.cancelBlur = true;
-    }
-  }
-
-  handleComboboxMouseUp() {
-    this.cancelBlur = false;
-    this.focus();
-  }
-
-  handleFocus() {
-    if (!this.cancelDisplayListBoxOnFocus) {
-      this.displayListBox = true;
-    } else {
-      this.cancelDisplayListBoxOnFocus = false;
-    }
-    this.hasFocus = true;
-    this.focusedResultIndex = null;
-    this.updateDropdownOfRecords();
-    this.dispatchEvent(new CustomEvent("focus"));
-  }
-
-  handleBlur() {
-    if (this.cancelBlur) {
-      this.cancelBlur = false;
-      return;
-    }
-    this.hasFocus = false;
-    this.displayListBox = false;
-    this.showHelpMessageIfInvalid();
-    this.dispatchEvent(new CustomEvent("blur"));
-  }
-
   handleRemoveSelectedItem(event) {
     if (this.disabled) {
       return;
@@ -638,57 +653,11 @@ export default class Lookup extends LightningElement {
     this.focus();
   }
 
-  handleActionClick(event) {
-    const name = event.currentTarget.dataset.name;
-    this.dispatchEvent(new CustomEvent("action", { detail: name }));
-  }
-
-  handleClearSearchTerm() {
-    this.cleanSearchTerm = "";
-    this.searchTerm = "";
-    this.displayMatching = false;
-    this.focus();
-  }
-
-  applyFocus() {
-    this.refs.input.focus();
-    this.refs.input.dispatchEvent(new CustomEvent("focus"));
-  }
-
-  applyBlur() {
-    this.refs.input.blur();
-    this.refs.input.dispatchEvent(new CustomEvent("blur"));
-  }
-
-  // hooks
-
-  async connectedCallback() {
-    this.classList.add("slds-form-element");
-    this.updateClassList();
-    if (!this.hasInit) {
-      this.setDefaultRecords();
-      await this.setSelection();
-      this.updateDropdownOfRecords();
-      this.hasInit = true;
-      this.isLoading = false;
+  handleSpace() {
+    if (!this.hasSelection() && isBlank(this.searchTerm)) {
+      this.hasFocus = true;
+      this.displayListBox = true;
     }
-  }
-
-  renderedCallback() {
-    if (this._shouldFocus && this.refs?.input) {
-      this._shouldFocus = false;
-      this.applyFocus();
-    }
-
-    if (this._shouldBlur && this.refs?.input) {
-      this._shouldBlur = false;
-      this.applyBlur();
-    }
-  }
-
-  async updateValue() {
-    await this.setSelection();
-    this.updateDropdownOfRecords();
   }
 
   hasMissingValue() {
@@ -697,43 +666,6 @@ export default class Lookup extends LightningElement {
 
   hasSelection() {
     return !!this.selectedRecords.length;
-  }
-
-  updateDropdownOfRecords() {
-    const result = [];
-    let regex;
-    if (this.displayMatching) {
-      const cleanSearchTerm = this.searchTerm
-        .replace(REGEX_SOSL_RESERVED, ".?")
-        .replace(REGEX_EXTRA_TRAP, "\\$1");
-      regex = new RegExp(`(${cleanSearchTerm})`, "gi");
-    }
-
-    let index = 0;
-    for (const { selected, record, matchesSearchTerm, isDefault } of Array.from(
-      this.records.values()
-    )) {
-      if (selected || !record) {
-        continue;
-      }
-
-      if (this.displayMatching && matchesSearchTerm) {
-        const singleResult = clone(record);
-        this.setDisplayableRecord(singleResult, index);
-        if (this.highlightTittleOnMatch) {
-          this.highlightTitle(singleResult, regex);
-        }
-        result.push(singleResult);
-        index++;
-      } else if (!this.displayMatching && isDefault) {
-        const singleResult = clone(record);
-        this.setDisplayableRecord(singleResult, index);
-        result.push(singleResult);
-        index++;
-      }
-    }
-
-    this.recordsDropdown = result;
   }
 
   highlightTitle(result, regex) {
@@ -787,46 +719,6 @@ export default class Lookup extends LightningElement {
     }
   }
 
-  async setSelection() {
-    try {
-      const selectedIds = this.selectedRecords.map((record) => record.id);
-
-      if (typeof this.selectionHandler !== "function" || !selectedIds.length) {
-        return;
-      }
-
-      const records = await Promise.resolve(
-        this.selectionHandler({
-          selectedIds
-        })
-      );
-
-      if (records instanceof Array && records?.length) {
-        clone(records).forEach((record) => {
-          if (isNotBlank(record.id)) {
-            this.upsertRecord(record.id, { record });
-          }
-        });
-      }
-    } catch {
-      this.setCustomValidity(LABELS.errors.errorFetchingData);
-      this.reportValidity();
-    }
-  }
-
-  upsertRecord(recordId, config = {}) {
-    assert(isNotBlank(recordId), "recordId is required");
-    const existingRecord = this.records.get(recordId);
-    if (existingRecord) {
-      Object.assign(this.records.get(recordId), config);
-    } else {
-      if (!config.record) {
-        config.record = { id: recordId, title: recordId };
-      }
-      this.records.set(recordId, config);
-    }
-  }
-
   setDisplayableRecord(record, recordIndex) {
     record.index = recordIndex;
     record.hasSubtitles = !!record.subtitles?.length;
@@ -857,11 +749,119 @@ export default class Lookup extends LightningElement {
     return record;
   }
 
+  async setSelection() {
+    try {
+      const selectedIds = this.selectedRecords.map((record) => record.id);
+
+      if (typeof this.selectionHandler !== "function" || !selectedIds.length) {
+        return;
+      }
+
+      const records = await Promise.resolve(
+        this.selectionHandler({
+          selectedIds
+        })
+      );
+
+      if (records instanceof Array && records?.length) {
+        clone(records).forEach((record) => {
+          if (isNotBlank(record.id)) {
+            this.upsertRecord(record.id, { record });
+          }
+        });
+      }
+    } catch {
+      this.setCustomValidity(LABELS.errors.errorFetchingData);
+      this.reportValidity();
+    }
+  }
+
   updateClassList() {
     classListMutation(this.classList, {
       "slds-form-element_stacked": this.variant === VARIANTS.LABEL_STACKED,
       "slds-form-element_horizontal": this.variant === VARIANTS.LABEL_INLINE
     });
+  }
+
+  updateDropdownOfRecords() {
+    const result = [];
+    let regex;
+    if (this.displayMatching) {
+      const cleanSearchTerm = this.searchTerm
+        .replace(REGEX_SOSL_RESERVED, ".?")
+        .replace(REGEX_EXTRA_TRAP, "\\$1");
+      regex = new RegExp(`(${cleanSearchTerm})`, "gi");
+    }
+
+    let index = 0;
+    for (const { selected, record, matchesSearchTerm, isDefault } of Array.from(
+      this.records.values()
+    )) {
+      if (selected || !record) {
+        continue;
+      }
+
+      if (this.displayMatching && matchesSearchTerm) {
+        const singleResult = clone(record);
+        this.setDisplayableRecord(singleResult, index);
+        if (this.highlightTittleOnMatch) {
+          this.highlightTitle(singleResult, regex);
+        }
+        result.push(singleResult);
+        index++;
+      } else if (!this.displayMatching && isDefault) {
+        const singleResult = clone(record);
+        this.setDisplayableRecord(singleResult, index);
+        result.push(singleResult);
+        index++;
+      }
+    }
+
+    this.recordsDropdown = result;
+  }
+
+  async updateValue() {
+    await this.setSelection();
+    this.updateDropdownOfRecords();
+  }
+
+  upsertRecord(recordId, config = {}) {
+    assert(isNotBlank(recordId), "recordId is required");
+    const existingRecord = this.records.get(recordId);
+    if (existingRecord) {
+      Object.assign(this.records.get(recordId), config);
+    } else {
+      if (!config.record) {
+        config.record = { id: recordId, title: recordId };
+      }
+      this.records.set(recordId, config);
+    }
+  }
+
+  // hooks
+
+  async connectedCallback() {
+    this.classList.add("slds-form-element");
+    this.updateClassList();
+    if (!this.hasInit) {
+      this.setDefaultRecords();
+      await this.setSelection();
+      this.updateDropdownOfRecords();
+      this.hasInit = true;
+      this.isLoading = false;
+    }
+  }
+
+  renderedCallback() {
+    if (this._shouldFocus && this.refs?.input) {
+      this._shouldFocus = false;
+      this.applyFocus();
+    }
+
+    if (this._shouldBlur && this.refs?.input) {
+      this._shouldBlur = false;
+      this.applyBlur();
+    }
   }
 }
 

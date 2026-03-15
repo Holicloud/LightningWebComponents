@@ -1,7 +1,9 @@
+import COMPONENTS from "./data/components.json";
+
+import getComponents from "@salesforce/apex/ComponentReferenceController.getComponents";
+import messageChannel from "@salesforce/messageChannel/ComponentReferenceChannel__c";
 import ComponentReferenceList from "c/componentReferenceList";
 import { publish } from "c/messageChannelMixin";
-import messageChannel from "@salesforce/messageChannel/ComponentReferenceChannel__c";
-import getComponents from "@salesforce/apex/ComponentReferenceController.getComponents";
 import {
   ElementBuilder,
   getByDataId,
@@ -9,18 +11,6 @@ import {
   removeChildren,
   flushPromises
 } from "test/utils";
-import COMPONENTS from "./data/components.json";
-
-jest.mock(
-  "@salesforce/apex/ComponentReferenceController.getComponents",
-  () => {
-    const { createApexTestWireAdapter } = require("@salesforce/sfdx-lwc-jest");
-    return {
-      default: createApexTestWireAdapter(jest.fn())
-    };
-  },
-  { virtual: true }
-);
 
 const elementBuilder = new ElementBuilder(
   "c-component-reference-list",
@@ -33,6 +23,17 @@ const mockEvent = (value) =>
       value
     }
   });
+
+jest.mock(
+  "@salesforce/apex/ComponentReferenceController.getComponents",
+  () => {
+    const { createApexTestWireAdapter } = require("@salesforce/sfdx-lwc-jest");
+    return {
+      default: createApexTestWireAdapter(jest.fn())
+    };
+  },
+  { virtual: true }
+);
 
 jest.mock("c/messageChannelMixin");
 

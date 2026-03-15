@@ -1,11 +1,3 @@
-import {
-  ElementBuilder,
-  removeChildren,
-  flushPromises,
-  getByDataId,
-  createMockedEventListener
-} from "test/utils";
-import Lookup, { VARIANTS, LABELS, SCROLL_AFTER_N, KEY_INPUTS } from "c/lookup";
 import RECORDS from "./data/records.json";
 import {
   inputSearchTerm,
@@ -15,13 +7,16 @@ import {
   assertDropdownIsNotVisible,
   DEFAULT_CONFIG
 } from "./lookup.utils.js";
+import Lookup, { VARIANTS, LABELS, SCROLL_AFTER_N, KEY_INPUTS } from "c/lookup";
+import {
+  ElementBuilder,
+  removeChildren,
+  flushPromises,
+  getByDataId,
+  createMockedEventListener
+} from "test/utils";
 
 const BASE_LABEL = "Lookup";
-const SAMPLE_SEARCH_TOO_SHORT_WHITESPACE = "A ";
-const SAMPLE_SEARCH_TOO_SHORT_SPECIAL = "a*";
-const SAMPLE_SEARCH_RAW = "Sample search* ";
-const SAMPLE_SEARCH_CLEAN = "Sample search?";
-
 const elementBuilder = new ElementBuilder("c-lookup", Lookup).setConfig({
   defaultApiProps: DEFAULT_CONFIG
 });
@@ -29,7 +24,12 @@ const multiEntry = elementBuilder.setConfig({
   defaultApiProps: { isMultiEntry: true }
 });
 const singleEntry = elementBuilder.setConfig({ isMultiEntry: false });
+
 const modes = [multiEntry, singleEntry];
+const SAMPLE_SEARCH_CLEAN = "Sample search?";
+const SAMPLE_SEARCH_RAW = "Sample search* ";
+const SAMPLE_SEARCH_TOO_SHORT_SPECIAL = "a*";
+const SAMPLE_SEARCH_TOO_SHORT_WHITESPACE = "A ";
 
 jest.mock("c/lookupSubtitle");
 

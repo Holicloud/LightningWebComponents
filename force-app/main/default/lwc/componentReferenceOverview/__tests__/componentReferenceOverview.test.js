@@ -1,15 +1,25 @@
-import ComponentReferenceOverview from "c/componentReferenceOverview";
+import COMPONENTS from "./data/components.json";
+import EXAMPLES from "./data/examples.json";
+
+import getComponents from "@salesforce/apex/ComponentReferenceController.getComponents";
+import getExamples from "@salesforce/apex/ComponentReferenceController.getExamples";
 import messageChannel from "@salesforce/messageChannel/ComponentReferenceChannel__c";
+import ComponentReferenceOverview from "c/componentReferenceOverview";
 import { publish } from "c/messageChannelMixin";
 import { getNavigateCalledWith } from "lightning/navigation";
-import getExamples from "@salesforce/apex/ComponentReferenceController.getExamples";
-import getComponents from "@salesforce/apex/ComponentReferenceController.getComponents";
 import {
   ElementBuilder,
   getByDataId,
   removeChildren,
   flushPromises
 } from "test/utils";
+
+const elementBuilder = new ElementBuilder(
+  "c-component-reference-overview",
+  ComponentReferenceOverview
+);
+
+const [FIRST_EXAMPLE, SECOND_EXAMPLE] = Object.freeze(Object.values(EXAMPLES));
 
 jest.mock(
   "@salesforce/apex/ComponentReferenceController.getComponents",
@@ -28,15 +38,6 @@ jest.mock(
     default: jest.fn()
   }),
   { virtual: true }
-);
-
-import COMPONENTS from "./data/components.json";
-import EXAMPLES from "./data/examples.json";
-
-const [FIRST_EXAMPLE, SECOND_EXAMPLE] = Object.freeze(Object.values(EXAMPLES));
-const elementBuilder = new ElementBuilder(
-  "c-component-reference-overview",
-  ComponentReferenceOverview
 );
 
 jest.mock("c/messageChannelMixin");

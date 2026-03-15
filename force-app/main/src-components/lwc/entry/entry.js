@@ -1,9 +1,9 @@
 import { LightningElement, api } from "lwc";
 
 export default class Entry extends LightningElement {
-  @api value;
-  @api separator = ",";
   @api options = {};
+  @api separator = ",";
+  @api value;
 
   get formattedValue() {
     if (!Array.isArray(this.value)) {

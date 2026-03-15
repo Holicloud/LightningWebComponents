@@ -1,4 +1,5 @@
 import { LightningElement, api } from "lwc";
+
 export const COMPONENTS = {
   "lightning/formattedPhone": {
     builder: () => import("lightning/formattedPhone")
@@ -43,10 +44,18 @@ export const COMPONENTS = {
 };
 
 export default class LookupSubtitle extends LightningElement {
-  @api type = "lightning/formattedRichText";
   @api props = {};
+  @api type = "lightning/formattedRichText";
 
   component;
+
+  get componentProps() {
+    const baseProps = COMPONENTS[this.type]?.baseProps || {};
+    return {
+      ...baseProps,
+      ...this.props
+    };
+  }
 
   async connectedCallback() {
     if (COMPONENTS[this.type]) {
@@ -56,13 +65,5 @@ export default class LookupSubtitle extends LightningElement {
       const { default: ComponentCtor } = await import(this.type);
       this.component = ComponentCtor;
     }
-  }
-
-  get componentProps() {
-    const baseProps = COMPONENTS[this.type]?.baseProps || {};
-    return {
-      ...baseProps,
-      ...this.props
-    };
   }
 }

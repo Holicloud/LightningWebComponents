@@ -6,12 +6,13 @@ import {
   createMockedEventListener
 } from "test/utils";
 
-jest.mock("c/panel");
-
 const elementBuilder = new ElementBuilder(
   "c-employee-dependent",
   EmployeeDependent
 );
+
+jest.mock("c/panel");
+
 describe("c-employee-dependent", () => {
   let element;
 

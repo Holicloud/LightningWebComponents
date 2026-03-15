@@ -1,6 +1,8 @@
 import { LightningElement } from "lwc";
 
 export default class LookupBasic extends LightningElement {
+  actionClicked = "";
+
   actions = [
     {
       label: "Account",
@@ -14,8 +16,6 @@ export default class LookupBasic extends LightningElement {
       }
     }
   ];
-
-  actionClicked = "";
 
   handleAction(event) {
     this.actionClicked = event.detail;

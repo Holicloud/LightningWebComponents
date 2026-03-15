@@ -1,9 +1,9 @@
 import { LightningElement } from "lwc";
 
 export default class IllustrationBasic extends LightningElement {
-  size = "small";
-  variant = "desert";
   hideIllustration = false;
+
+  size = "small";
 
   sizes = [
     { label: "No Value(Default container size)" },
@@ -11,9 +11,7 @@ export default class IllustrationBasic extends LightningElement {
     { label: "Large", value: "large" }
   ];
 
-  handleSizeChange(event) {
-    this.size = event.detail.value;
-  }
+  variant = "desert";
 
   variants = [
     { label: "No Value (Defaulted to desert)", value: undefined },
@@ -42,11 +40,15 @@ export default class IllustrationBasic extends LightningElement {
     { label: "research", value: "research" }
   ];
 
-  handleVariantChange(event) {
-    this.variant = event.detail.value;
-  }
-
   handleIllustrationChange(event) {
     this.hideIllustration = event.detail.checked;
+  }
+
+  handleSizeChange(event) {
+    this.size = event.detail.value;
+  }
+
+  handleVariantChange(event) {
+    this.variant = event.detail.value;
   }
 }

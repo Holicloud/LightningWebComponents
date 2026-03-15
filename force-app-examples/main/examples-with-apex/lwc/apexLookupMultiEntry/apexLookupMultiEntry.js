@@ -5,13 +5,20 @@ import { ShowToastEvent } from "lightning/platformShowToastEvent";
 export default class ApexLookupMultiEntry extends new Mixer().mix(
   NavigationMixin
 ) {
-  value;
-  payload = { accountName: "Edge Communications" };
   actions = [{ name: "newAccountAction", label: "New Account" }];
+  payload = { accountName: "Edge Communications" };
+  value;
 
-  handleChange(event) {
-    this.checkForErrors();
-    this.value = event.detail.value;
+  // CPD-OFF
+  checkForErrors() {
+    if (this.isMultiEntry && this.refs.lookup.value?.length > 2) {
+      this.refs.lookup.setCustomValidity(`You may only select up to 2 items.`);
+    } else {
+      // if there was a custom error before, reset it
+      this.refs.lookup.setCustomValidity("");
+    }
+    // Tells lightning-input to show the error right away without needing interaction
+    this.refs.lookup.reportValidity();
   }
 
   handleAction(event) {
@@ -24,6 +31,17 @@ export default class ApexLookupMultiEntry extends new Mixer().mix(
         }
       });
     }
+  }
+
+  handleChange(event) {
+    this.checkForErrors();
+    this.value = event.detail.value;
+  }
+
+  handleClear() {
+    this.value = [];
+    this.refs.lookup.setCustomValidity("");
+    this.refs.lookup.reportValidity();
   }
 
   handleSubmit() {
@@ -47,21 +65,5 @@ export default class ApexLookupMultiEntry extends new Mixer().mix(
       );
     }
   }
-
-  handleClear() {
-    this.value = [];
-    this.refs.lookup.setCustomValidity("");
-    this.refs.lookup.reportValidity();
-  }
-
-  checkForErrors() {
-    if (this.isMultiEntry && this.refs.lookup.value?.length > 2) {
-      this.refs.lookup.setCustomValidity(`You may only select up to 2 items.`);
-    } else {
-      // if there was a custom error before, reset it
-      this.refs.lookup.setCustomValidity("");
-    }
-    // Tells lightning-input to show the error right away without needing interaction
-    this.refs.lookup.reportValidity();
-  }
+  // CPD-ON
 }

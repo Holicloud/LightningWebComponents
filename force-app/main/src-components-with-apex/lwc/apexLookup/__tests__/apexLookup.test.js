@@ -1,3 +1,29 @@
+import RECORDS from "./data/records.json";
+
+import getDefault from "@salesforce/apex/LookupController.getDefault";
+import getDefaultNonCacheable from "@salesforce/apex/LookupController.getDefaultNonCacheable";
+import getMatching from "@salesforce/apex/LookupController.getMatching";
+import getMatchingNonCacheable from "@salesforce/apex/LookupController.getMatchingNonCacheable";
+import getSelection from "@salesforce/apex/LookupController.getSelection";
+import getSelectionNonCacheable from "@salesforce/apex/LookupController.getSelectionNonCacheable";
+
+import ApexLookup from "c/apexLookup";
+import {
+  ElementBuilder,
+  removeChildren,
+  getByDataId,
+  createMockedEventListener
+} from "test/utils";
+
+const elementBuilder = new ElementBuilder(
+  "c-apex-lookup",
+  ApexLookup
+).setConfig({
+  defaultApiProps: {
+    apexClass: "ApexClass"
+  }
+});
+
 jest.mock("c/lookup");
 jest.mock(
   "@salesforce/apex/LookupController.getDefaultNonCacheable",
@@ -41,31 +67,6 @@ jest.mock(
   }),
   { virtual: true }
 );
-
-import ApexLookup from "c/apexLookup";
-import getDefault from "@salesforce/apex/LookupController.getDefault";
-import getDefaultNonCacheable from "@salesforce/apex/LookupController.getDefaultNonCacheable";
-import getMatching from "@salesforce/apex/LookupController.getMatching";
-import getMatchingNonCacheable from "@salesforce/apex/LookupController.getMatchingNonCacheable";
-import getSelection from "@salesforce/apex/LookupController.getSelection";
-import getSelectionNonCacheable from "@salesforce/apex/LookupController.getSelectionNonCacheable";
-import {
-  ElementBuilder,
-  removeChildren,
-  getByDataId,
-  createMockedEventListener
-} from "test/utils";
-
-import RECORDS from "./data/records.json";
-
-const elementBuilder = new ElementBuilder(
-  "c-apex-lookup",
-  ApexLookup
-).setConfig({
-  defaultApiProps: {
-    apexClass: "ApexClass"
-  }
-});
 
 describe("c-apex-lookup", () => {
   let element;

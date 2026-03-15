@@ -1,13 +1,13 @@
-import { LightningElement } from "lwc";
 import getRecords from "./records";
+import { LightningElement } from "lwc";
 const RECORDS = getRecords();
 
 export default class LookupWithResults extends LightningElement {
-  // initial multiselect selection
-  value = ["6", "7"];
-
   // a small subset of your data typically first x elements or recently viewed records
   defaultRecords = RECORDS.slice(0, 5);
+
+  // initial multiselect selection
+  value = ["6", "7"];
 
   getMatching({ rawSearchTerm, searchTerm }) {
     // fetch your records using rawSearchTerm or searchTerm

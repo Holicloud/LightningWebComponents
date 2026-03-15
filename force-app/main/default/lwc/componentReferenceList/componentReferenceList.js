@@ -1,18 +1,18 @@
-import { LightningElement, track } from "lwc";
-import { MessageChannelMixin } from "c/messageChannelMixin";
-import messageChannel from "@salesforce/messageChannel/ComponentReferenceChannel__c";
-import { clone } from "c/utils";
 import getComponents from "@salesforce/apex/ComponentReferenceController.getComponents";
-import { wire } from "lwc";
+import messageChannel from "@salesforce/messageChannel/ComponentReferenceChannel__c";
 import { reduceErrors } from "c/ldsUtils";
+import { MessageChannelMixin } from "c/messageChannelMixin";
+import { clone } from "c/utils";
+import { LightningElement, track } from "lwc";
+import { wire } from "lwc";
 const MIN_LENGTH = 2;
 
 export default class ComponentReferenceList extends MessageChannelMixin(
   LightningElement
 ) {
   @track navigationData = [];
-  navigationDataStateful = [];
   initiallySelected = null;
+  navigationDataStateful = [];
 
   @wire(getComponents)
   wiredData({ error, data }) {
@@ -37,15 +37,6 @@ export default class ComponentReferenceList extends MessageChannelMixin(
     }
   }
 
-  handleSelect(event) {
-    this[MessageChannelMixin.Publish]({
-      channel: messageChannel,
-      payload: {
-        descriptor: event.detail.name
-      }
-    });
-  }
-
   handleInputChange(event) {
     const value = event.detail.value;
 
@@ -65,5 +56,14 @@ export default class ComponentReferenceList extends MessageChannelMixin(
     } else {
       this.navigationData = this.navigationDataStateful;
     }
+  }
+
+  handleSelect(event) {
+    this[MessageChannelMixin.Publish]({
+      channel: messageChannel,
+      payload: {
+        descriptor: event.detail.name
+      }
+    });
   }
 }

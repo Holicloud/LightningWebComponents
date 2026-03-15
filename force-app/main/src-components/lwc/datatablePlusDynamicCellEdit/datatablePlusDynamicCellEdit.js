@@ -1,8 +1,6 @@
-import { LightningElement, api } from "lwc";
 import { renderComponent } from "c/datatablePlusExtendedTypes";
+import { LightningElement, api } from "lwc";
 
-const REMOVE_INPUT_KEYS = [8, 46];
-const DEFAULT_TYPE = "lightning/input";
 const COMPONENTS = {
   "lightning/checkboxGroup": () => import("lightning/checkboxGroup"),
   "lightning/combobox": () => import("lightning/combobox"),
@@ -11,23 +9,15 @@ const COMPONENTS = {
   "lightning/textarea": () => import("lightning/textarea"),
   "c/lookup": () => import("c/lookup")
 };
+const DEFAULT_TYPE = "lightning/input";
+const REMOVE_INPUT_KEYS = [8, 46];
 
 export default class DatatablePlusDynamicCellEdit extends LightningElement {
-  @api type = DEFAULT_TYPE;
   @api label;
-
-  @api
-  get value() {
-    return this._value;
-  }
-  set value(value) {
-    this._value = value;
-  }
 
   @api props = {};
 
-  _value;
-  renderedComponent;
+  @api type = DEFAULT_TYPE;
 
   @api
   get validity() {
@@ -39,6 +29,20 @@ export default class DatatablePlusDynamicCellEdit extends LightningElement {
   }
 
   @api
+  get value() {
+    return this._value;
+  }
+
+  set value(value) {
+    this._value = value;
+  }
+
+  @api
+  focus() {
+    this.inputElement?.focus();
+  }
+
+  @api
   showHelpMessageIfInvalid() {
     if (this.inputElement?.showHelpMessageIfInvalid) {
       this.inputElement?.showHelpMessageIfInvalid();
@@ -47,13 +51,11 @@ export default class DatatablePlusDynamicCellEdit extends LightningElement {
     }
   }
 
-  @api
-  focus() {
-    this.inputElement?.focus();
-  }
+  _value;
+  renderedComponent;
 
-  connectedCallback() {
-    this.setType();
+  get inputElement() {
+    return this.template.querySelector(`[data-id="input"]`);
   }
 
   get isLightningRecordPicker() {
@@ -64,15 +66,12 @@ export default class DatatablePlusDynamicCellEdit extends LightningElement {
     return this.type === "c/lookup" || this.isLightningRecordPicker;
   }
 
-  async setType() {
-    if (this.renderedComponent) {
-      return;
-    }
-
-    this.renderedComponent = await renderComponent(
-      this.type,
-      COMPONENTS,
-      DEFAULT_TYPE
+  handleBlur() {
+    this.dispatchEvent(
+      new CustomEvent("blur", {
+        bubbles: true,
+        composed: true
+      })
     );
   }
 
@@ -103,22 +102,25 @@ export default class DatatablePlusDynamicCellEdit extends LightningElement {
     );
   }
 
-  handleBlur() {
-    this.dispatchEvent(
-      new CustomEvent("blur", {
-        bubbles: true,
-        composed: true
-      })
-    );
-  }
-
-  get inputElement() {
-    return this.template.querySelector(`[data-id="input"]`);
-  }
-
   handleKeyDown(event) {
     if (this.isLookup && REMOVE_INPUT_KEYS.includes(event.keyCode)) {
       this._value = null;
     }
+  }
+
+  async setType() {
+    if (this.renderedComponent) {
+      return;
+    }
+
+    this.renderedComponent = await renderComponent(
+      this.type,
+      COMPONENTS,
+      DEFAULT_TYPE
+    );
+  }
+
+  connectedCallback() {
+    this.setType();
   }
 }
