@@ -1,0 +1,141 @@
+<template>
+  <lightning-modal-header label={headerValue}></lightning-modal-header>
+  <lightning-modal-body>
+    <lightning-record-edit-form
+      data-id="record-edit-form"
+      onsubmit={handleSave}
+      onsuccess={handleSuccess}
+      record-id={questionRuleId}
+      object-api-name="Question_Rule__c"
+      layout-type="Compact"
+    >
+      <lightning-messages> </lightning-messages>
+      <div class="slds-grid slds-wrap">
+        <div class="sdls-col slds-size_3-of-12">
+          <lightning-input-field
+            disabled
+            field-name="Question_Catalog__c"
+            value={questionCatalogId}
+            data-id="question-catalog-field"
+          ></lightning-input-field>
+        </div>
+        <div class="sdls-col slds-size_7-of-12">
+          <lightning-input-field
+            data-id="name-input"
+            field-name="Name"
+            value={rule.Name}
+            onchange={handleChange}
+            required
+          >
+          </lightning-input-field>
+        </div>
+        <div class="sdls-col slds-size_2-of-12">
+          <lightning-input-field
+            field-name="Active__c"
+            value={rule.Active__c}
+            onchange={handleChange}
+            data-id="active-field"
+          >
+          </lightning-input-field>
+        </div>
+        <div class="slds-col slds-size_1-of-2">
+          <lightning-input-field
+            field-name="Rule_Type__c"
+            value={rule.Rule_Type__c}
+            onchange={handleChange}
+            data-id="rule-type-field"
+          >
+          </lightning-input-field>
+          <lightning-input-field
+            lwc:if={isOverwritePicklistValues}
+            field-name="Overwrite_Picklist_Values__c"
+            value={rule.Overwrite_Picklist_Values__c}
+            onchange={handleChange}
+            data-id="overwrite-picklist-values-field"
+          ></lightning-input-field>
+          <lightning-input-field
+            lwc:elseif={isRuleTypeAutopopulate}
+            field-name="Autopopulate_Source_Type__c"
+            value={rule.Autopopulate_Source_Type__c}
+            onchange={handleChange}
+            data-id="autopopulate-source-type-field"
+          ></lightning-input-field>
+          <lightning-input-field
+            lwc:if={isAutopopulateRaw}
+            field-name="Autopopulate_Value_Raw__c"
+            required
+            value={rule.Autopopulate_Value_Raw__c}
+            onchange={handleChange}
+            data-id="autopopulate-value-raw-field"
+          ></lightning-input-field>
+          <lightning-input-field
+            lwc:if={isAutopopulateSourcePath}
+            required
+            field-name="Autopopulate_Source_Path__c"
+            value={rule.Autopopulate_Source_Path__c}
+            onchange={handleChange}
+            data-id="autopopulate-source-path-field"
+          ></lightning-input-field>
+        </div>
+        <div class="slds-col slds-size_1-of-2">
+          <lightning-input-field
+            field-name="Logic_Type__c"
+            onchange={handleChange}
+            value={rule.Logic_Type__c}
+            data-id="logic-type-field"
+          >
+          </lightning-input-field>
+          <lightning-input-field
+            lwc:if={isNotAlwaysLogicType}
+            disabled={isNotCustomLogicType}
+            required
+            field-name="Condition_Logic__c"
+            data-id="condition-logic-field"
+            onchange={handleChange}
+            value={rule.Condition_Logic__c}
+          >
+          </lightning-input-field>
+        </div>
+        <div class="slds-col slds-size_1-of-1" lwc:if={isNotAlwaysLogicType}>
+          <template for:each={computedConditions} for:item="data">
+            <c-question-rule-condition
+              key={data.index}
+              condition={data.condition}
+              index={data.index}
+              question-catalog-id={questionCatalogId}
+              form-definition-id={formDefinitionId}
+              ondelete={handleDelete}
+              onupdate={handleUpdateCondition}
+              data-id="condition-item"
+            ></c-question-rule-condition>
+          </template>
+          <lightning-button
+            lwc:if={hasNotReachedMaxNumberOfConditions}
+            data-id="add-condition-btn"
+            variant="brand-outline"
+            icon-name="utility:add"
+            label={LABELS.addCondition}
+            onclick={handleAddCondition}
+          ></lightning-button>
+        </div>
+        <div class="slds-col slds-size_1-of-1 slds-text-align_right">
+          <lightning-button-group>
+            <lightning-button
+              data-id="cancel-btn"
+              variant="neutral"
+              label={LABELS.cancel}
+              onclick={handleCancel}
+            ></lightning-button>
+            <lightning-button
+              variant="brand"
+              type="submit"
+              icon-name="utility:save"
+              label={LABELS.save}
+              data-id="save-btn"
+            ></lightning-button>
+          </lightning-button-group>
+        </div>
+      </div>
+    </lightning-record-edit-form>
+  </lightning-modal-body>
+</template>

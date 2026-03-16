@@ -20,7 +20,9 @@ module.exports = defineConfig([
       "force-app/main/default/lwc/**/*.js",
       "force-app/main/src-components/lwc/**/*.js",
       "force-app/main/src-components-with-apex/lwc/**/*.js",
-      "force-app-examples/main/default/lwc/**/*.js"
+      "force-app-examples/main/default/lwc/**/*.js",
+      "force-app/main/form-builder/lwc/**/*.js",
+      "force-app/test/jest/jest-mocks/**/*.js"
     ],
     extends: [lwcConfig]
   },

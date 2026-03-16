@@ -1,0 +1,32 @@
+[
+  {
+    "sobject": "Form_Definition__c",
+    "saveRefs": true,
+    "resolveRefs": false,
+    "files": ["Form_Definition__c.json"]
+  },
+  {
+    "sobject": "Form_Section__c",
+    "saveRefs": true,
+    "resolveRefs": true,
+    "files": ["Form_Section__c.json"]
+  },
+  {
+    "sobject": "Question_Catalog__c",
+    "saveRefs": true,
+    "resolveRefs": true,
+    "files": ["Question_Catalog__c.json"]
+  },
+  {
+    "sobject": "Question_Rule__c",
+    "saveRefs": true,
+    "resolveRefs": true,
+    "files": ["Question_Rule__c.json"]
+  },
+  {
+    "sobject": "Rule_Condition__c",
+    "saveRefs": false,
+    "resolveRefs": true,
+    "files": ["Rule_Condition__c.json"]
+  }
+]

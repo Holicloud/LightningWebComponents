@@ -1,0 +1,10 @@
+<template>
+  <div class="multi-checkbox-three-column">
+    <template for:each={options} for:item="option">
+      <div key={option.value} class="multi-checkbox-item">
+        <lightning-input type="checkbox" label={option.label}>
+        </lightning-input>
+      </div>
+    </template>
+  </div>
+</template>

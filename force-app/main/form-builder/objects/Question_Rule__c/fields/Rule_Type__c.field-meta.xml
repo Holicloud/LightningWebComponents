@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Rule_Type__c</fullName>
+    <label>Rule Type</label>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Hidden</fullName>
+                <default>false</default>
+                <label>Hidden</label>
+            </value>
+            <value>
+                <fullName>Required</fullName>
+                <default>false</default>
+                <label>Required</label>
+            </value>
+            <value>
+                <fullName>ReadOnly</fullName>
+                <default>false</default>
+                <label>ReadOnly</label>
+            </value>
+            <value>
+                <fullName>Autopopulated</fullName>
+                <default>false</default>
+                <label>Autopopulated</label>
+            </value>
+            <value>
+                <fullName>Overwrite Picklist Values</fullName>
+                <default>false</default>
+                <label>Overwrite Picklist Values</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

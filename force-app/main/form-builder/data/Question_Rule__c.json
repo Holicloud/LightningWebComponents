@@ -1,0 +1,346 @@
+{
+  "records": [
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R01"
+      },
+      "Name": "FT - Employer Name Hidden",
+      "Question_Catalog__c": "@QC_FT_EmployerName",
+      "Rule_Type__c": "Hidden",
+      "Logic_Type__c": "OR",
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R02"
+      },
+      "Name": "FT - Salary Hidden",
+      "Question_Catalog__c": "@QC_FT_Salary",
+      "Rule_Type__c": "Hidden",
+      "Logic_Type__c": "OR",
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R03"
+      },
+      "Name": "FT - Salary Required",
+      "Question_Catalog__c": "@QC_FT_Salary",
+      "Rule_Type__c": "Required",
+      "Logic_Type__c": "OR",
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R04"
+      },
+      "Name": "FT - Experience Required",
+      "Question_Catalog__c": "@QC_FT_Experience",
+      "Rule_Type__c": "Required",
+      "Logic_Type__c": "AND",
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R05"
+      },
+      "Name": "FT - Job Desc Required",
+      "Question_Catalog__c": "@QC_FT_JobDesc",
+      "Rule_Type__c": "Required",
+      "Logic_Type__c": "AND",
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R06"
+      },
+      "Name": "FT - Job Desc Hidden When Blank",
+      "Question_Catalog__c": "@QC_FT_JobDesc",
+      "Rule_Type__c": "Hidden",
+      "Logic_Type__c": "AND",
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R07"
+      },
+      "Name": "FT - Industry Hidden",
+      "Question_Catalog__c": "@QC_FT_Industry",
+      "Rule_Type__c": "Hidden",
+      "Logic_Type__c": "OR",
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R08"
+      },
+      "Name": "FT - Job Title Required",
+      "Question_Catalog__c": "@QC_FT_JobTitle",
+      "Rule_Type__c": "Required",
+      "Logic_Type__c": "AND",
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R09"
+      },
+      "Name": "FT - Budget Hidden Under Age",
+      "Question_Catalog__c": "@QC_FT_Budget",
+      "Rule_Type__c": "Hidden",
+      "Logic_Type__c": "AND",
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R10"
+      },
+      "Name": "FT - Name ReadOnly (Inactive)",
+      "Question_Catalog__c": "@QC_FT_Name",
+      "Rule_Type__c": "ReadOnly",
+      "Logic_Type__c": "AND",
+      "Active__c": false
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R11"
+      },
+      "Name": "FT - Languages Required",
+      "Question_Catalog__c": "@QC_FT_Languages",
+      "Rule_Type__c": "Required",
+      "Logic_Type__c": "OR",
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R12"
+      },
+      "Name": "FT - Interests Required",
+      "Question_Catalog__c": "@QC_FT_Interests",
+      "Rule_Type__c": "Required",
+      "Logic_Type__c": "AND",
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R13"
+      },
+      "Name": "FT - Contact Method ReadOnly",
+      "Question_Catalog__c": "@QC_FT_ContactMethod",
+      "Rule_Type__c": "ReadOnly",
+      "Logic_Type__c": "AND",
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R14"
+      },
+      "Name": "FT - Notes Required Context",
+      "Question_Catalog__c": "@QC_FT_Notes",
+      "Rule_Type__c": "Required",
+      "Logic_Type__c": "AND",
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R15"
+      },
+      "Name": "FT - Age ReadOnly (Inactive)",
+      "Question_Catalog__c": "@QC_FT_Age",
+      "Rule_Type__c": "ReadOnly",
+      "Logic_Type__c": "AND",
+      "Active__c": false
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R16"
+      },
+      "Name": "FT - Notice Hidden Always (Inactive)",
+      "Question_Catalog__c": "@QC_FT_Notice",
+      "Rule_Type__c": "Hidden",
+      "Logic_Type__c": "Always",
+      "Active__c": false
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R17"
+      },
+      "Name": "FT - Support Overwrite Standard",
+      "Question_Catalog__c": "@QC_FT_Support",
+      "Rule_Type__c": "Overwrite Picklist Values",
+      "Logic_Type__c": "AND",
+      "Active__c": true,
+      "Overwrite_Picklist_Values__c": "Email Support;Priority Chat"
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R18"
+      },
+      "Name": "FT - Support Overwrite Premium",
+      "Question_Catalog__c": "@QC_FT_Support",
+      "Rule_Type__c": "Overwrite Picklist Values",
+      "Logic_Type__c": "AND",
+      "Active__c": true,
+      "Overwrite_Picklist_Values__c": "Email Support;Priority Chat;Phone Support;Screen Sharing"
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R19"
+      },
+      "Name": "FT - Support Overwrite Enterprise",
+      "Question_Catalog__c": "@QC_FT_Support",
+      "Rule_Type__c": "Overwrite Picklist Values",
+      "Logic_Type__c": "AND",
+      "Active__c": true,
+      "Overwrite_Picklist_Values__c": "Email Support;Priority Chat;Phone Support;Screen Sharing;Dedicated Line;On-Site Support"
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R20"
+      },
+      "Name": "FT - AddOns Overwrite Enterprise",
+      "Question_Catalog__c": "@QC_FT_AddOns",
+      "Rule_Type__c": "Overwrite Picklist Values",
+      "Logic_Type__c": "AND",
+      "Active__c": true,
+      "Overwrite_Picklist_Values__c": "Custom Integration;White-Labeling;Dedicated Infrastructure;Advanced Analytics;Custom SLA"
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R21"
+      },
+      "Name": "FT - SLA Overwrite High Tier",
+      "Question_Catalog__c": "@QC_FT_SLA",
+      "Rule_Type__c": "Overwrite Picklist Values",
+      "Logic_Type__c": "OR",
+      "Active__c": true,
+      "Overwrite_Picklist_Values__c": "Same Day;4 Hours;1 Hour;30 Minutes"
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R22"
+      },
+      "Name": "FT - Custom Pkg Hidden",
+      "Question_Catalog__c": "@QC_FT_CustomPkg",
+      "Rule_Type__c": "Hidden",
+      "Logic_Type__c": "AND",
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R23"
+      },
+      "Name": "FT - Esc Contact Required",
+      "Question_Catalog__c": "@QC_FT_EscContact",
+      "Rule_Type__c": "Required",
+      "Logic_Type__c": "OR",
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R24"
+      },
+      "Name": "FT - Custom Pkg Required Custom Logic",
+      "Question_Catalog__c": "@QC_FT_CustomPkg",
+      "Rule_Type__c": "Required",
+      "Logic_Type__c": "Custom",
+      "Active__c": true,
+      "Condition_Logic__c": "(1 AND 2) OR 3"
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R25"
+      },
+      "Name": "FT - Record Name Autopop",
+      "Question_Catalog__c": "@QC_FT_RecordName",
+      "Rule_Type__c": "Autopopulated",
+      "Logic_Type__c": "Always",
+      "Active__c": true,
+      "Autopopulate_Source_Type__c": "Context",
+      "Autopopulate_Source_Path__c": "record.Name"
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R26"
+      },
+      "Name": "FT - Record Owner Autopop",
+      "Question_Catalog__c": "@QC_FT_RecordOwner",
+      "Rule_Type__c": "Autopopulated",
+      "Logic_Type__c": "Always",
+      "Active__c": true,
+      "Autopopulate_Source_Type__c": "Context",
+      "Autopopulate_Source_Path__c": "record.OwnerId"
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R27"
+      },
+      "Name": "FT - Snapshot Date Autopop Raw",
+      "Question_Catalog__c": "@QC_FT_SnapDate",
+      "Rule_Type__c": "Autopopulated",
+      "Logic_Type__c": "Always",
+      "Active__c": true,
+      "Autopopulate_Source_Type__c": "Raw",
+      "Autopopulate_Value_Raw__c": "2026-03-15"
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R28"
+      },
+      "Name": "FT - Internal Notes ReadOnly Always",
+      "Question_Catalog__c": "@QC_FT_InternalNotes",
+      "Rule_Type__c": "ReadOnly",
+      "Logic_Type__c": "Always",
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R29"
+      },
+      "Name": "FT - Calc Score ReadOnly",
+      "Question_Catalog__c": "@QC_FT_CalcScore",
+      "Rule_Type__c": "ReadOnly",
+      "Logic_Type__c": "AND",
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Rule__c",
+        "referenceId": "Rule_FT_R30"
+      },
+      "Name": "FT - Start Date ReadOnly Context",
+      "Question_Catalog__c": "@QC_FT_StartDate",
+      "Rule_Type__c": "ReadOnly",
+      "Logic_Type__c": "AND",
+      "Active__c": true
+    }
+  ]
+}
