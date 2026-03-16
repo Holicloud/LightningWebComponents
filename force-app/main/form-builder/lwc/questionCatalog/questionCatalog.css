@@ -1,0 +1,104 @@
+/* .compact-dual-listbox {
+  /* max-height: 12rem;
+    height: 12rem;
+    position: relative; */
+/* width: 70%; */
+/* } */
+
+/* .compact-dual-listbox lightning-dual-listbox {
+    display: block;
+    height: 100%;
+    width: 100%;
+} */
+
+/* .display-text-rich {
+  display: inline-block;
+  color: inherit;
+}
+
+.group-heading {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #d8dde6; */
+/* color: #1b5297; */
+/* } */
+
+/* Checkbox container: checkbox on left, label on right */
+/* .checkbox-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+} */
+
+/* .checkbox-container lightning-input.checkbox-input {
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+} */
+
+/* .checkbox-container .checkbox-label {
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+  font-weight: bold;
+} */
+
+/* .multi-picklist-label {
+  font-weight: bold;
+} */
+
+/* .slds-form-element__label {
+  font-weight: bold;
+} */
+
+/* Style required field asterisk to be red */
+/* .required-asterisk {
+  color: #c23934;
+  font-weight: bold;
+  font-size: large;
+} */
+
+/* Style fields with validation errors - red border */
+/* .field-error {
+  border: 2px solid #c23934;
+  border-radius: 4px;
+  padding: 0.25rem;
+  display: inline-block;
+  width: 100%;
+} */
+
+/* .field-error lightning-input,
+.field-error lightning-textarea,
+.field-error lightning-combobox,
+.field-error lightning-radio-group,
+.field-error lightning-checkbox-group,
+.field-error lightning-dual-listbox {
+  --slds-c-input-color-border: #c23934;
+  --slds-c-input-shadow: 0 0 0 1px #c23934;
+} */
+
+/* For checkbox container, add border around the whole container */
+/* .checkbox-container.field-error {
+  border: 2px solid #c23934;
+  border-radius: 4px;
+  padding: 0.5rem;
+  display: inline-block;
+  width: 100%;
+} */
+
+/* For multi-checkbox containers */
+/* .field-error.multi-checkbox-three-column {
+  border: 2px solid #c23934;
+  border-radius: 4px;
+  padding: 0.5rem;
+} */
+
+/* For compact dual listbox */
+/* .field-error.compact-dual-listbox {
+  border: 2px solid #c23934;
+  border-radius: 4px;
+  padding: 0.5rem;
+} */

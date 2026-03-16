@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Picklist_Values__c</fullName>
+    <description
+  >Will hold the possible values of the answers to picklist in the form</description>
+    <inlineHelpText
+  >Add all the picklist values separated by semicolons.</inlineHelpText>
+    <label>Picklist Values</label>
+    <length>32768</length>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

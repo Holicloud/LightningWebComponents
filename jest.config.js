@@ -11,10 +11,23 @@ module.exports = {
   ...jestConfig,
   testTimeout: testTimeoutInSeconds * 1000,
   setupFiles: ["<rootDir>/test/setupFiles/setEnvVars.js", "jest-canvas-mock"],
+  collectCoverageFrom: [
+    "force-app/main/default/lwc/**/*.js",
+    "force-app/main/src-components-with-apex/lwc/**/*.js",
+    "force-app/main/src-components/lwc/**/*.js",
+    "force-app/main/src-utils/lwc/**/*.js",
+    "force-app/main/form-builder/lwc/**/*.js",
+    "!**/__tests__/**",
+    "!**/node_modules/**"
+  ],
   moduleNameMapper: {
     "^test/utils$": "<rootDir>/force-app/test/jest/utils",
     "^lightning/navigation$":
-      "<rootDir>/force-app/test/jest/jest-mocks/lightning-mocks/navigation"
+      "<rootDir>/force-app/test/jest/jest-mocks/lightning-mocks/navigation",
+    "^lightning/modal$":
+      "<rootDir>/force-app/test/jest/jest-mocks/lightning-mocks/modal",
+    "^lightning/platformShowToastEvent$":
+      "<rootDir>/force-app/test/jest/jest-mocks/lightning-mocks/platformShowToastEvent"
   },
   testPathIgnorePatterns: [
     "/node_modules/",
@@ -44,6 +57,10 @@ module.exports = {
       lines: 75
     },
     "./force-app/main/src-utils/lwc/**/*.js": {
+      statements: 75,
+      lines: 75
+    },
+    "./force-app/main/form-builder/lwc/**/*.js": {
       statements: 75,
       lines: 75
     }

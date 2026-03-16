@@ -1,0 +1,44 @@
+{
+  "records": [
+    {
+      "attributes": {
+        "type": "Form_Section__c",
+        "referenceId": "Section_FT_BasicTypes"
+      },
+      "Name": "All Data Types",
+      "Form_Definition__c": "@FormDef_FullTest"
+    },
+    {
+      "attributes": {
+        "type": "Form_Section__c",
+        "referenceId": "Section_FT_Visibility"
+      },
+      "Name": "Conditional Visibility",
+      "Form_Definition__c": "@FormDef_FullTest"
+    },
+    {
+      "attributes": {
+        "type": "Form_Section__c",
+        "referenceId": "Section_FT_Picklists"
+      },
+      "Name": "Picklist Dependencies",
+      "Form_Definition__c": "@FormDef_FullTest"
+    },
+    {
+      "attributes": {
+        "type": "Form_Section__c",
+        "referenceId": "Section_FT_AutoRead"
+      },
+      "Name": "Auto-Population and Read Only",
+      "Form_Definition__c": "@FormDef_FullTest"
+    },
+    {
+      "attributes": {
+        "type": "Form_Section__c",
+        "referenceId": "Section_FT_Inactive"
+      },
+      "Name": "Inactive Questions",
+      "Form_Definition__c": "@FormDef_FullTest"
+    }
+  ]
+}

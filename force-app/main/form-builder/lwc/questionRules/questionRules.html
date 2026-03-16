@@ -1,0 +1,101 @@
+<template>
+  <div class="slds-grid slds-wrap" lwc:if={questionCatalog.data}>
+    <lightning-input
+      class="slds-col slds-size_1-of-2"
+      type="toggle"
+      data-id="show-inactive-toggle"
+      label={LABELS.showInactive}
+      message-toggle-active=""
+      message-toggle-inactive=""
+      value={showInactive}
+      onchange={toggleShowInactive}
+    ></lightning-input>
+    <div class="slds-col slds-size_1-of-2 slds-text-align_right">
+      <lightning-button-group>
+        <lightning-button
+          data-id="add-rule-btn"
+          variant="brand-outline"
+          label={LABELS.addRule}
+          icon-name="utility:add"
+          title={LABELS.addRule}
+          onclick={handleAddRule}
+        ></lightning-button>
+      </lightning-button-group>
+    </div>
+  </div>
+  <div lwc:if={rules.length}>
+    <template for:each={computedRules} for:item="rule">
+      <c-panel
+        key={rule.Id}
+        data-id="panel"
+        title={rule.Name}
+        icon="utility:formula"
+        classes="slds-card_boundary slds-m-around--medium"
+      >
+        <div slot="actions">
+          <lightning-button-group>
+            <lightning-button
+              data-rule-id={rule.Id}
+              variant="brand"
+              label={LABELS.editRule}
+              onclick={handleEditRule}
+            ></lightning-button>
+            <lightning-button
+              data-rule-id={rule.Id}
+              data-id="deactivate-rule"
+              lwc:if={rule.ui.deactivationAllowed}
+              variant="destructive-text"
+              label={LABELS.deactivateRule}
+              onclick={handleDeactivateRule}
+            ></lightning-button>
+            <lightning-button
+              data-rule-id={rule.Id}
+              data-id="activate-rule"
+              lwc:if={rule.ui.activationAllowed}
+              variant="brand"
+              label={LABELS.activateRule}
+              onclick={handleActivateRule}
+            ></lightning-button>
+            <lightning-button
+              data-rule-id={rule.Id}
+              data-id="delete-rule"
+              lwc:if={rule.ui.deletionAllowed}
+              variant="destructive"
+              label={LABELS.deleteRule}
+              onclick={handleDeleteRule}
+            ></lightning-button>
+          </lightning-button-group>
+        </div>
+        <lightning-layout multiple-rows>
+          <lightning-layout-item size="12">
+            <div class="slds-text-body_small slds-m-bottom_small">
+              <p>
+                Is <strong>{rule.Rule_Type__c} </strong> <span>when </span
+                ><strong> {rule.ui.logicType}</strong>
+              </p>
+              <p lwc:if={rule.ui.isAutopopulated}>
+                <lightning-formatted-rich-text
+                  lwc:if={rule.Autopopulate_Value_Raw__c}
+                  value={rule.Autopopulate_Value_Raw__c}
+                ></lightning-formatted-rich-text>
+                <span lwc:else> {rule.Autopopulate_Source_Path__c} </span>
+              </p>
+            </div>
+          </lightning-layout-item>
+          <lightning-layout-item size="12">
+            <template for:each={rule.computedConditions} for:item="condition">
+              <p key={condition.index}>
+                {condition.Order__c}.<strong> {condition.ui.sourcePath}</strong>
+                <span lwc:if={condition.Not__c}> is <strong>NOT</strong> </span>
+                <span lwc:else> is </span>
+                <strong> {condition.Operator__c}</strong>
+                <span><em> ({condition.Value__c})</em></span>
+              </p>
+            </template>
+          </lightning-layout-item>
+        </lightning-layout>
+      </c-panel>
+    </template>
+  </div>
+  <p lwc:else>{LABELS.noRulesFound}</p>
+</template>

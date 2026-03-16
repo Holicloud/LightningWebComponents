@@ -1,0 +1,92 @@
+<template>
+  <div lwc:if={isLoading} class="slds-is-relative slds-var-p-around_medium">
+    <lightning-spinner
+      alternative-text="Loading questions..."
+      size="medium"
+    ></lightning-spinner>
+  </div>
+
+  <template lwc:else>
+    <template
+      lwc:if={computedGroupedByQuestions.length}
+      for:each={computedGroupedByQuestions}
+      for:item="group"
+    >
+      <div key={group.groupId} class="slds-var-m-bottom_large">
+        <h2 lwc:if={group.groupName} class="group-heading">
+          {group.groupName}
+        </h2>
+
+        <template for:each={group.questions} for:item="q">
+          <div key={q.question.Id} class="slds-var-m-bottom_medium">
+            <!-- DISPLAY TEXT (No input field) -->
+            <div
+              lwc:if={q.ui.isDisplayText}
+              class="slds-form-element slds-m-bottom_none"
+            >
+              <lightning-formatted-rich-text
+                class="display-text-rich slds-form-element__label"
+                value={q.question.Question__c}
+              >
+              </lightning-formatted-rich-text>
+            </div>
+
+            <template lwc:else>
+              <c-question-input
+                type={q.ui.type}
+                value={q.answer}
+                label={q.question.Question__c}
+                props={q.props}
+                data-question-id={q.question.Id}
+                onupdate={handleAnswerUpdate}
+              ></c-question-input>
+            </template>
+          </div>
+        </template>
+
+        <!-- Sum Total (if applicable) -->
+        <template lwc:if={group.shouldShowSum}>
+          <div
+            class="slds-var-m-top_medium slds-var-m-bottom_medium slds-border_top slds-var-p-top_small"
+          >
+            <div class="slds-grid">
+              <div class="slds-col slds-size_1-of-2">
+                <strong class="slds-text-heading_small">Total:</strong>
+              </div>
+              <div class="slds-col slds-size_1-of-2 slds-text-align_right">
+                <strong class="slds-text-heading_small"
+                  >{group.sumValue}</strong
+                >
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </template>
+    <div lwc:else class="slds-text-align_center slds-var-p-around_large">
+      <p>{LABELS.noQuestions}</p>
+    </div>
+
+    <template lwc:if={allowActions}>
+      <div class="slds-var-m-top_large slds-text-align_right">
+        <lightning-button-group>
+          <lightning-button
+            variant="brand"
+            label={LABELS.saveResponses}
+            onclick={handleSave}
+            disabled={isProcessing}
+          >
+          </lightning-button>
+          <lightning-button
+            lwc:if={isSubmittable}
+            variant="brand"
+            label={LABELS.submit}
+            onclick={handleSubmit}
+            disabled={isProcessing}
+          >
+          </lightning-button>
+        </lightning-button-group>
+      </div>
+    </template>
+  </template>
+</template>

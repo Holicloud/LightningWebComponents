@@ -1,0 +1,471 @@
+{
+  "records": [
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_Name"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_BasicTypes",
+      "Question__c": "Full Name",
+      "Answer_Data_Type__c": "Text",
+      "Order__c": 1,
+      "Required__c": true,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_Notes"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_BasicTypes",
+      "Question__c": "Additional Comments",
+      "Answer_Data_Type__c": "Text Area",
+      "Order__c": 2,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_Age"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_BasicTypes",
+      "Question__c": "Age",
+      "Answer_Data_Type__c": "Number",
+      "Order__c": 3,
+      "Required__c": true,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_Budget"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_BasicTypes",
+      "Question__c": "Monthly Budget",
+      "Answer_Data_Type__c": "Currency",
+      "Order__c": 4,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_StartDate"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_BasicTypes",
+      "Question__c": "Preferred Start Date",
+      "Answer_Data_Type__c": "Date",
+      "Order__c": 5,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_ApptDT"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_BasicTypes",
+      "Question__c": "Appointment Date and Time",
+      "Answer_Data_Type__c": "Date Time",
+      "Order__c": 6,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_Completion"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_BasicTypes",
+      "Question__c": "Estimated Completion",
+      "Answer_Data_Type__c": "Percentage",
+      "Order__c": 7,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_Agree"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_BasicTypes",
+      "Question__c": "I agree to Terms and Conditions",
+      "Answer_Data_Type__c": "Checkbox",
+      "Order__c": 8,
+      "Required__c": true,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_ContactMethod"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_BasicTypes",
+      "Question__c": "Preferred Contact Method",
+      "Answer_Data_Type__c": "Picklist",
+      "Picklist_Values__c": "Email;Phone;SMS;In-Person",
+      "Order__c": 9,
+      "Required__c": true,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_NotifPref"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_BasicTypes",
+      "Question__c": "Notification Preference",
+      "Answer_Data_Type__c": "Radio Buttons",
+      "Picklist_Values__c": "Immediate;Daily Digest;Weekly;None",
+      "Order__c": 10,
+      "Required__c": true,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_Languages"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_BasicTypes",
+      "Question__c": "Preferred Languages",
+      "Answer_Data_Type__c": "Multi-Select Picklist",
+      "Picklist_Values__c": "English;Spanish;French;Portuguese;German;Mandarin",
+      "Order__c": 11,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_Interests"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_BasicTypes",
+      "Question__c": "Areas of Interest",
+      "Answer_Data_Type__c": "Multi-Select Checkbox",
+      "Picklist_Values__c": "Technology;Finance;Healthcare;Arts;Sports;Education",
+      "Order__c": 12,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_Notice"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_BasicTypes",
+      "Question__c": "Please complete all required fields carefully. Your responses will be reviewed.",
+      "Answer_Data_Type__c": "Display Text",
+      "Order__c": 13,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_EmpStatus"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_Visibility",
+      "Question__c": "Employment Status",
+      "Answer_Data_Type__c": "Radio Buttons",
+      "Picklist_Values__c": "Employed;Self-Employed;Unemployed;Student;Retired",
+      "Order__c": 1,
+      "Required__c": true,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_EmployerName"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_Visibility",
+      "Question__c": "Employer / Company Name",
+      "Answer_Data_Type__c": "Text",
+      "Order__c": 2,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_Salary"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_Visibility",
+      "Question__c": "Annual Salary",
+      "Answer_Data_Type__c": "Currency",
+      "Order__c": 3,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_Experience"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_Visibility",
+      "Question__c": "Years of Experience",
+      "Answer_Data_Type__c": "Number",
+      "Order__c": 4,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_JobDesc"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_Visibility",
+      "Question__c": "Describe your current role and responsibilities",
+      "Answer_Data_Type__c": "Text Area",
+      "Order__c": 5,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_Industry"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_Visibility",
+      "Question__c": "Industry",
+      "Answer_Data_Type__c": "Picklist",
+      "Picklist_Values__c": "Technology;Healthcare;Finance;Education;Manufacturing;Retail;Other",
+      "Order__c": 6,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_JobTitle"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_Visibility",
+      "Question__c": "Job Title",
+      "Answer_Data_Type__c": "Text",
+      "Order__c": 7,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_IsFullTime"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_Visibility",
+      "Question__c": "Is this a full-time position?",
+      "Answer_Data_Type__c": "Radio Buttons",
+      "Picklist_Values__c": "Yes;No",
+      "Order__c": 8,
+      "Required__c": false,
+      "Active__c": false
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_ServiceTier"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_Picklists",
+      "Question__c": "Service Tier",
+      "Answer_Data_Type__c": "Picklist",
+      "Picklist_Values__c": "Basic;Standard;Premium;Enterprise",
+      "Order__c": 1,
+      "Required__c": true,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_Support"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_Picklists",
+      "Question__c": "Support Channel",
+      "Answer_Data_Type__c": "Picklist",
+      "Picklist_Values__c": "Email Only",
+      "Order__c": 2,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_AddOns"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_Picklists",
+      "Question__c": "Add-On Features",
+      "Answer_Data_Type__c": "Multi-Select Picklist",
+      "Picklist_Values__c": "Basic Feature",
+      "Order__c": 3,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_SLA"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_Picklists",
+      "Question__c": "SLA Response Time",
+      "Answer_Data_Type__c": "Picklist",
+      "Picklist_Values__c": "Standard 48h",
+      "Order__c": 4,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_CustomPkg"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_Picklists",
+      "Question__c": "Custom Package Name",
+      "Answer_Data_Type__c": "Text",
+      "Order__c": 5,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_EscContact"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_Picklists",
+      "Question__c": "Escalation Contact",
+      "Answer_Data_Type__c": "Text",
+      "Order__c": 6,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_RecordName"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_AutoRead",
+      "Question__c": "Record Name (Auto-filled)",
+      "Answer_Data_Type__c": "Text",
+      "Order__c": 1,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_RecordOwner"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_AutoRead",
+      "Question__c": "Record Owner (Auto-filled)",
+      "Answer_Data_Type__c": "Text",
+      "Order__c": 2,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_SnapDate"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_AutoRead",
+      "Question__c": "Snapshot Date (Auto-filled)",
+      "Answer_Data_Type__c": "Date",
+      "Order__c": 3,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_InternalNotes"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_AutoRead",
+      "Question__c": "Internal Notes (Read Only)",
+      "Answer_Data_Type__c": "Text Area",
+      "Order__c": 4,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_CalcScore"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_AutoRead",
+      "Question__c": "Calculated Score (Read Only when email contact)",
+      "Answer_Data_Type__c": "Number",
+      "Order__c": 5,
+      "Required__c": false,
+      "Active__c": true
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_Legacy1"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_Inactive",
+      "Question__c": "Legacy Field Alpha (Inactive)",
+      "Answer_Data_Type__c": "Text",
+      "Order__c": 1,
+      "Required__c": false,
+      "Active__c": false
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_Legacy2"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_Inactive",
+      "Question__c": "Deprecated Score (Inactive)",
+      "Answer_Data_Type__c": "Number",
+      "Order__c": 2,
+      "Required__c": false,
+      "Active__c": false
+    },
+    {
+      "attributes": {
+        "type": "Question_Catalog__c",
+        "referenceId": "QC_FT_Legacy3"
+      },
+      "Form_Definition__c": "@FormDef_FullTest",
+      "Form_Section__c": "@Section_FT_Inactive",
+      "Question__c": "Old Status (Inactive)",
+      "Answer_Data_Type__c": "Picklist",
+      "Picklist_Values__c": "Active;Inactive;Pending;Archived",
+      "Order__c": 3,
+      "Required__c": false,
+      "Active__c": false
+    }
+  ]
+}

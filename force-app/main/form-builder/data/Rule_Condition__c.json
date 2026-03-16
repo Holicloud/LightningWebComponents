@@ -1,0 +1,511 @@
+{
+  "records": [
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R01_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R01",
+      "Question_Catalog__c": "@QC_FT_EmpStatus",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Answer",
+      "Value__c": "Unemployed",
+      "Not__c": false,
+      "Order__c": 1
+    },
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R01_2"
+      },
+      "Question_Rule__c": "@Rule_FT_R01",
+      "Question_Catalog__c": "@QC_FT_EmpStatus",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Answer",
+      "Value__c": "Student",
+      "Not__c": false,
+      "Order__c": 2
+    },
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R01_3"
+      },
+      "Question_Rule__c": "@Rule_FT_R01",
+      "Question_Catalog__c": "@QC_FT_EmpStatus",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Answer",
+      "Value__c": "Retired",
+      "Not__c": false,
+      "Order__c": 3
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R02_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R02",
+      "Question_Catalog__c": "@QC_FT_EmpStatus",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Answer",
+      "Value__c": "Unemployed",
+      "Not__c": false,
+      "Order__c": 1
+    },
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R02_2"
+      },
+      "Question_Rule__c": "@Rule_FT_R02",
+      "Question_Catalog__c": "@QC_FT_EmpStatus",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Answer",
+      "Value__c": "Student",
+      "Not__c": false,
+      "Order__c": 2
+    },
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R02_3"
+      },
+      "Question_Rule__c": "@Rule_FT_R02",
+      "Question_Catalog__c": "@QC_FT_EmpStatus",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Answer",
+      "Value__c": "Retired",
+      "Not__c": false,
+      "Order__c": 3
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R03_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R03",
+      "Question_Catalog__c": "@QC_FT_EmpStatus",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Answer",
+      "Value__c": "Employed",
+      "Not__c": false,
+      "Order__c": 1
+    },
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R03_2"
+      },
+      "Question_Rule__c": "@Rule_FT_R03",
+      "Question_Catalog__c": "@QC_FT_EmpStatus",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Answer",
+      "Value__c": "Self-Employed",
+      "Not__c": false,
+      "Order__c": 2
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R04_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R04",
+      "Question_Catalog__c": "@QC_FT_Salary",
+      "Operator__c": "GreaterThan",
+      "Source_Type__c": "Answer",
+      "Value__c": "50000",
+      "Not__c": false,
+      "Order__c": 1
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R05_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R05",
+      "Question_Catalog__c": "@QC_FT_Experience",
+      "Operator__c": "GreaterOrEqual",
+      "Source_Type__c": "Answer",
+      "Value__c": "3",
+      "Not__c": false,
+      "Order__c": 1
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R06_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R06",
+      "Question_Catalog__c": "@QC_FT_Experience",
+      "Operator__c": "IsBlank",
+      "Source_Type__c": "Answer",
+      "Value__c": "",
+      "Not__c": false,
+      "Order__c": 1
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R07_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R07",
+      "Question_Catalog__c": "@QC_FT_EmpStatus",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Answer",
+      "Value__c": "Unemployed",
+      "Not__c": false,
+      "Order__c": 1
+    },
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R07_2"
+      },
+      "Question_Rule__c": "@Rule_FT_R07",
+      "Question_Catalog__c": "@QC_FT_EmpStatus",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Answer",
+      "Value__c": "Student",
+      "Not__c": false,
+      "Order__c": 2
+    },
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R07_3"
+      },
+      "Question_Rule__c": "@Rule_FT_R07",
+      "Question_Catalog__c": "@QC_FT_EmpStatus",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Answer",
+      "Value__c": "Retired",
+      "Not__c": false,
+      "Order__c": 3
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R08_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R08",
+      "Question_Catalog__c": "@QC_FT_EmployerName",
+      "Operator__c": "EndsWith",
+      "Source_Type__c": "Answer",
+      "Value__c": "Inc",
+      "Not__c": false,
+      "Order__c": 1
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R09_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R09",
+      "Question_Catalog__c": "@QC_FT_Age",
+      "Operator__c": "LessOrEqual",
+      "Source_Type__c": "Answer",
+      "Value__c": "16",
+      "Not__c": false,
+      "Order__c": 1
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R10_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R10",
+      "Question_Catalog__c": "@QC_FT_EmpStatus",
+      "Operator__c": "StartsWith",
+      "Source_Type__c": "Answer",
+      "Value__c": "Self",
+      "Not__c": false,
+      "Order__c": 1
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R11_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R11",
+      "Question_Catalog__c": "@QC_FT_NotifPref",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Answer",
+      "Value__c": "Daily Digest",
+      "Not__c": false,
+      "Order__c": 1
+    },
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R11_2"
+      },
+      "Question_Rule__c": "@Rule_FT_R11",
+      "Question_Catalog__c": "@QC_FT_NotifPref",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Answer",
+      "Value__c": "Weekly",
+      "Not__c": false,
+      "Order__c": 2
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R12_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R12",
+      "Question_Catalog__c": "@QC_FT_Languages",
+      "Operator__c": "IncludesAny",
+      "Source_Type__c": "Answer",
+      "Value__c": "Spanish;Portuguese",
+      "Not__c": false,
+      "Order__c": 1
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R13_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R13",
+      "Question_Catalog__c": "@QC_FT_Interests",
+      "Operator__c": "IncludesAll",
+      "Source_Type__c": "Answer",
+      "Value__c": "Finance;Technology",
+      "Not__c": false,
+      "Order__c": 1
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R14_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R14",
+      "Question_Catalog__c": "@QC_FT_EmpStatus",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Context",
+      "Source_Path__c": "record.Type",
+      "Value__c": "Customer",
+      "Not__c": false,
+      "Order__c": 1
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R15_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R15",
+      "Question_Catalog__c": "@QC_FT_Experience",
+      "Operator__c": "LessThan",
+      "Source_Type__c": "Answer",
+      "Value__c": "1",
+      "Not__c": false,
+      "Order__c": 1
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R17_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R17",
+      "Question_Catalog__c": "@QC_FT_ServiceTier",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Answer",
+      "Value__c": "Standard",
+      "Not__c": false,
+      "Order__c": 1
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R18_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R18",
+      "Question_Catalog__c": "@QC_FT_ServiceTier",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Answer",
+      "Value__c": "Premium",
+      "Not__c": false,
+      "Order__c": 1
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R19_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R19",
+      "Question_Catalog__c": "@QC_FT_ServiceTier",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Answer",
+      "Value__c": "Enterprise",
+      "Not__c": false,
+      "Order__c": 1
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R20_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R20",
+      "Question_Catalog__c": "@QC_FT_ServiceTier",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Answer",
+      "Value__c": "Enterprise",
+      "Not__c": false,
+      "Order__c": 1
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R21_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R21",
+      "Question_Catalog__c": "@QC_FT_ServiceTier",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Answer",
+      "Value__c": "Premium",
+      "Not__c": false,
+      "Order__c": 1
+    },
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R21_2"
+      },
+      "Question_Rule__c": "@Rule_FT_R21",
+      "Question_Catalog__c": "@QC_FT_ServiceTier",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Answer",
+      "Value__c": "Enterprise",
+      "Not__c": false,
+      "Order__c": 2
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R22_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R22",
+      "Question_Catalog__c": "@QC_FT_ServiceTier",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Answer",
+      "Value__c": "Enterprise",
+      "Not__c": true,
+      "Order__c": 1
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R23_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R23",
+      "Question_Catalog__c": "@QC_FT_ServiceTier",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Answer",
+      "Value__c": "Premium",
+      "Not__c": false,
+      "Order__c": 1
+    },
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R23_2"
+      },
+      "Question_Rule__c": "@Rule_FT_R23",
+      "Question_Catalog__c": "@QC_FT_ServiceTier",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Answer",
+      "Value__c": "Enterprise",
+      "Not__c": false,
+      "Order__c": 2
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R24_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R24",
+      "Question_Catalog__c": "@QC_FT_ServiceTier",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Answer",
+      "Value__c": "Enterprise",
+      "Not__c": false,
+      "Order__c": 1
+    },
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R24_2"
+      },
+      "Question_Rule__c": "@Rule_FT_R24",
+      "Question_Catalog__c": "@QC_FT_Budget",
+      "Operator__c": "GreaterOrEqual",
+      "Source_Type__c": "Answer",
+      "Value__c": "10000",
+      "Not__c": false,
+      "Order__c": 2
+    },
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R24_3"
+      },
+      "Question_Rule__c": "@Rule_FT_R24",
+      "Question_Catalog__c": "@QC_FT_Experience",
+      "Operator__c": "GreaterOrEqual",
+      "Source_Type__c": "Answer",
+      "Value__c": "5",
+      "Not__c": false,
+      "Order__c": 3
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R29_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R29",
+      "Question_Catalog__c": "@QC_FT_ContactMethod",
+      "Operator__c": "Contains",
+      "Source_Type__c": "Answer",
+      "Value__c": "Email",
+      "Not__c": false,
+      "Order__c": 1
+    },
+
+    {
+      "attributes": {
+        "type": "Rule_Condition__c",
+        "referenceId": "Cond_FT_R30_1"
+      },
+      "Question_Rule__c": "@Rule_FT_R30",
+      "Question_Catalog__c": "@QC_FT_EmpStatus",
+      "Operator__c": "Equals",
+      "Source_Type__c": "Context",
+      "Source_Path__c": "record.StageName",
+      "Value__c": "Closed Won",
+      "Not__c": false,
+      "Order__c": 1
+    }
+  ]
+}
