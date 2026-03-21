@@ -11,6 +11,14 @@
 | Private class fields       | Use `#` for true encapsulation (utils only) | `#file`, `#separator`             |
 | Boolean properties         | Prefix with `is`, `has`, `show`, `display`  | `isHidden`, `hasRender`           |
 
+## Template Directives
+
+- Always use modern LWC conditional directives: `lwc:if`, `lwc:elseif`, and `lwc:else`.
+- **Prohibited**: Do not use legacy `if:true` or `if:false` directives.
+
+- Use `lwc:ref` for accessing elements in JavaScript via `this.refs`.
+- Use `lwc:spread` for dynamic property binding when appropriate.
+
 ## Constants & Frozen Objects
 
 - Constants that are arrays or objects **must** use `Object.freeze(value)`.

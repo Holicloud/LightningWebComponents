@@ -47,7 +47,7 @@
     "**/*": [
       "eslint . --fix"
     ],
-    "**/lwc/**/*.js": [
+    "**/lwc/**/*.{js,html}": [
       "node validate-lwc.js"
     ],
     "force-app-examples/**/lwc/**/*.js": [
