@@ -96,7 +96,7 @@
         ></lightning-combobox>
       </lightning-layout-item>
       <lightning-layout-item
-        if:true={record.dependents.length}
+        lwc:if={hasDependents}
         padding="around-small"
         size="12"
       >

@@ -74,4 +74,69 @@ export default class Incorrect extends LightningElement {
     expect(errorOutput).toContain("Incorrect ordering");
     expect(errorOutput).toContain("Validation failed with 1 errors");
   });
+
+  it("should validate a correct lwc html file successfully", () => {
+    // Create a mock lwc directory in our test dir
+    const lwcDir = path.join(testDir, "lwc", "correctHtml");
+    if (!fs.existsSync(lwcDir)) {
+      fs.mkdirSync(lwcDir, { recursive: true });
+    }
+    const htmlPath = path.join(lwcDir, "correctHtml.html");
+    fs.writeFileSync(
+      htmlPath,
+      `<template>
+  <template lwc:if={isVisible}>
+    <div>Visible</div>
+  </template>
+</template>`
+    );
+
+    try {
+      const output = cp
+        .execSync(`node validate-lwc.js ${htmlPath}`, { stdio: "pipe" })
+        .toString();
+      expect(output).toContain("Successfully validated 1 files");
+    } catch (error) {
+      const out =
+        (error.stdout ? error.stdout.toString() : "") +
+        (error.stderr ? error.stderr.toString() : "");
+      throw new Error(
+        "HTML Validation failed unexpectedly: " + out + " " + error.message
+      );
+    }
+  });
+
+  it("should fail validation for an incorrect lwc html file with if:true", () => {
+    const lwcDir = path.join(testDir, "lwc", "incorrectHtml");
+    if (!fs.existsSync(lwcDir)) {
+      fs.mkdirSync(lwcDir, { recursive: true });
+    }
+    const htmlPath = path.join(lwcDir, "incorrectHtml.html");
+    fs.writeFileSync(
+      htmlPath,
+      `<template>
+  <template if:true={isVisible}>
+    <div>Visible</div>
+  </template>
+</template>`
+    );
+
+    let errorOutput = "";
+    try {
+      cp.execSync(`node validate-lwc.js ${htmlPath}`, { stdio: "pipe" });
+      throw new Error("SHOULD_FAIL");
+    } catch (error) {
+      if (error.message === "SHOULD_FAIL") {
+        throw error;
+      }
+      errorOutput =
+        (error.stdout ? error.stdout.toString() : "") +
+        (error.stderr ? error.stderr.toString() : "");
+    }
+
+    expect(errorOutput).toContain(
+      "Use of legacy directive 'true' is forbidden"
+    );
+    expect(errorOutput).toContain("Validation failed with 1 errors");
+  });
 });

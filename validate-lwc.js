@@ -100,7 +100,7 @@ const ORDER = {
 
 let totalErrors = 0;
 
-function validateFile(filePath) {
+function validateJsFile(filePath) {
   const code = fs.readFileSync(filePath, "utf-8");
   let ast;
   try {
@@ -377,16 +377,48 @@ function validateFile(filePath) {
   }
 }
 
+function validateHtmlFile(filePath) {
+  const code = fs.readFileSync(filePath, "utf-8");
+  const lines = code.split("\n");
+  const errors = [];
+
+  lines.forEach((line, index) => {
+    // Check for if:true or if:false
+    const match = line.match(/(?:^|\s)if:(true|false)\s*=/);
+    if (match) {
+      errors.push(
+        `Line ${index + 1}: Use of legacy directive '${
+          match[1]
+        }' is forbidden. Use 'lwc:if', 'lwc:elseif', or 'lwc:else' instead.`
+      );
+    }
+  });
+
+  if (errors.length > 0) {
+    console.error(`\nFile: ${filePath}`);
+    errors.forEach((e) => console.error(`  - ${e}`));
+    totalErrors += errors.length;
+  }
+}
+
+function validateFile(filePath) {
+  if (filePath.endsWith(".js")) {
+    validateJsFile(filePath);
+  } else if (filePath.endsWith(".html")) {
+    validateHtmlFile(filePath);
+  }
+}
+
 function processArgs(args) {
   let fileList = [];
   for (const arg of args) {
     const stat = fs.statSync(arg);
     const fullPath = path.resolve(arg);
     if (stat.isDirectory()) {
-      fileList = fileList.concat(findJsFiles(arg));
+      fileList = fileList.concat(findLwcFiles(arg));
     } else if (
       stat.isFile() &&
-      arg.endsWith(".js") &&
+      (arg.endsWith(".js") || arg.endsWith(".html")) &&
       !fullPath.includes("__tests__") &&
       !fullPath.includes("__mocks__")
     ) {
@@ -396,15 +428,15 @@ function processArgs(args) {
   return fileList;
 }
 
-function findJsFiles(dir, fileList = []) {
+function findLwcFiles(dir, fileList = []) {
   const files = fs.readdirSync(dir);
   for (const file of files) {
     const fullPath = path.join(dir, file);
     const stat = fs.statSync(fullPath);
     if (stat.isDirectory() && !file.includes("node_modules")) {
-      findJsFiles(fullPath, fileList);
+      findLwcFiles(fullPath, fileList);
     } else if (
-      file.endsWith(".js") &&
+      (file.endsWith(".js") || file.endsWith(".html")) &&
       fullPath.includes("lwc") &&
       !fullPath.includes("validate-lwc.js") &&
       !fullPath.includes("fix-lwc.js") &&

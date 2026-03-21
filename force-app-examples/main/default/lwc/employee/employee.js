@@ -113,6 +113,10 @@ export default class Employee extends LightningElement {
     { value: LABELS.status.waived, label: LABELS.status.waived }
   ];
 
+  get hasDependents() {
+    return !!this.record?.dependents?.length;
+  }
+
   get todaysDate() {
     return new Date().toISOString().split("T")[0];
   }

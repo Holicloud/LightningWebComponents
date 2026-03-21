@@ -1,0 +1,81 @@
+<template>
+  <lightning-card
+    title="Formatted File Basic Example"
+    icon-name="standard:file"
+  >
+    <div class="slds-p-horizontal_medium slds-m-bottom_medium">
+      <div
+        class="slds-scoped-notification slds-media slds-media_center slds-theme_info"
+        role="status"
+      >
+        <div class="slds-media__figure">
+          <lightning-icon
+            icon-name="utility:info"
+            variant="inverse"
+            size="small"
+          ></lightning-icon>
+        </div>
+        <div class="slds-media__body">
+          <p>
+            Previews for newly uploaded files may take a moment to generate. The
+            component will automatically try to refresh once after 30 seconds,
+            or you can use the <strong>refresh button</strong> below.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="slds-p-around_medium">
+      <div
+        class="slds-grid slds-grid_vertical-align-center slds-m-bottom_medium"
+      >
+        <lightning-file-upload
+          label="Upload a File to Preview"
+          name="fileUploader"
+          accept={acceptedFormats}
+          record-id={recordId}
+          onuploadfinished={handleUploadFinished}
+          class="slds-m-right_small"
+        >
+        </lightning-file-upload>
+
+        <template lwc:if={contentDocumentId}>
+          <div
+            class="slds-grid slds-grid_vertical-align-center slds-m-top_medium"
+          >
+            <lightning-button-icon
+              icon-name="utility:refresh"
+              variant="border-filled"
+              alternative-text="Refresh Preview"
+              title="Refresh Preview"
+              onclick={handleRefresh}
+              class="slds-m-right_medium"
+            >
+            </lightning-button-icon>
+            <lightning-input
+              type="checkbox"
+              label="Hide Preview Image"
+              checked={hidePreview}
+              onchange={handleHidePreviewChange}
+            ></lightning-input>
+          </div>
+        </template>
+      </div>
+
+      <template lwc:if={contentDocumentId}>
+        <div class="slds-m-top_medium slds-border_top slds-p-top_medium">
+          <c-formatted-file
+            content-document-id={contentDocumentId}
+            hide-preview={hidePreview}
+            data-id="formatted-file"
+          ></c-formatted-file>
+        </div>
+      </template>
+      <template lwc:else>
+        <p class="slds-m-top_medium slds-text-color_weak">
+          Please provide a valid Content Document ID (e.g., starts with 069) to
+          preview the file.
+        </p>
+      </template>
+    </div>
+  </lightning-card>
+</template>

@@ -38,6 +38,14 @@ export default class WizardStep extends LightningElement {
     return this.isFirst || this.hidePreviousButton;
   }
 
+  get shouldShowNextButton() {
+    return !this.hideNextButton;
+  }
+
+  get shouldShowPreviousButton() {
+    return !this.shouldHidePreviousButton;
+  }
+
   config = (props) => {
     this.isFirst = props.isFirst;
     this.isLast = props.isLast;
