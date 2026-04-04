@@ -1,6 +1,0 @@
-.file-thumbnail {
-  width: var(--slds-g-sizing-9, 32px);
-  height: var(--slds-g-sizing-9, 32px);
-  object-fit: cover;
-  border-radius: var(--slds-g-radius-border-1, 4px);
-}

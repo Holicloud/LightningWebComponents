@@ -1,0 +1,31 @@
+<template>
+  <lightning-card title="File Upload Example" icon-name="standard:file">
+    <div class="slds-p-around_medium">
+      <div class="slds-m-bottom_medium">
+        <lightning-input
+          type="checkbox"
+          label="Disabled"
+          checked={isDisabled}
+          onchange={handleDisabledChange}
+          data-id="disabled-toggle"
+        ></lightning-input>
+      </div>
+
+      <c-file-upload
+        record-id={recordId}
+        content-document-link-id={contentDocumentLinkId}
+        disabled={isDisabled}
+        accept={acceptedFormats}
+        onremove={handleRemove}
+        onuploadfinished={handleUploadFinished}
+        data-id="file-upload"
+      ></c-file-upload>
+
+      <template lwc:if={statusMessage}>
+        <div class="slds-m-top_medium slds-text-color_weak" data-id="status">
+          {statusMessage}
+        </div>
+      </template>
+    </div>
+  </lightning-card>
+</template>

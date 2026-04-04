@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>60.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>File Upload</masterLabel>
+    <description
+  >A file upload component with view/upload mode toggle and file actions.</description>
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig
+      targets="lightning__RecordPage,lightning__AppPage,lightning__HomePage"
+    >
+            <property
+        name="contentDocumentLinkId"
+        type="String"
+        label="Content Document Link ID"
+        description="ID of the existing ContentDocumentLink, if any."
+      />
+            <property
+        name="name"
+        type="String"
+        label="Name Override"
+        description="Optional display name to override the file name."
+      />
+            <property
+        name="disabled"
+        type="Boolean"
+        label="Disabled"
+        default="false"
+        description="Disable remove and upload new version actions."
+      />
+            <property
+        name="accept"
+        type="String"
+        label="Accepted Formats"
+        default=".pdf, .png, .jpg, .jpeg, .txt, .docx, .xlsx"
+        description="Comma separated file extensions."
+      />
+            <property
+        name="label"
+        type="String"
+        label="Upload Label"
+        default="Upload Files"
+        description="Label shown above the file uploader."
+      />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>
