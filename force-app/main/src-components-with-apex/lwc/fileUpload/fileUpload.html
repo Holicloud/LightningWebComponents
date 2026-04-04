@@ -1,0 +1,91 @@
+<template>
+  <div class={containerClass}>
+    <!-- View Mode: File exists -->
+    <template lwc:if={showViewMode}>
+      <div class="slds-media slds-media_center" data-id="file-tile">
+        <div class="slds-media__figure">
+          <lightning-icon
+            icon-name={file.iconName}
+            size="small"
+            data-id="file-icon"
+          ></lightning-icon>
+        </div>
+        <div class="slds-media__body">
+          <h3
+            class="slds-text-heading_small slds-truncate"
+            title={file.displayName}
+          >
+            <a href={file.fileUrl} target="_blank" data-id="file-link"
+              >{file.displayName}</a
+            >
+          </h3>
+          <p
+            class="slds-text-body_small slds-text-color_weak slds-truncate"
+            data-id="file-meta"
+          >
+            {file.formattedMetadata}
+          </p>
+        </div>
+        <div class="slds-media__figure slds-media__figure_reverse">
+          <lightning-button-menu
+            alternative-text="File actions"
+            variant="border-filled"
+            icon-size="x-small"
+            menu-alignment="right"
+            onselect={handleMenuSelect}
+            data-id="action-menu"
+          >
+            <template for:each={menuItems} for:item="item">
+              <lightning-menu-item
+                key={item.value}
+                value={item.value}
+                label={item.label}
+                icon-name={item.iconName}
+                disabled={item.disabled}
+              ></lightning-menu-item>
+            </template>
+          </lightning-button-menu>
+        </div>
+      </div>
+    </template>
+
+    <!-- Upload New Version Mode -->
+    <template lwc:if={showNewVersionUpload}>
+      <div class="slds-grid slds-grid_vertical-align-center">
+        <lightning-file-upload
+          label=""
+          name="fileVersionUploader"
+          accept={accept}
+          record-id={recordId}
+          onuploadfinished={handleUploadFinished}
+          variant="label-hidden"
+          data-id="version-upload"
+          class="slds-grow"
+        ></lightning-file-upload>
+        <lightning-button-icon
+          icon-name="utility:close"
+          variant="bare"
+          alternative-text="Cancel"
+          title="Cancel"
+          onclick={handleCancelUploadVersion}
+          class="slds-m-left_small"
+          data-id="cancel-version"
+        ></lightning-button-icon>
+      </div>
+    </template>
+
+    <!-- Upload Mode: No file exists -->
+    <template lwc:if={showUploadMode}>
+      <lightning-file-upload
+        label=""
+        name="fileUploader"
+        accept={accept}
+        record-id={recordId}
+        onuploadfinished={handleUploadFinished}
+        disabled={disabled}
+        variant="label-hidden"
+        data-id="file-upload"
+      ></lightning-file-upload>
+    </template>
+  </div>
+</template>

@@ -4,13 +4,13 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 >
-    <label>FormattedFile</label>
+    <label>FileUpload</label>
     <protected>false</protected>
     <values>
         <field>Description__c</field>
         <value
       xsi:type="xsd:string"
-    >A component to display file information with a thumbnail or icon fallback.</value>
+    >A component to display file information and allow uploading new versions or unlinking.</value>
     </values>
     <values>
         <field>Targets__c</field>
