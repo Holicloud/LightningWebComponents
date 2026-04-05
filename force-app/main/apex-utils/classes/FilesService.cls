@@ -29,30 +29,26 @@ public without sharing class FilesService {
    * @return List of ContentDocument records.
    */
   public static List<ContentDocument> getDocumentsByRecord(Id recordId) {
-    if (recordId == null) {
+    if (recordId == null)
       return new List<ContentDocument>();
+    Set<Id> docIds = new Set<Id>();
+    for (ContentDocumentLink link : getLinksByRecord(recordId)) {
+      docIds.add(link.ContentDocumentId);
     }
-    List<ContentDocumentLink> links = getLinksByRecord(recordId);
-    Set<Id> documentIds = new Set<Id>();
-    for (ContentDocumentLink link : links) {
-      documentIds.add(link.ContentDocumentId);
-    }
-    if (documentIds.isEmpty()) {
-      return new List<ContentDocument>();
-    }
-
-    return [
-      SELECT
-        Id,
-        Title,
-        LatestPublishedVersionId,
-        FileType,
-        ContentSize,
-        CreatedDate
-      FROM ContentDocument
-      WHERE Id IN :documentIds
-      WITH SYSTEM_MODE
-    ];
+    return docIds.isEmpty()
+      ? new List<ContentDocument>()
+      : [
+          SELECT
+            Id,
+            Title,
+            LatestPublishedVersionId,
+            FileType,
+            ContentSize,
+            CreatedDate
+          FROM ContentDocument
+          WHERE Id IN :docIds
+          WITH SYSTEM_MODE
+        ];
   }
 
   /**
@@ -124,18 +120,16 @@ public without sharing class FilesService {
    * @param linkId The ID of the ContentDocumentLink.
    */
   public static void deleteLinkById(Id linkId) {
-    if (linkId == null) {
+    if (linkId == null)
       return;
-    }
     List<ContentDocumentLink> links = [
       SELECT Id
       FROM ContentDocumentLink
       WHERE Id = :linkId
       WITH SYSTEM_MODE
     ];
-    if (!links.isEmpty()) {
+    if (!links.isEmpty())
       delete as system links;
-    }
   }
 
   // --- 4. File Lifecycle ---
@@ -145,18 +139,16 @@ public without sharing class FilesService {
    * @param documentId The ID of the ContentDocument to delete.
    */
   public static void deleteDocument(Id documentId) {
-    if (documentId == null) {
+    if (documentId == null)
       return;
-    }
     List<ContentDocument> docs = [
       SELECT Id
       FROM ContentDocument
       WHERE Id = :documentId
       WITH SYSTEM_MODE
     ];
-    if (!docs.isEmpty()) {
+    if (!docs.isEmpty())
       delete as system docs;
-    }
   }
 
   /**
@@ -164,10 +156,7 @@ public without sharing class FilesService {
    * @param documentId The ID of the ContentDocument to delete.
    */
   public static void deleteIfOrphan(Id documentId) {
-    if (documentId == null) {
-      return;
-    }
-    if (isOnlyLinkedToUser(documentId)) {
+    if (documentId != null && isOnlyLinkedToUser(documentId)) {
       deleteDocument(documentId);
     }
   }
@@ -185,23 +174,18 @@ public without sharing class FilesService {
     ContentVersion cv = new ContentVersion(
       Title = fileName,
       PathOnClient = fileName,
-      VersionData = body
+      VersionData = body,
+      FirstPublishLocationId = recordId
     );
-
-    if (recordId != null) {
-      cv.FirstPublishLocationId = recordId;
-    }
-
     insert as system cv;
 
-    ContentVersion insertedCv = [
+    return [
       SELECT ContentDocumentId
       FROM ContentVersion
       WHERE Id = :cv.Id
       WITH SYSTEM_MODE
-    ];
-
-    return insertedCv.ContentDocumentId;
+    ]
+    .ContentDocumentId;
   }
 
   // --- 6. Security & Helpers ---
