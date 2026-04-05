@@ -1,8 +1,5 @@
 <template>
-  <lightning-card
-    title="Message Channel Mixin Example"
-    icon-name="custom:custom13"
-  >
+  <lightning-card title="EMP API Mixin Example" icon-name="custom:custom13">
     <div slot="actions">
       <lightning-badge
         label={subscriptionStatus}
@@ -17,9 +14,7 @@
         <div class="slds-col slds-size_1-of-1">
           <p>
             <strong>Channel:</strong>
-            <span class="slds-badge slds-m-left_small"
-              >PrimaryMessageChannel__c</span
-            >
+            <span class="slds-badge slds-m-left_small">{channel}</span>
           </p>
         </div>
       </div>
@@ -52,9 +47,9 @@
         <div class="slds-col slds-text-align_right">
           <lightning-button
             variant="success"
-            label="Publish Message"
+            label="Publish Event"
             icon-name="utility:send"
-            onclick={handlePublishMessage}
+            onclick={handlePublish}
           ></lightning-button>
         </div>
       </div>
@@ -62,7 +57,7 @@
       <template lwc:if={hasEvents}>
         <div class="slds-m-top_large">
           <h2 class="slds-text-heading_small slds-m-bottom_small">
-            Received Messages
+            Received Events
           </h2>
           <template for:each={events} for:item="evt" for:index="index">
             <div
