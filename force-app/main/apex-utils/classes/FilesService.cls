@@ -29,8 +29,9 @@ public without sharing class FilesService {
    * @return List of ContentDocument records.
    */
   public static List<ContentDocument> getDocumentsByRecord(Id recordId) {
-    if (recordId == null)
+    if (recordId == null) {
       return new List<ContentDocument>();
+    }
     Set<Id> docIds = new Set<Id>();
     for (ContentDocumentLink link : getLinksByRecord(recordId)) {
       docIds.add(link.ContentDocumentId);
@@ -97,21 +98,13 @@ public without sharing class FilesService {
    * @param recordId The ID of the record.
    */
   public static void unlinkFromRecord(Id documentId, Id recordId) {
-    if (documentId == null || recordId == null) {
-      return;
-    }
-
-    List<ContentDocumentLink> links = getLinksByDocument(documentId);
-
-    List<ContentDocumentLink> toDelete = new List<ContentDocumentLink>();
-    for (ContentDocumentLink link : links) {
-      if (link.LinkedEntityId == recordId) {
-        toDelete.add(link);
-      }
-    }
-
-    if (!toDelete.isEmpty()) {
-      delete as system toDelete;
+    if (documentId != null && recordId != null) {
+      delete as system [
+        SELECT Id
+        FROM ContentDocumentLink
+        WHERE ContentDocumentId = :documentId AND LinkedEntityId = :recordId
+        WITH SYSTEM_MODE
+      ];
     }
   }
 
@@ -120,16 +113,18 @@ public without sharing class FilesService {
    * @param linkId The ID of the ContentDocumentLink.
    */
   public static void deleteLinkById(Id linkId) {
-    if (linkId == null)
+    if (linkId == null) {
       return;
+    }
     List<ContentDocumentLink> links = [
       SELECT Id
       FROM ContentDocumentLink
       WHERE Id = :linkId
       WITH SYSTEM_MODE
     ];
-    if (!links.isEmpty())
+    if (!links.isEmpty()) {
       delete as system links;
+    }
   }
 
   // --- 4. File Lifecycle ---
@@ -139,16 +134,18 @@ public without sharing class FilesService {
    * @param documentId The ID of the ContentDocument to delete.
    */
   public static void deleteDocument(Id documentId) {
-    if (documentId == null)
+    if (documentId == null) {
       return;
+    }
     List<ContentDocument> docs = [
       SELECT Id
       FROM ContentDocument
       WHERE Id = :documentId
       WITH SYSTEM_MODE
     ];
-    if (!docs.isEmpty())
+    if (!docs.isEmpty()) {
       delete as system docs;
+    }
   }
 
   /**
@@ -211,12 +208,11 @@ public without sharing class FilesService {
     List<ContentDocumentLink> links
   ) {
     List<ContentDocumentLink> result = new List<ContentDocumentLink>();
-    if (links == null) {
-      return result;
-    }
-    for (ContentDocumentLink link : links) {
-      if (!isUserLink(link)) {
-        result.add(link);
+    if (links != null) {
+      for (ContentDocumentLink link : links) {
+        if (!isUserLink(link)) {
+          result.add(link);
+        }
       }
     }
     return result;
@@ -268,8 +264,7 @@ public without sharing class FilesService {
       return false;
     }
 
-    List<ContentDocumentLink> links = getLinksByDocument(documentId);
-    for (ContentDocumentLink link : links) {
+    for (ContentDocumentLink link : getLinksByDocument(documentId)) {
       if (!isUserLink(link)) {
         return false;
       }
