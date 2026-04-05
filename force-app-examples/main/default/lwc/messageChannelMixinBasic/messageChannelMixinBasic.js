@@ -5,10 +5,27 @@ import { LightningElement } from "lwc";
 export default class MessageChannelMixinBasic extends MessageChannelMixin(
   LightningElement
 ) {
-  message = "";
+  events = [];
+  isSubscribed = false;
+
+  get hasEvents() {
+    return this.events.length > 0;
+  }
+
+  get isNotSubscribed() {
+    return !this.isSubscribed;
+  }
+
+  get statusVariant() {
+    return this.isSubscribed ? "success" : "error";
+  }
+
+  get subscriptionStatus() {
+    return this.isSubscribed ? "Subscribed" : "Unsubscribed";
+  }
 
   handleMessage(payload) {
-    this.message = payload.value;
+    this.events = [JSON.stringify(payload, null, 2), ...this.events];
   }
 
   handlePublishMessage() {
@@ -25,16 +42,15 @@ export default class MessageChannelMixinBasic extends MessageChannelMixin(
       listener: this.handleMessage.bind(this),
       channel
     });
+    this.isSubscribed = true;
   }
 
   handleUnsubscribe() {
     this[MessageChannelMixin.Unsubscribe](channel);
+    this.isSubscribed = false;
   }
 
   connectedCallback() {
-    this[MessageChannelMixin.Subscribe]({
-      listener: this.handleMessage.bind(this),
-      channel
-    });
+    this.handleSubscribe();
   }
 }
