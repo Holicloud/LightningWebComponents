@@ -25,7 +25,7 @@
     "@locker/eslint-config-locker": "^0.27.4",
     "@lwc/eslint-plugin-lwc": "^3.5.0",
     "@prettier/plugin-xml": "^3.4.1",
-    "@sa11y/jest": "^7.4.0",
+    "@sa11y/jest": "^8.0.27",
     "@salesforce/eslint-config-lwc": "^4.0.0",
     "@salesforce/eslint-plugin-aura": "^3.0.0",
     "@salesforce/eslint-plugin-lightning": "^2.0.0",
